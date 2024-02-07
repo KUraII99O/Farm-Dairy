@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 import { MdOutlineKeyboardDoubleArrowLeft, MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md';
 import { FaUserFriends } from 'react-icons/fa';
 import { GiMilkCarton } from "react-icons/gi";
@@ -26,43 +27,40 @@ const Sidebar: React.FC = () => {
   };
 
   const menuItems = [
-    { name: 'Human Resource', icon: FaUserFriends },
-    { name: 'Milk Parlor', icon: GiMilkCarton },
-    { name: 'Cow Feed', icon: PiForkKnifeFill },
-    { name: 'Cow Monitor', icon: CgScreen },
-    { name: 'Cow Sale', icon: FaMoneyBillAlt },
-    { name: 'Farm Expense', icon: FaDollarSign },
-    { name: 'Suppliers', icon: IoMdPerson },
-    { name: 'Manage Cow', icon: FaCow },
-    { name: 'Manage Cow Calf', icon: SiHappycow },
-    { name: 'Manage Stall', icon: FaHouse },
-    { name: 'Catalog', icon: GrCatalog },
-    { name: 'Settings', icon: IoSettings },
-    { name: 'Reports', icon: FaChartColumn },
+    { name: 'Human Resource', icon: FaUserFriends, link: '/human-resource' },
+    { name: 'Milk Parlor', icon: GiMilkCarton, link: '/milk-parlor' },
+    { name: 'Cow Feed', icon: PiForkKnifeFill, link: '/cow-feed' },
+    { name: 'Cow Monitor', icon: CgScreen, link: '/cow-monitor' },
+    { name: 'Cow Sale', icon: FaMoneyBillAlt, link: '/cow-sale' },
+    { name: 'Farm Expense', icon: FaDollarSign, link: '/farm-expense' },
+    { name: 'Suppliers', icon: IoMdPerson, link: '/suppliers' },
+    { name: 'Manage Cow', icon: FaCow, link: '/manage-cow' },
+    { name: 'Manage Cow Calf', icon: SiHappycow, link: '/manage-cow-calf' },
+    { name: 'Manage Stall', icon: FaHouse, link: '/manage-stall' },
+    { name: 'Catalog', icon: GrCatalog, link: '/catalog' },
+    { name: 'Settings', icon: IoSettings, link: '/settings' },
+    { name: 'Reports', icon: FaChartColumn, link: '/reports' },
   ];
 
   return (
     <div className={`min-h-screen bg-white transition-all duration-300 ${isOpen ? 'w-56' : 'w-[3.35rem]'}`}>
-      <div className="sidebar overflow-hidden border-r relative">
+      <div className="sidebar   overflow-hidden  border-r relative">
         <div className="flex h-screen flex-col justify-between pt-2 pb-6">
           <div>
             <div className="h-8 w-auto">
               <img
-                  src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                  className="h-8 w-auto"
+                src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+                className="h-8 w-auto"
                 alt="Your Company"
               />
             </div>
             <ul className="mt-6 space-y-2 tracking-wide">
               {menuItems.map((item, index) => (
                 <li key={index} className="min-w-max">
-                  <a
-                    href="#"
-                    className="relative flex items-center space-x-4  px-4 py-3 text-black hover:bg-green-500"
-                  >
+                  <Link to={item.link} className="relative flex items-center space-x-4  px-4 py-3 text-black hover:bg-green-500">
                     <item.icon className="h-6 w-6" /> {/* Render the icon */}
                     <span className="-mr-1 font-medium">{item.name}</span>
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
