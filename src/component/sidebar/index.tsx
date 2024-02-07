@@ -46,11 +46,11 @@ const Sidebar: React.FC = () => {
       <div className="sidebar overflow-hidden border-r relative">
         <div className="flex h-screen flex-col justify-between pt-2 pb-6">
           <div>
-            <div className="w-max p-2.5">
+            <div className="h-8 w-auto">
               <img
-                src="https://tailus.io/images/logo.svg"
-                className="w-32"
-                alt=""
+                  src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+                  className="h-8 w-auto"
+                alt="Your Company"
               />
             </div>
             <ul className="mt-6 space-y-2 tracking-wide">
