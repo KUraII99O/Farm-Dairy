@@ -6,6 +6,12 @@ import DashboardPage from "./Pages/DashboardPage";
 import SettingsPage from "./Pages/SettingPage";
 import Footer from "./component/footer";
 import Sidebar from "./component/sidebar";
+import ProfileSettingPage from "./Pages/ProfileSettingPage";
+
+
+
+
+
 
 const App: React.FC = () => {
   return (
@@ -18,6 +24,7 @@ const App: React.FC = () => {
             <Routes> {/* Use Routes instead of Route */}
               <Route path="/" element={<DashboardPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/Profile" element={<ProfileSettingPage />} />
             </Routes>
           </div>
           <Footer />

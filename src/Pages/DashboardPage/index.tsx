@@ -8,7 +8,6 @@ import CowFeedChart from '../../component/CowFeed';
 
 
   const cowFeedChartData = [
-    // Add your data here
     { stallNumber: 'Stall-001', grass: 'Quantity: 10.00 Gram Time: 8:00 AM', salt: 'Quantity: 1.00 Gram Time: 10:00 AM', water: 'Quantity: 5.00 KG Time: 10:30 AM' },
     { stallNumber: 'Stall-002', grass: 'Quantity: 10.00 KG Time: 8:00 AM', salt: 'Quantity: 1.00 KG Time: 04:30 PM', water: 'Quantity: 5.00 KG Time: 10:30 AM' },
     { stallNumber: 'Stall-003', grass: 'Quantity: 25.00 KG Time: 8:00 AM', salt: 'Quantity: 20.00 KG Time: 10:00 AM', water: '' },

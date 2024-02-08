@@ -50,7 +50,7 @@ const CowFeedChart: React.FC<CowFeedChartProps> = ({ data }) => {
           ))}
         </tbody>
       </table>
-      <button className="mt-4 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600">
+      <button className="mt-4 bg-green-200 text-black py-2 px-4 rounded hover:bg-gradient-to-r from-emerald-600 to-emerald-500">
         Set Feed Chart
       </button>
     </div>

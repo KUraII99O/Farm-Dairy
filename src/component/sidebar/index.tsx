@@ -43,8 +43,8 @@ const Sidebar: React.FC = () => {
   ];
 
   return (
-    <div className={`min-h-screen bg-white transition-all duration-300 ${isOpen ? 'w-56' : 'w-[3.35rem]'}`}>
-      <div className="sidebar   overflow-hidden  border-r relative">
+    <div className={`h-full bg-white  transition-all duration-300 ${isOpen ? 'w-56' : 'w-[3.35rem]'}`}>
+      <div className="sidebar overflow-hidden  border-r relative">
         <div className="flex h-screen flex-col justify-between pt-2 pb-6">
           <div>
             <div className="h-8 w-auto">
@@ -57,8 +57,8 @@ const Sidebar: React.FC = () => {
             <ul className="mt-6 space-y-2 tracking-wide">
               {menuItems.map((item, index) => (
                 <li key={index} className="min-w-max">
-                  <Link to={item.link} className="relative flex items-center space-x-4  px-4 py-3 text-black hover:bg-green-500">
-                    <item.icon className="h-6 w-6" /> {/* Render the icon */}
+                  <Link to={item.link} className="relative flex items-center space-x-4  px-4 py-3 text-black hover:bg-lime-300 transition duration-300 ease-in-out">
+                    <item.icon className="h-6 w-6" /> 
                     <span className="-mr-1 font-medium">{item.name}</span>
                   </Link>
                 </li>
@@ -72,7 +72,9 @@ const Sidebar: React.FC = () => {
           </button>
         </div>
       </div>
+      
     </div>
+    
   );
 };
 
