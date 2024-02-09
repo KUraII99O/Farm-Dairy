@@ -35,7 +35,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-4 ">Admin Dashboard</h1>
+      <h1 className="text-3xl font-bold mb-4 text-secondary ">Admin Dashboard</h1>
       <div className="grid grid-cols-1 gap-4 px-4 mt-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 ">
         {items.map((item) => (
           <DashboardItem key={item.id} item={item} />

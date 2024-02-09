@@ -14,11 +14,11 @@ interface CowFeedChartProps {
 const CowFeedChart: React.FC<CowFeedChartProps> = ({ data }) => {
   return (
     <div className="container mx-auto my-8">
-      <h2 className="text-2xl font-bold mb-4 text-green-600">
+      <h2 className="text-2xl font-bold mb-4 text-secondary">
         <FontAwesomeIcon icon={faUtensils} className="mr-2" />
         Cow Feed Chart
       </h2>
-      <table className="min-w-full bg-white border border-green-500">
+      <table className="min-w-full bg-white border border-secondary">
         <thead>
           <tr>
             <th className="py-2 px-4 border-b">Stall Number</th>
@@ -50,7 +50,7 @@ const CowFeedChart: React.FC<CowFeedChartProps> = ({ data }) => {
           ))}
         </tbody>
       </table>
-      <button className="mt-4 bg-green-200 text-black py-2 px-4 rounded hover:bg-gradient-to-r from-emerald-600 to-emerald-500">
+      <button className="mt-4 bg-secondary text-black py-2 px-4 rounded hover:bg-primary">
         Set Feed Chart
       </button>
     </div>

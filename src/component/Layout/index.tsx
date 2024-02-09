@@ -11,9 +11,9 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <div className="flex h-screen ">
+    <div className="overflow-hidden flex h-screen">
       <Sidebar />
-      <div className="flex flex-col w-full">
+      <div className="overflow-y-auto flex flex-col w-full">
         <Header />
         {/* Main content goes here */}
         <div className="p-4">
