@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaImage } from "react-icons/fa6";
+import { FaImage } from "react-icons/fa"; // Import FaImage icon
 
 const ProfileImageUploader: React.FC = () => {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -17,29 +17,32 @@ const ProfileImageUploader: React.FC = () => {
     };
 
     return (
-        <div className="container bg-white flex flex-col items-center">
-            <h2 className="text-xl font-bold text-gray-700 mb-4 text-left w-full mr-2">
+        <div className="container mx-auto mt-4 mb-16 bg-white p-8 ">
+            <h2 className="text-xl font-bold text-gray-700 mb-4 flex items-center">
                 <FaImage className="mr-2" /> 
-                Upload Profile Image :
+                <span>Upload Profile Image :</span>
             </h2>
-            <label htmlFor="fileUpload" className="cursor-pointer flex flex-col">
-                <input id="fileUpload" type="file" onChange={onImageSelect} className="hidden" />
-                {selectedImage ? (
-                    <img src={selectedImage} alt="Selected profile" className="rounded-lg h-48 w-48 object-cover" />
-                ) : (
-                    <div className="h-48 w-48 bg-gray-200 rounded-lg flex items-center justify-center">
-                        <span className="text-gray-500">No image selected</span>
-                    </div>
-                )}
-            </label>
-
-            {/* Button */}
-            <button
-                type='button'
-                onClick={() => document.getElementById('fileUpload')?.click()}
-                className='mt-4 px-4 py-2 bg-secondary text-white rounded-md hover:bg-primary focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'>
-                Browse
-            </button>
+            <div className="flex justify-center"> {/* Flex container to center content */}
+                <label htmlFor="fileUpload" className="cursor-pointer flex flex-col">
+                    <input id="fileUpload" type="file" onChange={onImageSelect} className="hidden" />
+                    {selectedImage ? (
+                        <img src={selectedImage} alt="Selected profile" className="rounded-lg h-48 w-48 object-cover" />
+                    ) : (
+                        <div className="h-48 w-48 bg-gray-200 rounded-lg flex items-center justify-center">
+                            <span className="text-gray-500">No image selected</span>
+                        </div>
+                    )}
+                </label>
+            </div>
+            {/* Center the button */}
+            <div className="text-center">
+                <button
+                    type='button'
+                    onClick={() => document.getElementById('fileUpload')?.click()}
+                    className='mt-4 px-4 py-2 bg-secondary text-white rounded-md hover:bg-primary item'>
+                    Browse
+                </button>
+            </div>
         </div>
     );
 };

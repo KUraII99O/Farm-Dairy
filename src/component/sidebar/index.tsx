@@ -42,9 +42,9 @@ const Sidebar: React.FC = () => {
       link: "/human-resource",
       submenu: [
         { name: "Add Staff", link: "/AddStaff" },
-        { name: "Staff List", link: "/submenu-2" },
-        { name: "User List", link: "/submenu-2" },
-        { name: "Employee Salary", link: "/submenu-2" },
+        { name: "Staff List", link: "/stafflist" },
+        { name: "User List", link: "/userlist" },
+        { name: "Employee Salary", link: "/employeesalary" },
       ],
     },
     {

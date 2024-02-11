@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { FaUserPlus } from "react-icons/fa";
+import { FaSave } from "react-icons/fa";
 
 interface ProfileInformation {
   fullName: string;
@@ -53,10 +55,10 @@ const ProfileForm: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col w-full space-y-4">
-      <h2 className="text-xl font-bold text-gray-700 mb-4">
-        Profile Information
+      <h2 className="text-xl font-bold text-gray-700 mb-4 flex items-center">
+        <FaUserPlus className="mr-2" /> {/* Add FaUserPlus icon */}
+        <span>Profile Information</span>
       </h2>
-
       <div className="flex flex-col space-y-1">
         <label htmlFor="fullName" className="text-sm font-medium text-gray-700">
           Full Name:
@@ -279,12 +281,13 @@ const ProfileForm: React.FC = () => {
       </div>
 
       <button
-        type="submit"
-        className="bg-secondary hover:bg-primary text-black px-4 py-2 rounded-md"
-        style={{ width: "100px" }}
-      >
-        Submit
-      </button>
+  type="submit"
+  className="bg-secondary hover:bg-primary text-black px-4 py-2 rounded-md flex items-center" // Use flexbox for alignment
+  style={{ width: "100px" }}
+>
+  <FaSave className="mr-2" style={{ verticalAlign: "middle" }} /> {/* Adjust vertical alignment */}
+  Save
+</button>
     </form>
   );
 };
