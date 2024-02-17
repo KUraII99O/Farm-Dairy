@@ -41,7 +41,6 @@ const Sidebar: React.FC = () => {
       icon: FaUserFriends,
       link: "/human-resource",
       submenu: [
-        { name: "Add Staff", link: "/AddStaff" },
         { name: "Staff List", link: "/stafflist" },
         { name: "User List", link: "/userlist" },
         { name: "Employee Salary", link: "/employeesalary" },
@@ -52,9 +51,9 @@ const Sidebar: React.FC = () => {
       icon: GiMilkCarton,
       link: "/milk-parlor",
       submenu: [
-        { name: "Collect Milk", link: "/submenu-1" },
-        { name: "Sale Milk", link: "/submenu-2" },
-        { name: "Sale Due Collection", link: "/submenu-2" },
+        { name: "Collect Milk", link: "/CollectMilk" },
+        { name: "Sale Milk", link: "/MilkSale" },
+        { name: "Sale Due Collection", link: "/SaleDueCollection" },
       ],
     },
     { name: "Cow Feed", icon: PiForkKnifeFill, link: "/cow-feed" },
@@ -126,19 +125,19 @@ const Sidebar: React.FC = () => {
   return (
     <div
       className={`h-full bg-white transition-all duration-300 ${
-        isOpen ? "w-56" : "w-[3.35rem]"
+        isOpen ? "w-full lg:w-56" : "w-[3.35rem]"
       }`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-       className={`sidebar overflow-y-auto border-r relative ${
-        (isOpen || isHovered) && "scrollbar"
-      }`}
-      style={{
-        scrollbarWidth: "thin",
-        scrollbarColor: "rgba(0, 0, 0, 0.3) transparent"
-      }}
+        className={`sidebar overflow-y-auto border-r relative ${
+          (isOpen || isHovered) && "scrollbar"
+        }`}
+        style={{
+          scrollbarWidth: "thin",
+          scrollbarColor: "rgba(0, 0, 0, 0.3) transparent"
+        }}
       >
         <div className="flex h-screen flex-col justify-between pt-2 pb-6">
           <div>
@@ -218,5 +217,6 @@ const Sidebar: React.FC = () => {
     </div>
   );
 };
+
 
 export default Sidebar;

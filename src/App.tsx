@@ -7,9 +7,13 @@ import ProfileSettingPage from "./Pages/ProfileSettingPage";
 import Layout from "./component/Layout";
 import AddStaff from "./Pages/AddStaffPage";
 import StaffList from "./Pages/StaffListPage";
-import UserList from "./Pages/UserListPage";
 import EmployeeSalary from "./Pages/EmployeeSalaryPage";
-import CreateSalary from "./Pages/CreateEmployeeSalary";
+import EmployeeSalaryPage from "./Pages/CreateEmployeeSalary";
+import CollectMilk from "./Pages/CollectMilkPage";
+import MilkSale from "./Pages/MilkSalePage";
+import EditMilkCollect from "./Pages/EditMilkCollection";
+import UserList from "./Pages/UserListPage";
+import EditUser from "./Pages/EditUserList";
 
 const App: React.FC = () => {
   return (
@@ -22,10 +26,15 @@ const App: React.FC = () => {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/Profile" element={<ProfileSettingPage />} />
           <Route path="/AddStaff" element={<AddStaff />} />
-          <Route path="/StaffList" element={<StaffList  />} />
-          <Route path="/UserList" element={<UserList  />} />
-          <Route path="/EmployeeSalary" element={<EmployeeSalary  />} />
-          <Route path="/CreateSalary" element={<CreateSalary  />} />
+          <Route path="/StaffList" element={<StaffList />} />
+          <Route path="/UserList" element={<UserList />} />
+          <Route path="/EmployeeSalary" element={<EmployeeSalary />} />
+          <Route path="/salary/create" element={<EmployeeSalaryPage />} />
+          <Route path="/salary/:id/edit/" element={<EmployeeSalaryPage />} />
+          <Route path="/user/:id/edit/" element={<EditUser />} />
+          <Route path="/CollectMilk" element={<CollectMilk />} />
+          <Route path="/MilkSale" element={<MilkSale />} />
+          <Route path="/EditMilkCollection" element={<EditMilkCollect />} />
         </Routes>
       </Layout>
     </Router>

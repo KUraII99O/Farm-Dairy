@@ -17,14 +17,14 @@ const ProfileImageUploader: React.FC = () => {
     };
 
     return (
-        <div className="container mx-auto mt-4 mb-16 bg-white p-8 ">
+        <div className="container pl-4 bg-white ">
             <h2 className="text-xl font-bold text-gray-700 mb-4 flex items-center">
                 <FaImage className="mr-2" /> 
                 <span>Upload Profile Image :</span>
             </h2>
             <div className="flex justify-center"> {/* Flex container to center content */}
                 <label htmlFor="fileUpload" className="cursor-pointer flex flex-col">
-                    <input id="fileUpload" type="file" onChange={onImageSelect} className="hidden" />
+                    <input id="fileUpload" type="file" accept="image/*" onChange={onImageSelect} className="hidden" />
                     {selectedImage ? (
                         <img src={selectedImage} alt="Selected profile" className="rounded-lg h-48 w-48 object-cover" />
                     ) : (

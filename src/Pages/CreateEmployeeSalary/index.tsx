@@ -1,12 +1,13 @@
-import React from 'react'
-import SalaryForm from '../../component/EmployeeSalary'
+import EmployeeSalaryForm from '../../component/EmployeeSalary/Form'
 
-const CreateSalary = () => {
+const EmployeeSalaryPage = () => {
   return (
-    <div>
-        <SalaryForm employees={[]}/>
+    <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4">
+      <div className="md:w-1/2">
+        <EmployeeSalaryForm/>
+        </div>
     </div>
   )
 }
 
-export default CreateSalary
+export default EmployeeSalaryPage

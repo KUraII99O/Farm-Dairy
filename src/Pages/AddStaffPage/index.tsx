@@ -9,7 +9,7 @@ const AddStaff = () => {
       <div className="md:w-1/2">
         <ProfileInformation />
       </div>
-      <div className="md:w-1/2 pt-40">
+      <div className="md:w-1/2 ">
         <FileUpload />
         <PasswordForm /> {/* Place PasswordForm component here */}
       </div>

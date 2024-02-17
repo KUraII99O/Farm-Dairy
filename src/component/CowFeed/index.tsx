@@ -13,7 +13,7 @@ interface CowFeedChartProps {
 
 const CowFeedChart: React.FC<CowFeedChartProps> = ({ data }) => {
   return (
-    <div className="container mx-auto my-8">
+    <div className="container w-full my-8">
       <h2 className="text-2xl font-bold mb-4 text-secondary">
         <FontAwesomeIcon icon={faUtensils} className="mr-2" />
         Cow Feed Chart
