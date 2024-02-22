@@ -1,10 +1,13 @@
 import React from 'react'
-import UserTable from '../../component/UserListTable/List'
+import UserTable from '../../component/User/List'
 
-const UserList = () => {
+const StaffList = () => {
   return (
-    <UserTable/>
+    <div>
+
+<UserTable/>
+    </div>
   )
 }
 
-export default UserList
+export default StaffList

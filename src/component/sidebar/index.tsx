@@ -41,9 +41,9 @@ const Sidebar: React.FC = () => {
       icon: FaUserFriends,
       link: "/human-resource",
       submenu: [
-        { name: "Staff List", link: "/stafflist" },
-        { name: "User List", link: "/userlist" },
-        { name: "Employee Salary", link: "/employeesalary" },
+        { name: "Staff List", link: "/staff" },
+        { name: "User List", link: "/User" },
+        { name: "Employee Salary", link: "/Employee" },
       ],
     },
     {
@@ -51,7 +51,7 @@ const Sidebar: React.FC = () => {
       icon: GiMilkCarton,
       link: "/milk-parlor",
       submenu: [
-        { name: "Collect Milk", link: "/CollectMilk" },
+        { name: "Collect Milk", link: "/Milk" },
         { name: "Sale Milk", link: "/MilkSale" },
         { name: "Sale Due Collection", link: "/SaleDueCollection" },
       ],

@@ -281,13 +281,14 @@ const ProfileForm: React.FC = () => {
       </div>
 
       <button
-  type="submit"
-  className="bg-secondary hover:bg-primary text-black px-4 py-2 rounded-md flex items-center" // Use flexbox for alignment
-  style={{ width: "100px" }}
->
-  <FaSave className="mr-2" style={{ verticalAlign: "middle" }} /> {/* Adjust vertical alignment */}
-  Save
-</button>
+        type="submit"
+        className="bg-secondary hover:bg-primary text-black px-4 py-2 rounded-md flex items-center" // Use flexbox for alignment
+        style={{ width: "100px" }}
+      >
+        <FaSave className="mr-2" style={{ verticalAlign: "middle" }} />{" "}
+        {/* Adjust vertical alignment */}
+        Save
+      </button>
     </form>
   );
 };

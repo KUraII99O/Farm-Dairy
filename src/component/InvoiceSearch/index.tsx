@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MilkSale } from "../types";
+import { MilkSale } from "../Staff/types";
 
 const InvoiceSearch: React.FC<{ sales: MilkSale[] }> = ({ sales }) => {
   const [searchTerm, setSearchTerm] = useState<string>("");

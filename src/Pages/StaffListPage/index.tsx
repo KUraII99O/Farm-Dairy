@@ -1,12 +1,13 @@
-import React from 'react';
-import StaffTable from '../../component/StaffTable';
+import React from 'react'
+import StaffTable from '../../component/Staff/List'
 
-const Index = () => {
+const StaffList = () => {
   return (
     <div>
-      <StaffTable />
-    </div>
-  );
-};
 
-export default Index;
+<StaffTable/>
+    </div>
+  )
+}
+
+export default StaffList

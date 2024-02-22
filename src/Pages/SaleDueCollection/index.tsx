@@ -1,7 +1,7 @@
 // pages/SaleDueCollection/index.tsx
 import React, { useState } from "react";
 import InvoiceSearch from "../../component/InvoiceSearch";
-import { MilkSale } from "../../component/types";
+import { MilkSale } from "../../component/Staff/types";
 import { FaList } from "react-icons/fa";
 
 const SaleDueCollection: React.FC = () => {

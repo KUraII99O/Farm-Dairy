@@ -1,43 +1,59 @@
-// App.tsx
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom"; // Import Route and Routes from react-router-dom
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import DashboardPage from "./Pages/DashboardPage";
-import SettingsPage from "./Pages/SettingPage";
+import SettingPage from "./Pages/SettingPage";
 import ProfileSettingPage from "./Pages/ProfileSettingPage";
 import Layout from "./component/Layout";
-import AddStaff from "./Pages/AddStaffPage";
-import StaffList from "./Pages/StaffListPage";
-import EmployeeSalary from "./Pages/EmployeeSalaryPage";
-import EmployeeSalaryPage from "./Pages/CreateEmployeeSalary";
-import CollectMilk from "./Pages/CollectMilkPage";
-import MilkSale from "./Pages/MilkSalePage";
-import EditMilkCollect from "./Pages/EditMilkCollection";
-import UserList from "./Pages/UserListPage";
-import EditUser from "./Pages/EditUserList";
+import { StaffProvider } from "./component/Staff/Provider";
+import { UserProvider } from "./component/User/Provider";
+import { EmployeeProvider } from "./component/Employee/Provider";
+import { MilkProvider } from "./component/Milk/Provider"; // Import MilkProvider
+import EditStaffPage from "./Pages/EditStaffPage";
+import StaffListPage from "./Pages/StaffListPage";
+import UserListPage from "./Pages/UserListPage";
+import EditUserPage from "./Pages/EditUserPage";
+import EmloyeeListPage from "./Pages/EmloyeeListPage";
+import EditEmployeePage from "./Pages/EditEmployeePage";
+import MilkListPage from "./Pages/MilkListPage"; // Import MilkListPage
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <Layout>
-        <Routes>
-          {" "}
-          {/* Use Routes instead of Route */}
-          <Route path="/" element={<DashboardPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/Profile" element={<ProfileSettingPage />} />
-          <Route path="/AddStaff" element={<AddStaff />} />
-          <Route path="/StaffList" element={<StaffList />} />
-          <Route path="/UserList" element={<UserList />} />
-          <Route path="/EmployeeSalary" element={<EmployeeSalary />} />
-          <Route path="/salary/create" element={<EmployeeSalaryPage />} />
-          <Route path="/salary/:id/edit/" element={<EmployeeSalaryPage />} />
-          <Route path="/user/:id/edit/" element={<EditUser />} />
-          <Route path="/CollectMilk" element={<CollectMilk />} />
-          <Route path="/MilkSale" element={<MilkSale />} />
-          <Route path="/EditMilkCollection" element={<EditMilkCollect />} />
-        </Routes>
-      </Layout>
-    </Router>
+    <UserProvider>
+      <StaffProvider>
+        <EmployeeProvider>
+          <MilkProvider>
+            {" "}
+            {/* Wrap with MilkProvider */}
+            <Router>
+              <Layout>
+                <Routes>
+                  <Route path="/" element={<DashboardPage />} />
+                  <Route path="/settings" element={<SettingPage />} />
+                  <Route path="/edit-staff/:id" element={<EditStaffPage />} />
+                  <Route path="/add-staff" element={<EditStaffPage />} />
+                  <Route path="/edit-user/:id" element={<EditUserPage />} />
+                  <Route path="/add-user" element={<EditUserPage />} />
+                  <Route path="/Profile" element={<ProfileSettingPage />} />
+                  <Route path="/Staff" element={<StaffListPage />} />
+                  <Route path="/User" element={<UserListPage />} />
+                  <Route path="/Employee" element={<EmloyeeListPage />} />
+                  <Route
+                    path="/edit-employee/:id"
+                    element={<EditEmployeePage />}
+                  />
+                  <Route
+                    path="/edit-employee/"
+                    element={<EditEmployeePage />}
+                  />
+                  <Route path="/Milk" element={<MilkListPage />} />{" "}
+                  {/* Add Route for MilkListPage */}
+                </Routes>
+              </Layout>
+            </Router>
+          </MilkProvider>
+        </EmployeeProvider>
+      </StaffProvider>
+    </UserProvider>
   );
 };
 
