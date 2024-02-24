@@ -1,33 +1,33 @@
 import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
+import {ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { EmployeeContext } from "../Provider"; // Assuming you have an EmployeeContext
-import { Employee } from "../types"; // Assuming you have an Employee type defined
+import { EmployeeContext } from "../Provider";
+import { Employee } from "../types";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import Pagination from "../../Pagination";
 import { BsPencil } from "react-icons/bs";
 import { AiOutlineDelete } from "react-icons/ai";
+import EmployeeDrawer from "../Drawer";
 
 const EmployeeTable: React.FC = () => {
   const { employees, toggleStatus, deleteEmployee } =
-    useContext(EmployeeContext); // Assuming you have an EmployeeContext
+    useContext(EmployeeContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5); // Number of employees per page
+  const [itemsPerPage, setItemsPerPage] = useState(5);
   const [isDeleting, setIsDeleting] = useState(false);
   const [employeeToDelete, setEmployeeToDelete] = useState<number | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-  // Filter employees based on search term
   const filteredEmployees = employees.filter((employee) =>
     Object.values(employee).some((field) =>
       field.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
 
-  // Sort employees based on the selected field
   const sortedEmployees = sortBy
     ? filteredEmployees.sort((a, b) =>
         sortOrder === "asc"
@@ -40,7 +40,6 @@ const EmployeeTable: React.FC = () => {
       )
     : filteredEmployees;
 
-  // Pagination
   const handlePageChange = (page: number, itemsPerPage: number) => {
     setCurrentPage(page);
     setItemsPerPage(itemsPerPage);
@@ -53,9 +52,6 @@ const EmployeeTable: React.FC = () => {
     indexOfLastEmployee
   );
 
-  // Pagination end
-
- 
   const handleSort = (fieldName: string) => {
     if (sortBy === fieldName) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -74,7 +70,6 @@ const EmployeeTable: React.FC = () => {
 
   const handleDeleteConfirmation = (id: number) => {
     if (window.confirm("Are you sure you want to delete this employee?")) {
-      // If the user confirms, directly call handleDelete
       handleDelete(id);
     }
   };
@@ -84,12 +79,13 @@ const EmployeeTable: React.FC = () => {
     try {
       await deleteEmployee(id);
       setIsDeleting(false);
-      setEmployees((prevEmployees) =>
-        prevEmployees.filter((employee) => employee.id !== id)
-      );
     } catch (error) {
       setIsDeleting(false);
     }
+  };
+
+  const toggleDrawer = () => {
+    setDrawerOpen(!drawerOpen);
   };
 
   return (
@@ -104,14 +100,15 @@ const EmployeeTable: React.FC = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="p-2 rounded border border-gray-300 "
           />
-          <Link
-            to="/edit-employee"
+          <button
+            onClick={toggleDrawer}
             className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary ml-2"
           >
-            Add Employee
-          </Link>
+            {drawerOpen ? "X" : "Add New"} 
+          </button>
         </div>
       </div>
+      <EmployeeDrawer isOpen={drawerOpen} onClose={toggleDrawer} />
       <h1 className="text-xl font-bold mb-4">Employee Table</h1>
       <table className="min-w-full bg-white border-collapse">
         {/* Table header */}
@@ -198,7 +195,7 @@ const EmployeeTable: React.FC = () => {
                 {employee.name}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                {employee.PayDate	}
+                {employee.PayDate}
               </td>
               <td className="border border-gray-300 px-4 py-2">
                 {employee.Month}
@@ -213,7 +210,8 @@ const EmployeeTable: React.FC = () => {
                 {employee.AdditionAmount}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                {parseInt(employee.SalaryAmount) + parseInt(employee.AdditionAmount)}
+                {parseInt(employee.SalaryAmount) +
+                  parseInt(employee.AdditionAmount)}
               </td>
               <td className="border border-gray-300 px-4 py-2">
                 <div className="flex items-center">

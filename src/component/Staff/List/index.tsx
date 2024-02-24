@@ -107,7 +107,7 @@ const StaffTable: React.FC = () => {
             className="p-2 rounded border border-gray-300 ml-2"
           />
           <Link
-            to="/edit-staff"
+            to="/add-staff"
             className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary ml-2"
           >
             Add Staff

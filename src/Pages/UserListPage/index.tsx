@@ -1,7 +1,7 @@
 import React from 'react'
 import UserTable from '../../component/User/List'
 
-const StaffList = () => {
+const UserList = () => {
   return (
     <div>
 
@@ -10,4 +10,4 @@ const StaffList = () => {
   )
 }
 
-export default StaffList
+export default UserList

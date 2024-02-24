@@ -51,8 +51,8 @@ const Sidebar: React.FC = () => {
       icon: GiMilkCarton,
       link: "/milk-parlor",
       submenu: [
-        { name: "Collect Milk", link: "/Milk" },
-        { name: "Sale Milk", link: "/MilkSale" },
+        { name: "Collect Milk", link: "/Milk" }, // Update link path to "/Milk"
+        { name: "Sale Milk", link: "/Milk-Sale" },
         { name: "Sale Due Collection", link: "/SaleDueCollection" },
       ],
     },

@@ -2,7 +2,7 @@ import React from 'react';
 import Dashboard from '../../component/Dashboard';
 import ExpenseHistory from '../../component/ExpenseHistoryTable';
 import SaleHistory from '../../component/SaleHistoryTable';
-import CowFeedChart from '../../component/CowFeed';
+import CowFeedChart from '../../component/CowFeedcharts';
 
 
 

@@ -20,10 +20,11 @@ const MilkTable: React.FC = () => {
   const [milkToDelete, setMilkToDelete] = useState<number | null>(null);
 
   // Filter milks based on search term
-  const filteredMilks = milks.filter((milk) =>
-    Object.values(milk).some((field) =>
-      field.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    )
+  const filteredMilks = milks.filter(
+    (milk: { [s: string]: unknown } | ArrayLike<unknown>) =>
+      Object.values(milk).some((field) =>
+        field.toString().toLowerCase().includes(searchTerm.toLowerCase())
+      )
   );
 
   // Sort milks based on the selected field
@@ -99,10 +100,10 @@ const MilkTable: React.FC = () => {
           />
 
           <Link
-            to="/edit-User "
+            to="/Collect-Milk "
             className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary ml-2"
           >
-            Collect New 
+            Collect New
           </Link>
         </div>
       </div>
@@ -226,7 +227,7 @@ const MilkTable: React.FC = () => {
               <td className="border border-gray-300 px-4 py-2">
                 <div className="flex items-center">
                   <Link
-                    to={`/edit-milk/${milk.id}`}
+                    to={`/Edit-Milk/${milk.id}`}
                     className="text-blue-500 hover:underline flex items-center mr-2"
                   >
                     <BsPencil className="w-5 h-5 mr-1" />

@@ -1,36 +1,39 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { MilkContext } from "../Provider";
+import { MilkSaleContext } from "../Provider";
 import { FaUserPlus } from "react-icons/fa";
 
-const EditMilk = () => {
+const EditMilkSale = () => {
   const { id } = useParams<{ id: string }>();
-  const { milks, addMilk, editMilk } = useContext(MilkContext);
+  const { milkSales, addMilkSale, editMilkSale } = useContext(MilkSaleContext);
   const navigate = useNavigate();
 
   const isEditMode = !!id;
 
   const [formData, setFormData] = useState({
     accountNo: "",
-    stallNo: "",
-    animalID: "",
-    liter: "",
-    collectedFrom: "", // New field
-    address: "", // New field
-    fate: "", // New field
-    price: "", // New field
-    total: "", // New field
+    supplier : "",
+    name : "",
+    contact : "",
+    email : "",
+    address: "",
+    litre: "",
+    price: "",
+    total: "",
+    due: "",
+    paid: "",
+    
   });
   const [loading, setLoading] = useState(false);
   const [successPopup, setSuccessPopup] = useState(false);
   useEffect(() => {
     if (isEditMode) {
-      const selectedMilk = milks.find((milk) => milk.id === parseInt(id));
-      if (selectedMilk) {
-        setFormData(selectedMilk);
+      const selectedMilkSale = milkSales.find((milkSale) => milkSale.id === parseInt(id));
+      if (selectedMilkSale) {
+        setFormData(selectedMilkSale);
       }
     }
-  }, [id, isEditMode, milks]);
+  }, [id, isEditMode, milkSales]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -44,15 +47,15 @@ const EditMilk = () => {
     e.preventDefault();
     setLoading(true);
     if (isEditMode) {
-      await editMilk(parseInt(id), formData);
+      await editMilkSale(parseInt(id), formData);
     } else {
-      await addMilk(formData);
+      await addMilkSale(formData);
     }
     setLoading(false);
     setSuccessPopup(true);
     setTimeout(() => {
       setSuccessPopup(false);
-      navigate("/milk");
+      navigate("/Milk-Sale");
     }, 2000); // Close the popup and navigate after 2 seconds
   };
 
@@ -61,7 +64,7 @@ const EditMilk = () => {
       <form onSubmit={handleSubmit} className="flex flex-col w-full space-y-4">
         <h2 className="text-xl font-bold text-gray-700 mb-4 flex items-center">
           <FaUserPlus className="mr-2" />
-          <span>Milk Information</span>
+          <span>Milk Sale Information</span>
         </h2>
         <div className="flex flex-col space-y-1">
           <label className="text-sm font-medium text-gray-700">
@@ -82,14 +85,14 @@ const EditMilk = () => {
         {/* Add more fields */}
         <div className="flex flex-col space-y-1">
           <label className="text-sm font-medium text-gray-700">
-            Stall Number:
+          Supplier :
           </label>
           <input
             style={{ width: "800px" }}
             type="text"
-            placeholder="Stall Number"
-            name="stallNo"
-            value={formData.stallNo}
+            placeholder="supplier"
+            name="supplier"
+            value={formData.supplier}
             onChange={handleChange}
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
@@ -99,14 +102,14 @@ const EditMilk = () => {
         {/* Add more fields */}
         <div className="flex flex-col space-y-1">
           <label className="text-sm font-medium text-gray-700">
-            Animal ID:
+          name:
           </label>
           <input
             style={{ width: "800px" }}
             type="text"
-            placeholder="Animal ID"
-            name="animalID"
-            value={formData.animalID}
+            placeholder="name"
+            name="name"
+            value={formData.name}
             onChange={handleChange}
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
@@ -116,14 +119,14 @@ const EditMilk = () => {
         {/* Add more fields */}
         <div className="flex flex-col space-y-1">
           <label className="text-sm font-medium text-gray-700">
-            Liter:
+          Contact :
           </label>
           <input
             style={{ width: "800px" }}
             type="text"
-            placeholder="Liter"
-            name="liter"
-            value={formData.liter}
+            placeholder="contact"
+            name="contact"
+            value={formData.contact}
             onChange={handleChange}
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
@@ -133,14 +136,14 @@ const EditMilk = () => {
         {/* Add more fields */}
         <div className="flex flex-col space-y-1">
           <label className="text-sm font-medium text-gray-700">
-            Collected From Name:
+          Email * :
           </label>
           <input
             style={{ width: "800px" }}
-            type="text"
-            placeholder="Collected From Name"
-            name="collectedFrom"
-            value={formData.collectedFrom}
+            type="email"
+            placeholder="email"
+            name="email"
+            value={formData.email}
             onChange={handleChange}
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
@@ -153,7 +156,7 @@ const EditMilk = () => {
           </label>
           <input
             style={{ width: "800px" }}
-            type="text"
+            type="textarea"
             placeholder="Address"
             name="address"
             value={formData.address}
@@ -165,14 +168,14 @@ const EditMilk = () => {
 
         <div className="flex flex-col space-y-1">
           <label className="text-sm font-medium text-gray-700">
-            Fate (%):
+          Litre * :
           </label>
           <input
             style={{ width: "800px" }}
             type="text"
-            placeholder="Fate (%)"
-            name="fate"
-            value={formData.fate}
+            placeholder="litre"
+            name="litre"
+            value={formData.litre}
             onChange={handleChange}
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
@@ -210,6 +213,36 @@ const EditMilk = () => {
             required
           />
         </div>
+        <div className="flex flex-col space-y-1">
+          <label className="text-sm font-medium text-gray-700">
+          Paid :
+          </label>
+          <input
+            style={{ width: "800px" }}
+            type="text"
+            placeholder="paid"
+            name="paid"
+            value={formData.paid}
+            onChange={handleChange}
+            className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+            required
+          />
+        </div>
+        <div className="flex flex-col space-y-1">
+          <label className="text-sm font-medium text-gray-700">
+          Due * :
+          </label>
+          <input
+            style={{ width: "800px" }}
+            type="text"
+            placeholder="due"
+            name="due"
+            value={formData.due}
+            onChange={handleChange}
+            className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+            required
+          />
+        </div>
 
         <button
         style={{ width: "800px" }}
@@ -217,7 +250,7 @@ const EditMilk = () => {
           className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary"
           disabled={loading}
         >
-          {loading ? "Loading..." : isEditMode ? "Save" : "Add Milk"}
+          {loading ? "Loading..." : isEditMode ? "Save" : "Add Milk Sale"}
         </button>
       </form>
 
@@ -232,4 +265,4 @@ const EditMilk = () => {
   );
 };
 
-export default EditMilk;
+export default EditMilkSale;

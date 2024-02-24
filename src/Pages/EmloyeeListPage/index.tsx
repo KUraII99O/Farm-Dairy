@@ -6,6 +6,7 @@ const EmployeeList = () => {
     <div>
 
 <EmployeeTable/>
+
     </div>
   )
 }

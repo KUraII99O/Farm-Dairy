@@ -1,7 +1,7 @@
 import React from 'react';
 import MilkTable from '../../component/Milk/List';
 
-const index = () => {
+const MilkList = () => {
   return (
     <div>
       <MilkTable />
@@ -9,4 +9,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default MilkList;
