@@ -35,7 +35,7 @@ const Sidebar: React.FC = () => {
   };
 
   const menuItems = [
-    { name: "Dashboard", icon: MdSpaceDashboard, link: "/#" },
+    { name: "Dashboard", icon: MdSpaceDashboard, link: "/Dashboard" },
     {
       name: "Human Resource",
       icon: FaUserFriends,

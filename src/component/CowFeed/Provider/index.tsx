@@ -10,6 +10,10 @@ export const CowFeedProvider = ({ children }) => {
       stallNo: 'A1', 
       cowNumber: 'C001', 
       note: 'Morning feeding', 
+      Informations:[{
+        
+      }
+      ]
     },
     { 
       id: 2, 

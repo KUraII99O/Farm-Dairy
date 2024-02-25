@@ -6,6 +6,7 @@ import { AiOutlineDelete } from "react-icons/ai";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import Pagination from "../../Pagination";
 import { CowFeedContext } from "../Provider";
+import { BiListUl } from "react-icons/bi";
 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -108,7 +109,10 @@ const CowFeedTable: React.FC = () => {
           </Link>
         </div>
       </div>
-      <h1 className="text-xl font-bold mb-4">Cow Feed Table</h1>
+      <h1 className="text-xl font-bold mb-4">
+        <BiListUl className="inline-block mr-2" />
+        Cow Feed List
+      </h1>
       <table className="min-w-full bg-white border-collapse">
         {/* Table header */}
         <thead>

@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import DashboardPage from "./Pages/DashboardPage";
 import SettingPage from "./Pages/SettingPage";
 import ProfileSettingPage from "./Pages/ProfileSettingPage";
@@ -7,7 +7,7 @@ import Layout from "./component/Layout";
 import { StaffProvider } from "./component/Staff/Provider";
 import { UserProvider } from "./component/User/Provider";
 import { EmployeeProvider } from "./component/Employee/Provider";
-import { MilkProvider } from "./component/Milk/Provider"; // Import MilkProvider
+import { MilkProvider } from "./component/Milk/Provider";
 import EditStaffPage from "./Pages/EditStaffPage";
 import StaffListPage from "./Pages/StaffListPage";
 import UserListPage from "./Pages/UserListPage";
@@ -22,6 +22,8 @@ import EditMilkSalePage from "./Pages/EditMilkSalePage";
 import MilkSaleInvoicePage from "./Pages/MilkSaleInvoicePage";
 import { CowFeedProvider } from "./component/CowFeed/Provider";
 import CowFeedList from "./Pages/CowFeedList";
+import EditCowFeedPage from "./Pages/EditCowFeedPage";
+import LogInPage from "./Pages/LogInPage";
 
 const App: React.FC = () => {
   return (
@@ -30,34 +32,164 @@ const App: React.FC = () => {
         <EmployeeProvider>
           <MilkProvider>
             <MilkSaleProvider>
-              <CowFeedProvider> {/* Wrap App component with CowFeedProvider */}
+              <CowFeedProvider>
                 <Router>
-                  <Layout>
-                    <Routes>
-                      <Route path="/cow-feed" element={<CowFeedList />} /> {/* Route for CowFeedList */}
-                      <Route path="/Milk" element={<MilkListPage />} />
-                      <Route path="/Edit-Milk/:id" element={<EditMilkPage />} />
-                      <Route path="/Collect-Milk" element={<EditMilkPage />} />
-                      <Route path="/" element={<DashboardPage />} />
-                      <Route path="/settings" element={<SettingPage />} />
-                      <Route path="/edit-staff/:id" element={<EditStaffPage />} />
-                      <Route path="/add-staff" element={<EditStaffPage />} />
-                      <Route path="/edit-user/:id" element={<EditUserPage />} />
-                      <Route path="/add-user" element={<EditUserPage />} />
-                      <Route path="/Profile" element={<ProfileSettingPage />} />
-                      <Route path="/Staff" element={<StaffListPage />} />
-                      <Route path="/User" element={<UserListPage />} />
-                      <Route path="/Milk-Sale" element={<MilkSaleListPage />} />
-                      <Route path="/Edit-Milk-sale/:id" element={<EditMilkSalePage />} />
-                      <Route path="/Milk-Sale-invoice/:id" element={<MilkSaleInvoicePage />} />
-                      <Route path="/Add-milk-Sale" element={<EditMilkSalePage />} />
-                      <Route path="/Employee" element={<EmloyeeListPage />} />
-                      <Route
-                        path="/edit-employee/:id"
-                        element={<EditEmployeePage />}
-                      />
-                    </Routes>
-                  </Layout>
+                  <Routes>
+                    <Route path="/" element={<LogInPage />} />
+                    <Route path="/LogIn" element={<LogInPage />} />
+                    <Route
+                      path="/dashboard"
+                      element={
+                        <RequireAuthentication>
+                          <DashboardPage />
+                        </RequireAuthentication>
+                      }
+                    />
+                    <Route
+                      path="/cow-feed"
+                      element={
+                        <RequireAuthentication>
+                          <CowFeedList />
+                        </RequireAuthentication>
+                      }
+                    />
+                    <Route
+                      path="/edit-cow-feed/:id"
+                      element={
+                        <RequireAuthentication>
+                          <EditCowFeedPage />
+                        </RequireAuthentication>
+                      }
+                    />
+                    <Route
+                      path="/milk"
+                      element={
+                        <RequireAuthentication>
+                          <MilkListPage />
+                        </RequireAuthentication>
+                      }
+                    />
+                    <Route
+                      path="/edit-milk/:id"
+                      element={
+                        <RequireAuthentication>
+                          <EditMilkPage />
+                        </RequireAuthentication>
+                      }
+                    />
+                    <Route
+                      path="/milk-sale"
+                      element={
+                        <RequireAuthentication>
+                          <MilkSaleListPage />
+                        </RequireAuthentication>
+                      }
+                    />
+                    <Route
+                      path="/edit-milk-sale/:id"
+                      element={
+                        <RequireAuthentication>
+                          <EditMilkSalePage />
+                        </RequireAuthentication>
+                      }
+                    />
+                    <Route
+                      path="/milk-sale-invoice/:id"
+                      element={
+                        <RequireAuthentication>
+                          <MilkSaleInvoicePage />
+                        </RequireAuthentication>
+                      }
+                    />
+                    <Route
+                      path="/add-milk-sale"
+                      element={
+                        <RequireAuthentication>
+                          <EditMilkSalePage />
+                        </RequireAuthentication>
+                      }
+                    />
+                    <Route
+                      path="/employee"
+                      element={
+                        <RequireAuthentication>
+                          <EmloyeeListPage />
+                        </RequireAuthentication>
+                      }
+                    />
+                    <Route
+                      path="/edit-employee/:id"
+                      element={
+                        <RequireAuthentication>
+                          <EditEmployeePage />
+                        </RequireAuthentication>
+                      }
+                    />
+                    <Route
+                      path="/staff"
+                      element={
+                        <RequireAuthentication>
+                          <StaffListPage />
+                        </RequireAuthentication>
+                      }
+                    />
+                    <Route
+                      path="/edit-staff/:id"
+                      element={
+                        <RequireAuthentication>
+                          <EditStaffPage />
+                        </RequireAuthentication>
+                      }
+                    />
+                    <Route
+                      path="/add-staff"
+                      element={
+                        <RequireAuthentication>
+                          <EditStaffPage />
+                        </RequireAuthentication>
+                      }
+                    />
+                    <Route
+                      path="/user"
+                      element={
+                        <RequireAuthentication>
+                          <UserListPage />
+                        </RequireAuthentication>
+                      }
+                    />
+                    <Route
+                      path="/edit-user/:id"
+                      element={
+                        <RequireAuthentication>
+                          <EditUserPage />
+                        </RequireAuthentication>
+                      }
+                    />
+                    <Route
+                      path="/add-user"
+                      element={
+                        <RequireAuthentication>
+                          <EditUserPage />
+                        </RequireAuthentication>
+                      }
+                    />
+                    <Route
+                      path="/profile"
+                      element={
+                        <RequireAuthentication>
+                          <ProfileSettingPage />
+                        </RequireAuthentication>
+                      }
+                    />
+                    <Route
+                      path="/settings"
+                      element={
+                        <RequireAuthentication>
+                          <SettingPage />
+                        </RequireAuthentication>
+                      }
+                    />
+                  </Routes>
                 </Router>
               </CowFeedProvider>
             </MilkSaleProvider>
@@ -66,6 +198,17 @@ const App: React.FC = () => {
       </StaffProvider>
     </UserProvider>
   );
+};
+
+const RequireAuthentication = ({ children }) => {
+  // Check if user is authenticated, if not redirect to login
+  const isAuthenticated = true; // Replace with your authentication logic
+
+  if (!isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <Layout>{children}</Layout>;
 };
 
 export default App;
