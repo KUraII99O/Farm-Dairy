@@ -24,6 +24,8 @@ import { CowFeedProvider } from "./component/CowFeed/Provider";
 import CowFeedList from "./Pages/CowFeedList";
 import EditCowFeedPage from "./Pages/EditCowFeedPage";
 import LogInPage from "./Pages/LogInPage";
+import SignUpPage from "./Pages/SignUpPage";
+import ResetPasswordPage from "./Pages/ResetPasswordPage";
 
 const App: React.FC = () => {
   return (
@@ -36,7 +38,9 @@ const App: React.FC = () => {
                 <Router>
                   <Routes>
                     <Route path="/" element={<LogInPage />} />
+                    <Route path="/Signup" element={<SignUpPage />} />
                     <Route path="/LogIn" element={<LogInPage />} />
+                    <Route path="/Rest-Password" element={<ResetPasswordPage />} />
                     <Route
                       path="/dashboard"
                       element={
@@ -55,6 +59,14 @@ const App: React.FC = () => {
                     />
                     <Route
                       path="/edit-cow-feed/:id"
+                      element={
+                        <RequireAuthentication>
+                          <EditCowFeedPage />
+                        </RequireAuthentication>
+                      }
+                    />
+                    <Route
+                      path="/Add-cow-feed/"
                       element={
                         <RequireAuthentication>
                           <EditCowFeedPage />

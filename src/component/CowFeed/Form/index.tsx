@@ -1,7 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { CowFeedContext } from "../Provider";
-import { FaUserPlus } from "react-icons/fa";
 import { PiForkKnifeBold } from "react-icons/pi";
 import { IoInformationCircle } from "react-icons/io5";
 
@@ -17,6 +16,12 @@ const EditCowFeedForm = () => {
     cowNumber: "",
     date: "",
     note: "",
+    unit: "",
+    informations: Array.from({ length: 3 }, () => ({
+      foodItem: "",
+      quantity: "",
+      feedingTime: "",
+    })), // Change: Initialize informations as an empty array
   });
 
   const [loading, setLoading] = useState(false);
@@ -33,11 +38,33 @@ const EditCowFeedForm = () => {
     }
   }, [id, isEditMode, cowFeeds]);
 
-  const handleChange = (e) => {
+  const handleChange = (e, index) => {
     const { name, value } = e.target;
+    if (index === -1) {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    } else {
+      const updatedInformations = [...formData.informations];
+      updatedInformations[index] = {
+        ...updatedInformations[index],
+        [name]: value,
+      };
+      setFormData({
+        ...formData,
+        informations: updatedInformations,
+      });
+    }
+  };
+
+  const handleAddRow = () => {
     setFormData({
       ...formData,
-      [name]: value,
+      informations: [
+        ...formData.informations,
+        { foodItem: "", quantity: "", unit: "", feedingTime: "" },
+      ],
     });
   };
 
@@ -54,7 +81,7 @@ const EditCowFeedForm = () => {
     setTimeout(() => {
       setSuccessPopup(false);
       navigate("/Cow-Feed");
-    }, 2000); // Close the popup and navigate after 2 seconds
+    }, 2000);
   };
 
   return (
@@ -76,7 +103,7 @@ const EditCowFeedForm = () => {
             placeholder="Stall No"
             name="stallNo"
             value={formData.stallNo}
-            onChange={handleChange}
+            onChange={(e) => handleChange(e, -1)}
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
           />
@@ -92,7 +119,7 @@ const EditCowFeedForm = () => {
             placeholder="Cow Number"
             name="cowNumber"
             value={formData.cowNumber}
-            onChange={handleChange}
+            onChange={(e) => handleChange(e, -1)}
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
           />
@@ -106,7 +133,7 @@ const EditCowFeedForm = () => {
             placeholder="Date"
             name="date"
             value={formData.date}
-            onChange={handleChange}
+            onChange={(e) => handleChange(e, -1)}
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
           />
@@ -120,22 +147,12 @@ const EditCowFeedForm = () => {
             placeholder="Note"
             name="note"
             value={formData.note}
-            onChange={handleChange}
+            onChange={(e) => handleChange(e, -1)}
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
           />
         </div>
 
-        <button
-          style={{ width: "800px" }}
-          type="submit"
-          className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary"
-          disabled={loading}
-        >
-          {loading ? "Loading..." : isEditMode ? "Save" : "Add Cow Feed"}
-        </button>
-      </form>
-      <form onSubmit={handleSubmit} className="flex flex-col w-full space-y-4">
         <h2 className="text-xl font-bold mt-2 mb-4 flex items-center">
           <IoInformationCircle className="mr-2" />
           <span>Feed Informations :</span>
@@ -153,140 +170,66 @@ const EditCowFeedForm = () => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td className="border border-gray-400 px-3 py-2">
-                <input
-                  type="checkbox"
-                  id="food1"
-                  name="food1"
-                  className="mr-2"
-                />
-                <label htmlFor="food1">Grass</label>
-              </td>
-              <td className="border border-gray-400 px-3 py-2">
-                <input
-                  type="text"
-                  placeholder="Item Quantity"
-                  name="itemQuantity1"
-                  value={formData.itemQuantity1}
-                  onChange={handleChange}
-                  className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  required
-                />
-              </td>
-              <td className="border border-gray-400 px-3 py-2">
-                <input
-                  type="text"
-                  placeholder="Unit"
-                  name="unit1"
-                  value={formData.unit1}
-                  onChange={handleChange}
-                  className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  required
-                />
-              </td>
-              <td className="border border-gray-400 px-3 py-2">
-                <input
-                  type="date"
-                  placeholder="Feeding Time"
-                  name="feedingTime1"
-                  value={formData.feedingTime1}
-                  onChange={handleChange}
-                  className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  required
-                />
-              </td>
-            </tr>
-            <tr>
-              <td className="border border-gray-400 px-3 py-2">
-                <input
-                  type="checkbox"
-                  id="food2"
-                  name="food2"
-                  className="mr-2"
-                />
-                <label htmlFor="food2">Salt</label>
-              </td>
-              <td className="border border-gray-400 px-3 py-2">
-                <input
-                  type="text"
-                  placeholder="Item Quantity"
-                  name="itemQuantity2"
-                  value={formData.itemQuantity2}
-                  onChange={handleChange}
-                  className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  required
-                />
-              </td>
-              <td className="border border-gray-400 px-3 py-2">
-                <input
-                  type="text"
-                  placeholder="Unit"
-                  name="unit2"
-                  value={formData.unit2}
-                  onChange={handleChange}
-                  className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  required
-                />
-              </td>
-              <td className="border border-gray-400 px-3 py-2">
-                <input
-                  type="date"
-                  placeholder="Feeding Time"
-                  name="feedingTime2"
-                  value={formData.feedingTime2}
-                  onChange={handleChange}
-                  className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  required
-                />
-              </td>
-            </tr>
-            <tr>
-              <td className="border border-gray-400 px-3 py-2">
-                <input
-                  type="checkbox"
-                  id="food3"
-                  name="food3"
-                  className="mr-2"
-                />
-                <label htmlFor="food3">Water</label>
-              </td>
-              <td className="border border-gray-400 px-3 py-2">
-                <input
-                  type="text"
-                  placeholder="Item Quantity"
-                  name="itemQuantity3"
-                  value={formData.itemQuantity3}
-                  onChange={handleChange}
-                  className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  required
-                />
-              </td>
-              <td className="border border-gray-400 px-3 py-2">
-                <input
-                  type="text"
-                  placeholder="Unit"
-                  name="unit3"
-                  value={formData.unit3}
-                  onChange={handleChange}
-                  className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  required
-                />
-              </td>
-              <td className="border border-gray-400 px-3 py-2">
-                <input
-                  type="date"
-                  placeholder="Feeding Time"
-                  name="feedingTime3"
-                  value={formData.feedingTime3}
-                  onChange={handleChange}
-                  className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  required
-                />
-              </td>
-            </tr>
+            {formData.informations.map((info, index) => (
+              <tr key={index}>
+                <td className="border border-gray-400 px-3 py-2">
+                  <input
+                    type="string"
+                    placeholder="Food Item"
+                    name="foodItem"
+                    value={info.foodItem}
+                    onChange={(e) => handleChange(e, index)}
+                    className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    required
+                  />
+                </td>
+                <td className="border border-gray-400 px-3 py-2">
+                  <input
+                    type="string"
+                    placeholder="Item Quantity"
+                    name="quantity"
+                    value={info.quantity}
+                    onChange={(e) => handleChange(e, index)}
+                    className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    required
+                  />
+                </td>
+                <td className="border border-gray-400 px-3 py-2">
+                  <select
+                    name="unit"
+                    value={info.unit}
+                    onChange={(e) => handleChange(e, index)}
+                    className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  >
+                    <option value="kg">Kg</option>
+                    <option value="gram">Gram</option>
+                    <option value="liters">Liters</option>
+                  </select>
+                </td>
+                <td className="border border-gray-400 px-1 py-2">
+                  <input
+                    type="string"
+                    placeholder="Feeding Time"
+                    name="feedingTime"
+                    value={info.feedingTime}
+                    onChange={(e) => handleChange(e, index)}
+                    className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    required
+                  />
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
+
+        <button
+          style={{ width: "800px" }}
+          type="button"
+          onClick={handleAddRow}
+          className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary"
+        >
+          Add Row
+        </button>
 
         <button
           style={{ width: "800px" }}

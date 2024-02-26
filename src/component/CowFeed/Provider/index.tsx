@@ -10,9 +10,10 @@ export const CowFeedProvider = ({ children }) => {
       stallNo: 'A1', 
       cowNumber: 'C001', 
       note: 'Morning feeding', 
-      Informations:[{
-        
-      }
+      informations: [
+        { foodItem: 'Grass', quantity: '2', unit: 'kg', feedingTime: '8:00 AM' },
+        { foodItem: 'Salt', quantity: '100', unit: 'gram', feedingTime: '8:00 AM' },
+        { foodItem: 'Water', quantity: '5', unit: 'liters', feedingTime: '8:00 AM' },
       ]
     },
     { 
@@ -21,6 +22,11 @@ export const CowFeedProvider = ({ children }) => {
       stallNo: 'B2', 
       cowNumber: 'C002', 
       note: 'Afternoon feeding', 
+      informations: [
+        { foodItem: 'Grass', quantity: '2.5', unit: 'kg', feedingTime: '1:00 PM' },
+        { foodItem: 'Salt', quantity: '120', unit: 'gram', feedingTime: '1:00 PM' },
+        { foodItem: 'Water', quantity: '6', unit: 'liters', feedingTime: '1:00 PM' },
+      ]
     },
     { 
       id: 3, 
@@ -28,6 +34,11 @@ export const CowFeedProvider = ({ children }) => {
       stallNo: 'C3', 
       cowNumber: 'C003', 
       note: 'Evening feeding', 
+      informations: [
+        { foodItem: 'Grass', quantity: '3', unit: 'kg', feedingTime: '6:00 PM' },
+        { foodItem: 'Salt', quantity: '150', unit: 'gram', feedingTime: '6:00 PM' },
+        { foodItem: 'Water', quantity: '7', unit: 'liters', feedingTime: '6:00 PM' },
+      ]
     },
     // Add more mock data as needed
   ]);

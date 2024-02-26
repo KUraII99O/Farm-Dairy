@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { HiArrowLeft } from "react-icons/hi";
+import { HiArrowNarrowRight } from "react-icons/hi";
 
 interface PaginationProps {
   totalItems: number;
@@ -53,17 +55,19 @@ const Pagination: React.FC<PaginationProps> = ({
         <button
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="px-3 py-1 rounded-md bg-gray-200 mr-2"
+          className="px-3 py-1 rounded-md bg-gray-200 mr-2 cursor-pointer"
         >
-          &#8592; {/* Unicode character for left arrow */}
+          <HiArrowLeft />
+ {/* Unicode character for left arrow */}
         </button>
         <span className="mr-2">{`Page ${currentPage} of ${totalPages}`}</span>
         <button
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="px-3 py-1 rounded-md bg-gray-200"
+          className="px-3 py-1 rounded-md bg-gray-200 cursor-pointer"
         >
-          &#8594; {/* Unicode character for right arrow */}
+          <HiArrowNarrowRight />
+{/* Unicode character for right arrow */}
         </button>
       </div>
     </div>
