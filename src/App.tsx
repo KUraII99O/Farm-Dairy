@@ -26,6 +26,8 @@ import EditCowFeedPage from "./Pages/EditCowFeedPage";
 import LogInPage from "./Pages/LogInPage";
 import SignUpPage from "./Pages/SignUpPage";
 import ResetPasswordPage from "./Pages/ResetPasswordPage";
+import PhoneVereficationPage from "./Pages/PhoneVereficationPage";
+import NewPasswordPage from "./Pages/NewPasswordPage";
 
 const App: React.FC = () => {
   return (
@@ -41,6 +43,8 @@ const App: React.FC = () => {
                     <Route path="/Signup" element={<SignUpPage />} />
                     <Route path="/LogIn" element={<LogInPage />} />
                     <Route path="/Rest-Password" element={<ResetPasswordPage />} />
+                    <Route path="/phone-verification" element={<PhoneVereficationPage />} />
+                    <Route path="/new-password" element={<NewPasswordPage />} />
                     <Route
                       path="/dashboard"
                       element={

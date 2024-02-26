@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import MoooImage from "../../assets/images/Mooo.png";
 import { FaRegEyeSlash, FaRegEye } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const SignUpForm: React.FC = () => {
   const [mobile, setMobile] = useState("");
@@ -11,13 +12,15 @@ const SignUpForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [showSuccess, setShowSuccess] = useState(false); // State for success pop-up
+  const navigate = useNavigate(); // Use the useNavigate hook
 
   const validateForm = () => {
     const errors: { [key: string]: string } = {};
     if (!mobile.trim()) {
       errors.mobile = "Phone Number is required";
-    } else if (!/^\d{10}$/i.test(mobile.trim())) {
-      errors.mobile = "Phone Number must be 10 digits";
+    } else if (!/^\d{8}$/i.test(mobile.trim())) {
+      errors.mobile = "Phone Number must be 8 digits";
     }
     if (!username.trim()) {
       errors.username = "Username is required";
@@ -39,7 +42,12 @@ const SignUpForm: React.FC = () => {
     e.preventDefault();
     if (validateForm()) {
       // Submit form logic here
-      console.log("Form submitted:", { username, email, password });
+      // For demonstration, show a success message and navigate to the dashboard
+      setShowSuccess(true); // Show success pop-up
+      setTimeout(() => {
+        setShowSuccess(false); // Hide success pop-up after 3 seconds
+        navigate("/dashboard"); // Navigate to the dashboard
+      }, 3000); // Hide pop-up after 3 seconds
     }
   };
 
@@ -206,6 +214,14 @@ const SignUpForm: React.FC = () => {
           </div>
         </div>
       </div>
+      {/* Success pop-up */}
+      {showSuccess && (
+        <div className="fixed bottom-10 left-0 right-0 flex justify-center">
+          <div className="bg-green-500 text-white py-2 px-4 rounded-lg">
+            Welcome! You have successfully signed up.
+          </div>
+        </div>
+      )}
     </section>
   );
 };

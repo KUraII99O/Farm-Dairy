@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { CowFeedContext } from "../Provider";
 import { PiForkKnifeBold } from "react-icons/pi";
 import { IoInformationCircle } from "react-icons/io5";
+import { TiMinus } from "react-icons/ti"; // Import TiMinus icon
 
 const EditCowFeedForm = () => {
   const { id } = useParams<{ id: string }>();
@@ -82,6 +83,12 @@ const EditCowFeedForm = () => {
       setSuccessPopup(false);
       navigate("/Cow-Feed");
     }, 2000);
+  };
+  const handleRemoveRow = (indexToRemove) => {
+    setFormData({
+      ...formData,
+      informations: formData.informations.filter((_, index) => index !== indexToRemove),
+    });
   };
 
   return (
@@ -206,7 +213,14 @@ const EditCowFeedForm = () => {
                     <option value="liters">Liters</option>
                   </select>
                 </td>
-                <td className="border border-gray-400 px-1 py-2">
+                <td className="border border-gray-400 px-1 py-2 text-right">
+                <button
+                    type="button"
+                    onClick={() => handleRemoveRow(index)}
+                    className="text-red-600 hover:text-red-800 self-end"
+                  >
+                    <TiMinus />
+                  </button>
                   <input
                     type="string"
                     placeholder="Feeding Time"

@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MoooImage from "../../assets/images/Mooo.png";
-import WelcomeMessage from "../Welcome";
 
 const LogIn = ({ onLogin }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [showWelcome, setShowWelcome] = useState(false); // Initially set to false
+  const [showPopUp, setShowPopUp] = useState(false); // State to control the pop-up visibility
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -15,8 +14,8 @@ const LogIn = ({ onLogin }) => {
     const isValid = username.trim() && password.trim();
 
     if (isValid) {
-      // Show the welcome message if the form is valid
-      setShowWelcome(true);
+      // Show the pop-up
+      setShowPopUp(true);
       // Simulate login process by calling onLogin function after 3 seconds
       setTimeout(() => {
         onLogin();
@@ -28,7 +27,13 @@ const LogIn = ({ onLogin }) => {
 
   return (
     <>
-{showWelcome && <WelcomeMessage username={username} onLogin={onLogin} />}
+      {showPopUp && (
+        <div className="fixed bottom-10 left-0 right-0 flex justify-center">
+          <div className="bg-green-500 text-white py-2 px-4 rounded-lg">
+            Welcome Back! You have successfully logged in.
+          </div>
+        </div>
+      )}
       <section className={`h-full bg-neutral-200 dark:bg-neutral-700 `}>
         {/* Render the login form */}
         <div className="container h-full p-10">

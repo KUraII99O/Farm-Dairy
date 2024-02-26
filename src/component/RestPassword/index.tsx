@@ -1,18 +1,20 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate hook
-import MoooImage from "../../assets/images/Mooo.png";
+import MoooImage from "../../assets/images/Mooo.png"; // Import your image
 
 const ResetPassword: React.FC = () => {
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you can perform the password reset logic
-    // For simplicity, let's assume the password reset was successful
-    console.log("Password reset request submitted for email:", email);
-    // Redirect to the login page after password reset request
-    navigate("/login");
+    const isPhoneNumber = /^\d{8}$/.test(identifier);
+    if (isPhoneNumber) {
+      // Pass phoneNumber state as state to the PhoneVerification component
+      navigate("/phone-verification", { state: { phoneNumber: identifier } });
+    } else {
+      console.log("Entered value is not a valid phone number.");
+    }
   };
 
   return (
@@ -25,7 +27,6 @@ const ResetPassword: React.FC = () => {
                 {/* <!-- Left column container--> */}
                 <div className="px-4 md:px-0 lg:w-6/12">
                   <div className="md:mx-6 md:p-12">
-                    {/* <!--Logo--> */}
                     <div className="text-center">
                       <img
                         className="mx-auto w-48"
@@ -39,15 +40,15 @@ const ResetPassword: React.FC = () => {
 
                     <form onSubmit={handleSubmit}>
                       <p className="mb-4">
-                        Please enter your email or phone number to reset your password
+                        Please enter your phone number to reset your password
                       </p>
-                      {/* Email input */}
+                      {/* Email or Phone input */}
                       <input
-                        type="email"
+                        type="string "
                         className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
-                        placeholder="Email or Phone "
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder=" Phone Number"
+                        value={identifier}
+                        onChange={(e) => setIdentifier(e.target.value)}
                       />
 
                       {/* <!--Submit button--> */}
@@ -58,22 +59,6 @@ const ResetPassword: React.FC = () => {
                         >
                           Reset Password
                         </button>
-                      </div>
-
-                      {/* <!--Login button--> */}
-                      <div className="flex items-center justify-between pb-6">
-                        <p className="mb-0 mr-2">
-                          Remember your password?{" "}
-                          <button
-                            type="button"
-                            className="text-primary underline"
-                            onClick={() => {
-                              navigate("/login");
-                            }}
-                          >
-                            Log in
-                          </button>
-                        </p>
                       </div>
                     </form>
                   </div>
