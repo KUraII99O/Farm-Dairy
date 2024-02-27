@@ -62,7 +62,7 @@ const Sidebar: React.FC = () => {
       icon: CgScreen,
       link: "/cow-monitor",
       submenu: [
-        { name: "Routine Monitor", link: "/submenu-1" },
+        { name: "Routine Monitor", link: "/Routine-Monitor" },
         { name: "Vaccine Monitor", link: "/submenu-2" },
         { name: "Animal Pregnancy", link: "/submenu-2" },
       ],

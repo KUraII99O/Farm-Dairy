@@ -28,6 +28,9 @@ import SignUpPage from "./Pages/SignUpPage";
 import ResetPasswordPage from "./Pages/ResetPasswordPage";
 import PhoneVereficationPage from "./Pages/PhoneVereficationPage";
 import NewPasswordPage from "./Pages/NewPasswordPage";
+import RoutineMonitorPage from "./Pages/RoutineMonitorPage";
+import { RoutineMonitorProvider } from "./component/RoutineMonitor/Provider"; // Import RoutineMonitorProvider
+import EditRoutineMonitorPage from "./Pages/EditRoutineMonitorPage";
 
 const App: React.FC = () => {
   return (
@@ -37,176 +40,194 @@ const App: React.FC = () => {
           <MilkProvider>
             <MilkSaleProvider>
               <CowFeedProvider>
-                <Router>
-                  <Routes>
-                    <Route path="/" element={<LogInPage />} />
-                    <Route path="/Signup" element={<SignUpPage />} />
-                    <Route path="/LogIn" element={<LogInPage />} />
-                    <Route path="/Rest-Password" element={<ResetPasswordPage />} />
-                    <Route path="/phone-verification" element={<PhoneVereficationPage />} />
-                    <Route path="/new-password" element={<NewPasswordPage />} />
-                    <Route
-                      path="/dashboard"
-                      element={
-                        <RequireAuthentication>
-                          <DashboardPage />
-                        </RequireAuthentication>
-                      }
-                    />
-                    <Route
-                      path="/cow-feed"
-                      element={
-                        <RequireAuthentication>
-                          <CowFeedList />
-                        </RequireAuthentication>
-                      }
-                    />
-                    <Route
-                      path="/edit-cow-feed/:id"
-                      element={
-                        <RequireAuthentication>
-                          <EditCowFeedPage />
-                        </RequireAuthentication>
-                      }
-                    />
-                    <Route
-                      path="/Add-cow-feed/"
-                      element={
-                        <RequireAuthentication>
-                          <EditCowFeedPage />
-                        </RequireAuthentication>
-                      }
-                    />
-                    <Route
-                      path="/milk"
-                      element={
-                        <RequireAuthentication>
-                          <MilkListPage />
-                        </RequireAuthentication>
-                      }
-                    />
-                    <Route
-                      path="/edit-milk/:id"
-                      element={
-                        <RequireAuthentication>
-                          <EditMilkPage />
-                        </RequireAuthentication>
-                      }
-                    />
-                    <Route
-                      path="/milk-sale"
-                      element={
-                        <RequireAuthentication>
-                          <MilkSaleListPage />
-                        </RequireAuthentication>
-                      }
-                    />
-                    <Route
-                      path="/edit-milk-sale/:id"
-                      element={
-                        <RequireAuthentication>
-                          <EditMilkSalePage />
-                        </RequireAuthentication>
-                      }
-                    />
-                    <Route
-                      path="/milk-sale-invoice/:id"
-                      element={
-                        <RequireAuthentication>
-                          <MilkSaleInvoicePage />
-                        </RequireAuthentication>
-                      }
-                    />
-                    <Route
-                      path="/add-milk-sale"
-                      element={
-                        <RequireAuthentication>
-                          <EditMilkSalePage />
-                        </RequireAuthentication>
-                      }
-                    />
-                    <Route
-                      path="/employee"
-                      element={
-                        <RequireAuthentication>
-                          <EmloyeeListPage />
-                        </RequireAuthentication>
-                      }
-                    />
-                    <Route
-                      path="/edit-employee/:id"
-                      element={
-                        <RequireAuthentication>
-                          <EditEmployeePage />
-                        </RequireAuthentication>
-                      }
-                    />
-                    <Route
-                      path="/staff"
-                      element={
-                        <RequireAuthentication>
-                          <StaffListPage />
-                        </RequireAuthentication>
-                      }
-                    />
-                    <Route
-                      path="/edit-staff/:id"
-                      element={
-                        <RequireAuthentication>
-                          <EditStaffPage />
-                        </RequireAuthentication>
-                      }
-                    />
-                    <Route
-                      path="/add-staff"
-                      element={
-                        <RequireAuthentication>
-                          <EditStaffPage />
-                        </RequireAuthentication>
-                      }
-                    />
-                    <Route
-                      path="/user"
-                      element={
-                        <RequireAuthentication>
-                          <UserListPage />
-                        </RequireAuthentication>
-                      }
-                    />
-                    <Route
-                      path="/edit-user/:id"
-                      element={
-                        <RequireAuthentication>
-                          <EditUserPage />
-                        </RequireAuthentication>
-                      }
-                    />
-                    <Route
-                      path="/add-user"
-                      element={
-                        <RequireAuthentication>
-                          <EditUserPage />
-                        </RequireAuthentication>
-                      }
-                    />
-                    <Route
-                      path="/profile"
-                      element={
-                        <RequireAuthentication>
-                          <ProfileSettingPage />
-                        </RequireAuthentication>
-                      }
-                    />
-                    <Route
-                      path="/settings"
-                      element={
-                        <RequireAuthentication>
-                          <SettingPage />
-                        </RequireAuthentication>
-                      }
-                    />
-                  </Routes>
-                </Router>
+                <RoutineMonitorProvider> {/* Wrap App with RoutineMonitorProvider */}
+                  <Router>
+                    <Routes>
+                      <Route path="/" element={<LogInPage />} />
+                      <Route path="/Signup" element={<SignUpPage />} />
+                      <Route path="/LogIn" element={<LogInPage />} />
+                      <Route path="/Rest-Password" element={<ResetPasswordPage />} />
+                      <Route path="/phone-verification" element={<PhoneVereficationPage />} />
+                      <Route path="/new-password" element={<NewPasswordPage />} />
+                      <Route
+                        path="/dashboard"
+                        element={
+                          <RequireAuthentication>
+                            <DashboardPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/Edit-Routine-Monitor/:id"
+                        element={
+                          <RequireAuthentication>
+                            <EditRoutineMonitorPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/Routine-Monitor"
+                        element={
+                          <RequireAuthentication>
+                            <RoutineMonitorPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/cow-feed"
+                        element={
+                          <RequireAuthentication>
+                            <CowFeedList />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/edit-cow-feed/:id"
+                        element={
+                          <RequireAuthentication>
+                            <EditCowFeedPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/Add-cow-feed/"
+                        element={
+                          <RequireAuthentication>
+                            <EditCowFeedPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/milk"
+                        element={
+                          <RequireAuthentication>
+                            <MilkListPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/edit-milk/:id"
+                        element={
+                          <RequireAuthentication>
+                            <EditMilkPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/milk-sale"
+                        element={
+                          <RequireAuthentication>
+                            <MilkSaleListPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/edit-milk-sale/:id"
+                        element={
+                          <RequireAuthentication>
+                            <EditMilkSalePage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/milk-sale-invoice/:id"
+                        element={
+                          <RequireAuthentication>
+                            <MilkSaleInvoicePage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/add-milk-sale"
+                        element={
+                          <RequireAuthentication>
+                            <EditMilkSalePage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/employee"
+                        element={
+                          <RequireAuthentication>
+                            <EmloyeeListPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/edit-employee/:id"
+                        element={
+                          <RequireAuthentication>
+                            <EditEmployeePage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/staff"
+                        element={
+                          <RequireAuthentication>
+                            <StaffListPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/edit-staff/:id"
+                        element={
+                          <RequireAuthentication>
+                            <EditStaffPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/add-staff"
+                        element={
+                          <RequireAuthentication>
+                            <EditStaffPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/user"
+                        element={
+                          <RequireAuthentication>
+                            <UserListPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/edit-user/:id"
+                        element={
+                          <RequireAuthentication>
+                            <EditUserPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/add-user"
+                        element={
+                          <RequireAuthentication>
+                            <EditUserPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/profile"
+                        element={
+                          <RequireAuthentication>
+                            <ProfileSettingPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/settings"
+                        element={
+                          <RequireAuthentication>
+                            <SettingPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                    </Routes>
+                  </Router>
+                </RoutineMonitorProvider>
               </CowFeedProvider>
             </MilkSaleProvider>
           </MilkProvider>
