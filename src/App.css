@@ -45,7 +45,11 @@
     transition:all .4s ease-in-out;
   }
 }
-
+.sidebar {
+  /* Your existing styles */
+  --submenu-height: 0; /* Initial value */
+  transition: margin-bottom 0.3s ease; /* Add a transition for smooth animation */
+}
 
 
 

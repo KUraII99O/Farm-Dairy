@@ -50,7 +50,7 @@ const LogIn = ({ onLogin }) => {
                           alt="Mooo Image"
                         />
                         <h4 className="mb-12 mt-4 pb-1 text-xl font-semibold">
-                          We are Moooooo Team
+                          We are GesCow
                         </h4>
                       </div>
 

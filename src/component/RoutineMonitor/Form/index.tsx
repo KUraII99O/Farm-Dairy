@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { RoutineMonitorContext } from "../Provider";
 import { PiForkKnifeBold } from "react-icons/pi";
 import { IoInformationCircle } from "react-icons/io5";
-import { FaRegEdit } from "react-icons/fa";
+import { TiMinus } from "react-icons/ti"; // Import TiMinus icon
+import { FaRegEdit } from "react-icons/fa"; // Import FaRegEdit icon
 
 const EditRoutineMonitorForm = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,12 +18,19 @@ const EditRoutineMonitorForm = () => {
   const [formData, setFormData] = useState({
     stallNo: "",
     animalID: "",
+    date: "",
+    note: "",
+    healthStatus: 50,
+    informations: Array.from({ length: 3 }, () => ({
+      ServiceName: "",
+      Result: "",
+      MonitoringTime: "",
+    })),
     updatedWeight: "",
     updatedHeight: "",
     milkPerDay: "",
     monitoringDate: "",
-    note: "",
-    healthStatus: 50, // Default health status
+    reports: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -39,18 +47,33 @@ const EditRoutineMonitorForm = () => {
     }
   }, [id, isEditMode, routineMonitors]);
 
-  const handleChange = (e) => {
+  const handleChange = (e, index) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    if (index === -1) {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    } else {
+      const updatedInformations = [...formData.informations];
+      updatedInformations[index] = {
+        ...updatedInformations[index],
+        [name]: value,
+      };
+      setFormData({
+        ...formData,
+        informations: updatedInformations,
+      });
+    }
   };
 
-  const handleHealthStatusChange = (e) => {
+  const handleAddRow = () => {
     setFormData({
       ...formData,
-      healthStatus: e.target.value,
+      informations: [
+        ...formData.informations,
+        { ServiceName: "", Result: "", MonitoringTime: "" },
+      ],
     });
   };
 
@@ -68,6 +91,21 @@ const EditRoutineMonitorForm = () => {
       setSuccessPopup(false);
       navigate("/routine-monitor");
     }, 2000);
+  };
+
+  const handleRemoveRow = (indexToRemove) => {
+    setFormData({
+      ...formData,
+      informations: formData.informations.filter(
+        (_, index) => index !== indexToRemove
+      ),
+    });
+  };
+  const handleHealthStatusChange = (e) => {
+    setFormData({
+      ...formData,
+      healthStatus: e.target.value,
+    });
   };
 
   return (
@@ -89,7 +127,7 @@ const EditRoutineMonitorForm = () => {
             placeholder="Stall No"
             name="stallNo"
             value={formData.stallNo}
-            onChange={handleChange}
+            onChange={(e) => handleChange(e, -1)}
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
           />
@@ -105,7 +143,7 @@ const EditRoutineMonitorForm = () => {
             placeholder="Animal ID"
             name="animalID"
             value={formData.animalID}
-            onChange={handleChange}
+            onChange={(e) => handleChange(e, -1)}
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
           />
@@ -126,7 +164,7 @@ const EditRoutineMonitorForm = () => {
             placeholder="Updated Weight"
             name="updatedWeight"
             value={formData.updatedWeight}
-            onChange={handleChange}
+            onChange={(e) => handleChange(e, -1)}
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
           />
@@ -142,7 +180,7 @@ const EditRoutineMonitorForm = () => {
             placeholder="Updated Height"
             name="updatedHeight"
             value={formData.updatedHeight}
-            onChange={handleChange}
+            onChange={(e) => handleChange(e, -1)}
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
           />
@@ -158,7 +196,7 @@ const EditRoutineMonitorForm = () => {
             placeholder="Milk Per Day"
             name="milkPerDay"
             value={formData.milkPerDay}
-            onChange={handleChange}
+            onChange={(e) => handleChange(e, -1)}
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
@@ -173,7 +211,7 @@ const EditRoutineMonitorForm = () => {
             placeholder="Monitoring Date"
             name="monitoringDate"
             value={formData.monitoringDate}
-            onChange={handleChange}
+            onChange={(e) => handleChange(e, -1)}
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
           />
@@ -186,10 +224,14 @@ const EditRoutineMonitorForm = () => {
             placeholder="note"
             name="note"
             value={formData.note}
-            onChange={handleChange}
+            onChange={(e) => handleChange(e, -1)}
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
+        <h2 className="text-xl font-bold mt-2 mb-4 flex items-center">
+          <FaRegEdit className="mr-2" />
+          <span> Monitor Informations :</span>
+        </h2>
 
         <div className="flex flex-col space-y-4 items-center">
           <label className="text-sm font-medium text-secondary">
@@ -214,6 +256,66 @@ const EditRoutineMonitorForm = () => {
           </div>
         </div>
 
+        <table className="border-collapse w-full" style={{ width: "800px" }}>
+          <thead>
+            <tr>
+              <th className="border border-gray-400 px-3 py-2">ServiceName</th>
+              <th className="border border-gray-400 px-3 py-2">Result</th>
+              <th className="border border-gray-400 px-3 py-2">
+                MonitoringTime
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {formData.informations.map((info, index) => (
+              <tr key={index}>
+                <td className="border border-gray-400 px-3 py-2">
+                  <input
+                    type="string"
+                    placeholder="Service Name"
+                    name="ServiceName"
+                    value={info.ServiceName}
+                    onChange={(e) => handleChange(e, index)}
+                    className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    required
+                  />
+                </td>
+                <td className="border border-gray-400 px-3 py-2">
+                  <input
+                    type="string"
+                    placeholder="Result"
+                    name="Result"
+                    value={info.Result}
+                    onChange={(e) => handleChange(e, index)}
+                    className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    required
+                  />
+                </td>
+                <td className="border border-gray-400 px-3 py-2">
+                  
+                  <input
+                    type="string"
+                    placeholder="Monitoring Time"
+                    name="MonitoringTime"
+                    value={info.MonitoringTime}
+                    onChange={(e) => handleChange(e, index)}
+                    className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveRow(index)}
+                    className="text-red-600 hover:text-red-800 ml-2  self-end"
+                  >
+                    <TiMinus />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        
+
         <button
           style={{ width: "800px" }}
           type="submit"
@@ -222,15 +324,23 @@ const EditRoutineMonitorForm = () => {
         >
           {loading ? "Loading..." : isEditMode ? "Save" : "Add Routine Monitor"}
         </button>
-      </form>
+        <button
+          style={{ width: "800px" }}
+          type="button"
+          onClick={handleAddRow}
+          className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary"
+        >
+          Add Row
+        </button>
 
-      {successPopup && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded shadow-md">
-            <p>Information updated successfully!</p>
+        {successPopup && (
+          <div className="fixed inset-0 flex items-center justify-center z-50">
+            <div className="bg-white p-4 rounded shadow-md">
+              <p>Information updated successfully!</p>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </form>
     </div>
   );
 };

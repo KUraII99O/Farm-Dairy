@@ -101,7 +101,7 @@ const MilkSaleTable: React.FC = () => {
           />
 
           <Link
-            to="/Add-milk-Sale "
+            to="/Collect-Milk "
             className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary ml-2"
           >
             Collect New

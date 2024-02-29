@@ -58,6 +58,14 @@ const App: React.FC = () => {
                         }
                       />
                       <Route
+                        path="/Add-routine-monitor"
+                        element={
+                          <RequireAuthentication>
+                            <EditRoutineMonitorPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
                         path="/Edit-Routine-Monitor/:id"
                         element={
                           <RequireAuthentication>
@@ -107,6 +115,14 @@ const App: React.FC = () => {
                       />
                       <Route
                         path="/edit-milk/:id"
+                        element={
+                          <RequireAuthentication>
+                            <EditMilkPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/Collect-Milk"
                         element={
                           <RequireAuthentication>
                             <EditMilkPage />
