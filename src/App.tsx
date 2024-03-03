@@ -31,6 +31,12 @@ import NewPasswordPage from "./Pages/NewPasswordPage";
 import RoutineMonitorPage from "./Pages/RoutineMonitorPage";
 import { RoutineMonitorProvider } from "./component/RoutineMonitor/Provider"; // Import RoutineMonitorProvider
 import EditRoutineMonitorPage from "./Pages/EditRoutineMonitorPage";
+import VaccineMonitorPage from "./Pages/VaccineMonitorPage";
+import { VaccineMonitorProvider } from "./component/VaccineMonitor/Provider";
+import EditVaccineMonitorPage from "./Pages/EditVaccineMonitorPage";
+import ManageCowPage from "./Pages/ManageCowPage";
+import { ManageCowProvider } from "./component/Cow/Provider";
+import EditCowPage from "./Pages/EditCowPage";
 
 const App: React.FC = () => {
   return (
@@ -40,8 +46,11 @@ const App: React.FC = () => {
           <MilkProvider>
             <MilkSaleProvider>
               <CowFeedProvider>
-                <RoutineMonitorProvider> {/* Wrap App with RoutineMonitorProvider */}
+                <RoutineMonitorProvider>
+                <VaccineMonitorProvider>  
+                <ManageCowProvider> 
                   <Router>
+
                     <Routes>
                       <Route path="/" element={<LogInPage />} />
                       <Route path="/Signup" element={<SignUpPage />} />
@@ -66,6 +75,30 @@ const App: React.FC = () => {
                         }
                       />
                       <Route
+                        path="/manage-cow"
+                        element={
+                          <RequireAuthentication>
+                            <ManageCowPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/Edit-Cow/:id"
+                        element={
+                          <RequireAuthentication>
+                            <EditCowPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                       <Route
+                        path="/Add-cow"
+                        element={
+                          <RequireAuthentication>
+                            <EditCowPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
                         path="/Edit-Routine-Monitor/:id"
                         element={
                           <RequireAuthentication>
@@ -78,6 +111,30 @@ const App: React.FC = () => {
                         element={
                           <RequireAuthentication>
                             <RoutineMonitorPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/Edit-Vaccine-Monitor/:id"
+                        element={
+                          <RequireAuthentication>
+                            <EditVaccineMonitorPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/Add-Vaccine-Monitor"
+                        element={
+                          <RequireAuthentication>
+                            <EditVaccineMonitorPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/Vaccine-Monitor"
+                        element={
+                          <RequireAuthentication>
+                            <VaccineMonitorPage />
                           </RequireAuthentication>
                         }
                       />
@@ -243,6 +300,8 @@ const App: React.FC = () => {
                       />
                     </Routes>
                   </Router>
+                  </ManageCowProvider>
+                  </VaccineMonitorProvider>
                 </RoutineMonitorProvider>
               </CowFeedProvider>
             </MilkSaleProvider>

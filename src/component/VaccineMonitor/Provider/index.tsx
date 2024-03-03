@@ -8,28 +8,32 @@ export const VaccineMonitorProvider = ({ children }) => {
       id: 1, 
       date: '2024-01-01', 
       stallNo: 'A1', 
-      animalID: 'A001',
+      CowNumber: 'A001',
       note: 'testets',
-      healthStatus: 'Healthy', 
       reportedBy: 'John Doe', 
       informations: [
         { VaccineName: 'Anthrax - ( 120 Months )', Remarks: 'Done.', GivenTime: '10:20 AM' },
         { VaccineName: 'BDV - ( 60 Months )', Remarks: 'Done', GivenTime: '11:20 AM' },
-        { VaccineName: 'BVD - ( 90 Months )', Remarks: 'Done', GivenTime: '04:30 PM' },
+        { VaccineName: 'Vitamin A - ( 60 Days )', Remarks: 'Done', GivenTime: '04:30 PM' },
+        { VaccineName: 'PI3 - ( 120 Days )', Remarks: 'Done', GivenTime: '04:30 PM' },
+        { VaccineName: 'BRSV - ( 365 Days )', Remarks: 'Done', GivenTime: '04:30 PM' },
+        { VaccineName: 'BVD - ( 90 Days )', Remarks: 'Done', GivenTime: '04:30 PM' },
       ]
     },
     { 
       id: 2, 
       date: '2024-01-02', 
       stallNo: 'B2', 
-      animalID: 'A002',
+      CowNumber: 'A002',
       note: 'test the testing note ',
-      healthStatus: 'Sick', 
       reportedBy: 'Jane Smith', 
       informations: [
-        { VaccineName: 'Anthrax - ( 120 Months )', Remarks: 'Done.', GivenTime: '10:20 AM' },
-        { VaccineName: 'BDV - ( 60 Months )', Remarks: 'Done', GivenTime: '11:20 AM' },
-        { VaccineName: 'BVD - ( 90 Months )', Remarks: 'Done', GivenTime: '04:30 PM' },
+        { VaccineName: 'Anthrax - ( 120 Months )', Remarks: 'Done.', GivenTime: '12:20 AM' },
+        { VaccineName: 'BDV - ( 60 Months )', Remarks: 'not ', GivenTime: '10:20 AM' },
+        { VaccineName: 'Vitamin A - ( 60 Days )', Remarks: 'Done', GivenTime: '04:30 PM' },
+        { VaccineName: 'PI3 - ( 120 Days )', Remarks: 'Done', GivenTime: '14:30 PM' },
+        { VaccineName: 'BRSV - ( 365 Days )', Remarks: 'Done', GivenTime: '14:20 PM' },
+        { VaccineName: 'BVD - ( 90 Days )', Remarks: 'Done', GivenTime: '04:30 PM' },
       ]
     },
     // Add more mock data as needed
@@ -73,4 +77,4 @@ export const useVaccineMonitor = () => {
     throw new Error('useVaccineMonitor must be used within a VaccineMonitorProvider');
   }
   return context;
-};
+}

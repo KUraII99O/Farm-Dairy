@@ -6,12 +6,13 @@ import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import Pagination from "../../Pagination";
 import { BiListUl } from "react-icons/bi";
 import { FaEye } from "react-icons/fa";
-import { RoutineMonitorContext } from "../Provider";
+import { VaccineMonitorContext } from "../Provider";
 import RoutineMonitorDetailsDrawer from "../ItemDetails";
+import VaccineMonitorDetailsDrawer from "../ItemDetails";
 
 const VaccineMonitorTable: React.FC = () => {
   const { vaccineMonitors, deleteVaccineMonitor } = useContext(
-    RoutineMonitorContext
+    VaccineMonitorContext
   );
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
@@ -168,11 +169,11 @@ const VaccineMonitorTable: React.FC = () => {
             </th>
             <th
               className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("cowNumber")}
+              onClick={() => handleSort("CowNumber")}
             >
               <div className="flex items-center">
                 Cow Number
-                {sortIcon("cowNumber")}
+                {sortIcon("CowNumber")}
               </div>
             </th>
             <th
@@ -206,7 +207,7 @@ const VaccineMonitorTable: React.FC = () => {
                 {vaccineMonitor.stallNo}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                {vaccineMonitor.cowNumber}
+                {vaccineMonitor.CowNumber}
               </td>
               <td className="border border-gray-300 px-4 py-2">
                 {vaccineMonitor.note}
