@@ -51,5 +51,10 @@
   transition: margin-bottom 0.3s ease; /* Add a transition for smooth animation */
 }
 
+/* styles.css */
+.custom-overlay {
+  background-color: rgba(115, 129, 148, 0.5); /* Use your desired color code and opacity */
+}
+
 
 

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { FaImage } from "react-icons/fa"; // Import FaImage icon
 
 const ProfileImageUploader: React.FC<{
   onImageChange: (imagePath: string) => void;
-}> = ({ onImageChange }) => {
+  image: string | null; // Add image prop
+}> = ({ onImageChange, image }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,8 +27,6 @@ const ProfileImageUploader: React.FC<{
   return (
     <div className="container pl-4 bg-white">
       <h2 className="text-xl font-bold text-gray-700 mb-4 flex items-center">
-        <FaImage className="mr-2" />
-        <span>Upload Profile Image :</span>
       </h2>
       <div className="flex justify-center">
         <label htmlFor="fileUpload" className="cursor-pointer flex flex-col">
@@ -62,6 +60,7 @@ const ProfileImageUploader: React.FC<{
         >
           Browse
         </button>
+        
       </div>
     </div>
   );

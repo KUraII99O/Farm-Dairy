@@ -12,7 +12,7 @@ export default function Example() {
     <Disclosure as="nav" className="bg-primary">
       {() => (
         <>
-          <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 ">
+          <div className="mx-auto px-2 sm:px-6 lg:px-8 ">
             <div className="relative flex items-center justify-between h-16">
               {/* Profile dropdown */}
               <Menu as="div" className="relative ml-auto">

@@ -9,9 +9,8 @@ import { BsPencil } from "react-icons/bs";
 import EditStallForm from "../Form";
 
 const StallList: React.FC = () => {
-  const { stalls, deleteStall, addStall, editStall   } = useContext(
-    ManageStallContext
-  );
+  const { stalls, deleteStall, addStall, editStall } =
+    useContext(ManageStallContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
@@ -54,11 +53,6 @@ const StallList: React.FC = () => {
   const handleEditDrawerOpen = (stall: any) => {
     setSelectedStall(stall);
     setIsEditDrawerOpen(true);
-  };
-
-  const handleEditDrawerClose = () => {
-    setSelectedStall(null);
-    setIsEditDrawerOpen(false);
   };
 
   const handleAddNewStall = async (newStallData: any) => {
@@ -204,8 +198,9 @@ const StallList: React.FC = () => {
               {selectedStall ? "Edit Stall" : "Add New Stall"}
             </h2>
             <EditStallForm
-             stall={selectedStall} // Pass selected stall data to the edit form
-             onSubmit={selectedStall ? handleUpdateStall : handleAddNewStall}
+              stall={selectedStall}
+              onSubmit={selectedStall ? handleUpdateStall : handleAddNewStall}
+              onClose={() => setIsEditDrawerOpen(false)} // Assuming setIsEditDrawerOpen is the function to close the drawer
             />
           </div>
         </div>

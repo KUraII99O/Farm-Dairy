@@ -40,6 +40,8 @@ import EditCowPage from "./Pages/EditCowPage";
 import EditCowPregnancyPage from "./Pages/EditCowPregnancyPage";
 import StallListPage from "./Pages/StallListPage";
 import { ManageStallProvider } from "./component/ManageStall/Provider";
+import SuppliersListPage from "./Pages/suppliersListPage";
+import { SupplierProvider } from "./component/Suppliers/Provider";
 
 const App: React.FC = () => {
   return (
@@ -53,6 +55,7 @@ const App: React.FC = () => {
                 <VaccineMonitorProvider>  
                 <ManageCowProvider> 
                 <ManageStallProvider> 
+                <SupplierProvider>
                   <Router>
 
                     <Routes>
@@ -319,8 +322,17 @@ const App: React.FC = () => {
                           </RequireAuthentication>
                         }
                       />
+                      <Route
+                        path="/suppliers"
+                        element={
+                          <RequireAuthentication>
+                            <SuppliersListPage />
+                          </RequireAuthentication>
+                        }
+                      />
                     </Routes>
                   </Router>
+                  </SupplierProvider>
                   </ManageStallProvider>
                   </ManageCowProvider>
                   </VaccineMonitorProvider>
