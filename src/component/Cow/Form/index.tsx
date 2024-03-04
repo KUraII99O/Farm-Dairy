@@ -31,6 +31,7 @@ const Checkbox = ({
 const EditCowForm = () => {
   const { id } = useParams<{ id: string }>();
   const { addCow, editCow, getCowById } = useContext(ManageCowContext);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null); // State to store selected image path
   const navigate = useNavigate();
 
   const isEditMode = !!id;
@@ -69,10 +70,9 @@ const EditCowForm = () => {
   });
 
   // Define setSelectedImages state setter function
-  const [selectedImage, setSelectedImage] = useState(null);
 
-  const handleImageChange = (imageUrl) => {
-    setSelectedImage(imageUrl);
+  const handleImageChange = (imagePath: string) => {
+    setSelectedImage(imagePath);
   };
 
   useEffect(() => {
@@ -124,12 +124,24 @@ const EditCowForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isEditMode) {
-      await editCow(parseInt(id), formData);
-    } else {
-      await addCow(formData);
+
+    // Include selectedImage in formData if it exists
+    const formDataToSend = { ...formData };
+    if (selectedImage) {
+      formDataToSend.image = selectedImage;
     }
-    navigate("/manage-cow");
+
+    try {
+      if (isEditMode) {
+        await editCow(parseInt(id), formDataToSend);
+      } else {
+        await addCow(formDataToSend);
+      }
+      navigate("/manage-cow");
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      // Handle error
+    }
   };
   return (
     <form onSubmit={handleSubmit}>
@@ -238,14 +250,19 @@ const EditCowForm = () => {
 
         <div className="col-span-1">
           <h2 className="text-xl font-bold mb-4">Buying Price * :</h2>
-          <input
-            type="text" // Change type to text to allow dollar sign
-            name="buyingPrice"
-            value={"$ " + formData.buyingPrice} // Concatenate dollar sign with formData.buyingPrice
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
-            required
-          />
+          <div className="relative">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-2 text-gray-700">
+              $
+            </span>
+            <input
+              type="text"
+              name="buyingPrice"
+              value={formData.buyingPrice} // Use formData.buyingPrice directly
+              onChange={handleChange}
+              className="pl-8 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              required
+            />
+          </div>
         </div>
 
         <div className="col-span-1">
@@ -357,7 +374,7 @@ const EditCowForm = () => {
         </h2>
 
         <div className="col-span-3">
-          <ProfileImageUploader onImageChange={handleImageChange} />;
+          <ProfileImageUploader onImageChange={handleImageChange} />
         </div>
 
         <div className="col-span-3">

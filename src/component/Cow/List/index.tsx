@@ -11,7 +11,7 @@ import ItemDetailDrawer from "../ItemDatils";
 import { toast, ToastContainer } from "react-toastify";
 
 const AnimalList: React.FC = () => {
-  const { cows, deleteCow,setCows  } = useContext(ManageCowContext); // Corrected context variable
+  const { cows, deleteCow, setCows } = useContext(ManageCowContext); // Corrected context variable
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
@@ -91,10 +91,12 @@ const AnimalList: React.FC = () => {
       const updatedCows = [...currentCows];
       updatedCows[cowIndex] = {
         ...updatedCows[cowIndex],
-        status: !updatedCows[cowIndex].status
+        status: !updatedCows[cowIndex].status,
       };
       setCows(updatedCows); // Update the state of cows
-      const statusMessage = updatedCows[cowIndex].status ? "enabled" : "disabled";
+      const statusMessage = updatedCows[cowIndex].status
+        ? "enabled"
+        : "disabled";
       toast.success(`Toggle status ${statusMessage} successfully`);
     } else {
       toast.error("Cow not found");
@@ -235,25 +237,41 @@ const AnimalList: React.FC = () => {
             <th className="border border-gray-300 px-4 py-2">Action</th>{" "}
           </tr>
         </thead>
-        {/* Table body */}
+
         <tbody>
           {currentCows.map((cow) => (
             <tr key={cow.id}>
               {/* Render each field accordingly */}
               <td className="border border-gray-300 px-4 py-2">{cow.id}</td>
-              <td className="border border-gray-300 px-4 py-2">{cow.image}</td>
+              <td className="border border-gray-300 px-4 py-2">
+                <img
+                  src={cow.image} // Set the source of the image
+                  alt="Cow Image" // Provide alternative text for accessibility
+                  className="w-12 h-12 rounded-full object-cover" // Adjust styling as needed
+                />
+              </td>{" "}
               <td className="border border-gray-300 px-4 py-2">{cow.gender}</td>
-              <td className="border border-gray-300 px-4 py-2">{cow.animalType}</td>
-              <td className="border border-gray-300 px-4 py-2">{cow.buyDate}</td>
-              <td className="border border-gray-300 px-4 py-2">{cow.buyingPrice}</td>
-              <td className="border border-gray-300 px-4 py-2">{cow.pregnantStatus}</td>
-              <td className="border border-gray-300 px-4 py-2">{cow.milkPerDay}</td>
+              <td className="border border-gray-300 px-4 py-2">
+                {cow.animalType}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {cow.buyDate}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                $ {cow.buyingPrice}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {cow.pregnantStatus}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                {cow.milkPerDay}
+              </td>
               <td className="border border-gray-300 px-4 py-2">
                 <label className="inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"
                     className={`sr-only peer`}
-                    checked={cow.status}
+                    checked={cow.status} // Make sure 'cow.status' is properly defined and always boolean
                     onChange={() => handleToggleStatus(cow.id)}
                   />
                   <div
@@ -306,8 +324,7 @@ const AnimalList: React.FC = () => {
         defaultItemsPerPage={itemsPerPage}
         onPageChange={handlePageChange}
       />
-            <ToastContainer />
-
+      <ToastContainer />
     </div>
   );
 };

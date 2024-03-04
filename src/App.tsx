@@ -37,6 +37,9 @@ import EditVaccineMonitorPage from "./Pages/EditVaccineMonitorPage";
 import ManageCowPage from "./Pages/ManageCowPage";
 import { ManageCowProvider } from "./component/Cow/Provider";
 import EditCowPage from "./Pages/EditCowPage";
+import EditCowPregnancyPage from "./Pages/EditCowPregnancyPage";
+import StallListPage from "./Pages/StallListPage";
+import { ManageStallProvider } from "./component/ManageStall/Provider";
 
 const App: React.FC = () => {
   return (
@@ -49,6 +52,7 @@ const App: React.FC = () => {
                 <RoutineMonitorProvider>
                 <VaccineMonitorProvider>  
                 <ManageCowProvider> 
+                <ManageStallProvider> 
                   <Router>
 
                     <Routes>
@@ -63,6 +67,15 @@ const App: React.FC = () => {
                         element={
                           <RequireAuthentication>
                             <DashboardPage />
+                          </RequireAuthentication>
+                        }
+                        
+                      />
+                      <Route
+                        path="/Animal-Pregnancy"
+                        element={
+                          <RequireAuthentication>
+                            <EditCowPregnancyPage />
                           </RequireAuthentication>
                         }
                       />
@@ -298,8 +311,17 @@ const App: React.FC = () => {
                           </RequireAuthentication>
                         }
                       />
+                      <Route
+                        path="/manage-stall"
+                        element={
+                          <RequireAuthentication>
+                            <StallListPage />
+                          </RequireAuthentication>
+                        }
+                      />
                     </Routes>
                   </Router>
+                  </ManageStallProvider>
                   </ManageCowProvider>
                   </VaccineMonitorProvider>
                 </RoutineMonitorProvider>

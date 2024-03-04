@@ -9,13 +9,17 @@ const ProfileImageUploader: React.FC<{
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const reader = new FileReader();
-
+  
       reader.onload = (e) => {
         const imageData = e.target?.result as string;
         setSelectedImage(imageData);
         onImageChange(imageData); // Call the onImageChange callback with the new image data
       };
-
+  
+      reader.onerror = (error) => {
+        console.error('Error reading the file:', error);
+      };
+  
       reader.readAsDataURL(event.target.files[0]);
     }
   };

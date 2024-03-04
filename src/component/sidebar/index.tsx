@@ -75,7 +75,7 @@ const Sidebar: React.FC = () => {
       submenu: [
         { name: "Routine Monitor", link: "/Routine-Monitor" },
         { name: "Vaccine Monitor", link: "/Vaccine-Monitor" },
-        { name: "Animal Pregnancy", link: "/submenu-2" },
+        { name: "Animal Pregnancy", link: "/Animal-Pregnancy" },
       ],
     },
     {
