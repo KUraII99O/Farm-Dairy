@@ -234,11 +234,11 @@ const SupplierList: React.FC = () => {
                 </td>
                 <td className="border border-gray-300 px-2 py-2">
                   <div className="flex items-center">
-                    
                     <button
                       onClick={() => handleEditDrawerOpen(supplier)}
                       className="text-blue-500 hover:underline flex items-center mr-4"
                     >
+                      <BsPencil className="w-5 h-5 mr-1" />
                     </button>
                     <button
                       onClick={() => handleDeleteConfirmation(supplier.id)}
