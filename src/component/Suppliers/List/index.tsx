@@ -236,13 +236,13 @@ const SupplierList: React.FC = () => {
                   <div className="flex items-center">
                     <button
                       onClick={() => handleEditDrawerOpen(supplier)}
-                      className="text-blue-500 hover:underline flex items-center mr-4"
+                      className="text-blue-500 hover:underline flex items-center mr-4 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-110"
                     >
                       <BsPencil className="w-5 h-5 mr-1" />
                     </button>
                     <button
                       onClick={() => handleDeleteConfirmation(supplier.id)}
-                      className="text-red-500 hover:text-red-700 focus:outline-none flex items-center"
+                      className="text-red-500 hover:hover:underline flex items-center mr-4 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-110"
                     >
                       <AiOutlineDelete className="w-5 h-5 mr-1" />
                     </button>

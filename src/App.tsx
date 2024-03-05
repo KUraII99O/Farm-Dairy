@@ -42,6 +42,9 @@ import StallListPage from "./Pages/StallListPage";
 import { ManageStallProvider } from "./component/ManageStall/Provider";
 import SuppliersListPage from "./Pages/suppliersListPage";
 import { SupplierProvider } from "./component/Suppliers/Provider";
+import CowCalfListPage from "./Pages/CowCalfListPage";
+import { ManageCowCalfProvider } from "./component/ManageCowCalf/Provider";
+import EditCowCalfPage from "./Pages/EditCowCalfPage";
 
 const App: React.FC = () => {
   return (
@@ -56,6 +59,7 @@ const App: React.FC = () => {
                 <ManageCowProvider> 
                 <ManageStallProvider> 
                 <SupplierProvider>
+                <ManageCowCalfProvider>
                   <Router>
 
                     <Routes>
@@ -330,8 +334,33 @@ const App: React.FC = () => {
                           </RequireAuthentication>
                         }
                       />
+                      <Route
+                        path="/manage-cow-calf"
+                        element={
+                          <RequireAuthentication>
+                            <CowCalfListPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      <Route
+                        path="/Edit-Calf/:id"
+                        element={
+                          <RequireAuthentication>
+                            <EditCowCalfPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                       <Route
+                        path="/Add-Calf"
+                        element={
+                          <RequireAuthentication>
+                            <EditCowCalfPage />
+                          </RequireAuthentication>
+                        }
+                      />
                     </Routes>
                   </Router>
+                  </ManageCowCalfProvider>
                   </SupplierProvider>
                   </ManageStallProvider>
                   </ManageCowProvider>
