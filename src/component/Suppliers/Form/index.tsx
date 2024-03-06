@@ -17,7 +17,7 @@ const EditSupplierForm = ({ supplier, onSubmit, onClose }) => {
     phoneNumber: "",
     email: "",
     address: "",
-    image: null, // Add image field to formData
+    image: "", // Add image field to formData
   });
 
   useEffect(() => {

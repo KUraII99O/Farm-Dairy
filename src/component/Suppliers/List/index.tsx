@@ -119,7 +119,7 @@ const SupplierList: React.FC = () => {
       {isEditDrawerOpen && (
         <EditSupplierForm
           supplier={selectedSupplier}
-          onSubmit={handleUpdateSupplier}
+          onSubmit={selectedSupplier ? handleUpdateSupplier : handleAddNewSupplier}
           onClose={() => setIsEditDrawerOpen(false)}
         />
       )}

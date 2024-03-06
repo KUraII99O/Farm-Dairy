@@ -45,6 +45,9 @@ import { SupplierProvider } from "./component/Suppliers/Provider";
 import CowCalfListPage from "./Pages/CowCalfListPage";
 import { ManageCowCalfProvider } from "./component/ManageCowCalf/Provider";
 import EditCowCalfPage from "./Pages/EditCowCalfPage";
+import CowSaleListPage from "./Pages/CowSaleListPage";
+import { SaleListProvider } from "./component/CowSale/provider";
+import EditCowSalePage from "./Pages/EditCowSalePage";
 
 const App: React.FC = () => {
   return (
@@ -60,6 +63,7 @@ const App: React.FC = () => {
                 <ManageStallProvider> 
                 <SupplierProvider>
                 <ManageCowCalfProvider>
+                <SaleListProvider>
                   <Router>
 
                     <Routes>
@@ -358,8 +362,25 @@ const App: React.FC = () => {
                           </RequireAuthentication>
                         }
                       />
+                       <Route
+                        path="/Cow-Sale-List"
+                        element={
+                          <RequireAuthentication>
+                            <CowSaleListPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                       <Route
+                        path="/Edit-Sale/:id"
+                        element={
+                          <RequireAuthentication>
+                            <EditCowSalePage />
+                          </RequireAuthentication>
+                        }
+                      />
                     </Routes>
                   </Router>
+                  </SaleListProvider>
                   </ManageCowCalfProvider>
                   </SupplierProvider>
                   </ManageStallProvider>

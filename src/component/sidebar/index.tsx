@@ -83,7 +83,7 @@ const Sidebar: React.FC = () => {
       icon: FaMoneyBillAlt,
       link: "/cow-sale",
       submenu: [
-        { name: "Sale List", link: "/submenu-1" },
+        { name: "Sale List", link: "/Cow-Sale-List" },
         { name: "Sale Due Collection", link: "/submenu-2" },
       ],
     },
