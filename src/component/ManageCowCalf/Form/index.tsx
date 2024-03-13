@@ -56,6 +56,14 @@ const EditCalfForm = () => {
       note: "",
       createdBy: "",
     },
+    vaccinations: {
+      BDV: false,
+      BVD: false,
+      PI3: false,
+      BRSV: false,
+      VitaminA: false,
+      Anthrax: false,
+    },
   });
 
   const handleImageChange = (imagePath: string) => {
@@ -97,7 +105,15 @@ const EditCalfForm = () => {
       });
     }
   };
-
+  const handleCheckboxChange = (name: string, isChecked: boolean) => {
+    setFormData({
+      ...formData,
+      vaccinations: {
+        ...formData.vaccinations,
+        [name]: isChecked,
+      },
+    });
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -280,9 +296,47 @@ const EditCalfForm = () => {
           </h2>
           <div className="flex flex-wrap mt-4">
             <div className="flex flex-col mr-8">
-              {/* Include your Checkbox components here */}
+              <Checkbox
+                label="BDV - (60 Days)"
+                checked={formData.vaccinations.BDV}
+                onChange={(isChecked) => handleCheckboxChange("BDV", isChecked)}
+              />
+              <Checkbox
+                label="BVD - (90 Days)"
+                checked={formData.vaccinations.BVD}
+                onChange={(isChecked) => handleCheckboxChange("BVD", isChecked)}
+              />
             </div>
-            {/* Include more Checkbox groups if needed */}
+            <div className="flex flex-col mr-8">
+              <Checkbox
+                label="PI3 - (120 Days)"
+                checked={formData.vaccinations.PI3}
+                onChange={(isChecked) => handleCheckboxChange("PI3", isChecked)}
+              />
+              <Checkbox
+                label="BRSV - (365 Days)"
+                checked={formData.vaccinations.BRSV}
+                onChange={(isChecked) =>
+                  handleCheckboxChange("BRSV", isChecked)
+                }
+              />
+            </div>
+            <div className="flex flex-col">
+              <Checkbox
+                label="Vitamin A - (60 Days)"
+                checked={formData.vaccinations.VitaminA}
+                onChange={(isChecked) =>
+                  handleCheckboxChange("VitaminA", isChecked)
+                }
+              />
+              <Checkbox
+                label="Anthrax - (120 Days)"
+                checked={formData.vaccinations.Anthrax}
+                onChange={(isChecked) =>
+                  handleCheckboxChange("Anthrax", isChecked)
+                }
+              />
+            </div>
           </div>
         </div>
         <h2 className="text-xl font-bold mt-8 flex items-center">

@@ -25,6 +25,132 @@ export const SaleListProvider = ({ children }) => {
         height: 55
       }
     },
+    {
+      id: 2,
+      invoice: "INV001",
+      date: "2024-03-01",
+      customerName: "John Doe",
+      customerPhone: "123-456-7890",
+      customerEmail: "john@example.com",
+      address: "123 Main St, City, Country",
+      totalPrice: 500,
+      totalPaid: 300,
+      due: 200,
+      note: "Payment pending for this invoice.",
+      information: {
+        image: "cow1.jpg",
+        cowNumber: "Cow001",
+        stallNo: "C3",
+        gender: "Female",
+        weight: 300,
+        height: 55
+      }
+    },
+    {
+      id: 3,
+      invoice: "INV001",
+      date: "2024-03-01",
+      customerName: "John Doe",
+      customerPhone: "123-456-7890",
+      customerEmail: "john@example.com",
+      address: "123 Main St, City, Country",
+      totalPrice: 500,
+      totalPaid: 300,
+      due: 200,
+      note: "Payment pending for this invoice.",
+      information: {
+        image: "cow1.jpg",
+        cowNumber: "Cow001",
+        stallNo: "C3",
+        gender: "Female",
+        weight: 300,
+        height: 55
+      }
+    },
+    {
+      id: 4,
+      invoice: "INV001",
+      date: "2024-03-01",
+      customerName: "John Doe",
+      customerPhone: "123-456-7890",
+      customerEmail: "john@example.com",
+      address: "123 Main St, City, Country",
+      totalPrice: 500,
+      totalPaid: 300,
+      due: 200,
+      note: "Payment pending for this invoice.",
+      information: {
+        image: "cow1.jpg",
+        cowNumber: "Cow001",
+        stallNo: "C3",
+        gender: "Female",
+        weight: 300,
+        height: 55
+      }
+    },
+    {
+      id: 5,
+      invoice: "INV001",
+      date: "2024-03-01",
+      customerName: "John Doe",
+      customerPhone: "123-456-7890",
+      customerEmail: "john@example.com",
+      address: "123 Main St, City, Country",
+      totalPrice: 500,
+      totalPaid: 300,
+      due: 200,
+      note: "Payment pending for this invoice.",
+      information: {
+        image: "cow1.jpg",
+        cowNumber: "Cow001",
+        stallNo: "C3",
+        gender: "Female",
+        weight: 300,
+        height: 55
+      }
+    },
+    {
+      id: 6,
+      invoice: "INV001",
+      date: "2024-03-01",
+      customerName: "John Doe",
+      customerPhone: "123-456-7890",
+      customerEmail: "john@example.com",
+      address: "123 Main St, City, Country",
+      totalPrice: 500,
+      totalPaid: 300,
+      due: 200,
+      note: "Payment pending for this invoice.",
+      information: {
+        image: "cow1.jpg",
+        cowNumber: "Cow001",
+        stallNo: "C3",
+        gender: "Female",
+        weight: 300,
+        height: 55
+      }
+    },
+    {
+      id: 7,
+      invoice: "INV001",
+      date: "2024-03-01",
+      customerName: "John Doe",
+      customerPhone: "123-456-7890",
+      customerEmail: "john@example.com",
+      address: "123 Main St, City, Country",
+      totalPrice: 500,
+      totalPaid: 300,
+      due: 200,
+      note: "Payment pending for this invoice.",
+      information: {
+        image: "cow1.jpg",
+        cowNumber: "Cow001",
+        stallNo: "C3",
+        gender: "Female",
+        weight: 300,
+        height: 55
+      }
+    },
     // Add more sales as needed
   ]);
 

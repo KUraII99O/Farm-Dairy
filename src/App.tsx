@@ -48,6 +48,20 @@ import EditCowCalfPage from "./Pages/EditCowCalfPage";
 import CowSaleListPage from "./Pages/CowSaleListPage";
 import { SaleListProvider } from "./component/CowSale/provider";
 import EditCowSalePage from "./Pages/EditCowSalePage";
+import { ExpenseProvider } from "./component/FarmExpense/Provider";
+import FarmExpenseListPgae from "./Pages/FarmExpenseListPgae";
+import PurposeListPage from "./Pages/PurposeListPage";
+import { ExpensePurposeProvider } from "./component/ExpensePurpose/Provider";
+import BranchListPage from "./Pages/BranchListPage";
+import { ManageBranchProvider } from "./component/Branch/Provider";
+import DesignationListPage from "./Pages/DesignationListPage";
+import { ManageDesignationProvider } from "./component/Designation/Provider";
+import ColorListPage from "./Pages/ColorListPage";
+import { ManageColorProvider } from "./component/Color/Provider";
+import AnimalListPage from "./Pages/AnimalTypeListPage";
+import { ManageAnimalTypeProvider } from "./component/Animaltype/Provider";
+import VaccineList from "./component/Vaccine/List";
+import { ManageVaccineProvider } from "./component/Vaccine/Provider";
 
 const App: React.FC = () => {
   return (
@@ -64,6 +78,13 @@ const App: React.FC = () => {
                 <SupplierProvider>
                 <ManageCowCalfProvider>
                 <SaleListProvider>
+                <ExpenseProvider>
+                <ExpensePurposeProvider>
+                <ManageBranchProvider>
+                <ManageDesignationProvider>
+                <ManageColorProvider>
+                <ManageAnimalTypeProvider>
+                <ManageVaccineProvider>
                   <Router>
 
                     <Routes>
@@ -378,8 +399,79 @@ const App: React.FC = () => {
                           </RequireAuthentication>
                         }
                       />
+                       <Route
+                        path="/Add-sale"
+                        element={
+                          <RequireAuthentication>
+                            <EditCowSalePage />
+                          </RequireAuthentication>
+                        }
+                      />
+                       <Route
+                        path="/Expense-List"
+                        element={
+                          <RequireAuthentication>
+                            <FarmExpenseListPgae />
+                          </RequireAuthentication>
+                        }
+                      />
+                       <Route
+                        path="/Purpose-List"
+                        element={
+                          <RequireAuthentication>
+                            <PurposeListPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                       <Route
+                        path="/Branch-List"
+                        element={
+                          <RequireAuthentication>
+                            <BranchListPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                       <Route
+                        path="/Designation-List"
+                        element={
+                          <RequireAuthentication>
+                            <DesignationListPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                       <Route
+                        path="/Color-List"
+                        element={
+                          <RequireAuthentication>
+                            <ColorListPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                       <Route
+                        path="/Animal-Type"
+                        element={
+                          <RequireAuthentication>
+                            <AnimalListPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                       <Route
+                        path="/Vaccine-List"
+                        element={
+                          <RequireAuthentication>
+                            <VaccineList />
+                          </RequireAuthentication>
+                        }
+                      />
                     </Routes>
                   </Router>
+                  </ManageVaccineProvider>
+                  </ManageAnimalTypeProvider>
+                  </ManageColorProvider>
+                  </ManageDesignationProvider>
+                  </ManageBranchProvider>
+                  </ExpensePurposeProvider>
+                  </ExpenseProvider>
                   </SaleListProvider>
                   </ManageCowCalfProvider>
                   </SupplierProvider>

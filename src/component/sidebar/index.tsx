@@ -92,8 +92,8 @@ const Sidebar: React.FC = () => {
       icon: FaDollarSign,
       link: "/farm-expense",
       submenu: [
-        { name: "Expense List", link: "/submenu-1" },
-        { name: "Expense Purpose", link: "/submenu-2" },
+        { name: "Expense List", link: "/Expense-List" },
+        { name: "Expense Purpose", link: "/Purpose-List" },
       ],
     },
     { name: "Suppliers", icon: IoMdPerson, link: "/suppliers" },
@@ -109,12 +109,12 @@ const Sidebar: React.FC = () => {
       icon: GrCatalog,
       link: "/catalog",
       submenu: [
-        { name: "Branch", link: "/submenu-1" },
-        { name: "User Type", link: "/submenu-2" },
-        { name: "Designation", link: "/submenu-2" },
-        { name: "Colors", link: "/submenu-2" },
-        { name: "Animal Types", link: "/submenu-2" },
-        { name: "Vaccines", link: "/submenu-2" },
+        { name: "Branch", link: "/Branch-List" },
+        { name: "User Type", link: "/" },
+        { name: "Designation", link: "/Designation-List" },
+        { name: "Colors", link: "/Color-List" },
+        { name: "Animal Types", link: "/Animal-Type" },
+        { name: "Vaccines", link: "/Vaccine-List" },
         { name: "Food Unit", link: "/submenu-2" },
         { name: "Food Item", link: "/submenu-2" },
         { name: "Monitoring Services", link: "/submenu-2" },
@@ -243,6 +243,7 @@ const Sidebar: React.FC = () => {
         </div>
       </div>
     </div>
+    
   );
 };
 
