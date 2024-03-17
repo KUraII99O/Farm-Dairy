@@ -3,39 +3,44 @@ import { useNavigate } from "react-router-dom";
 import MoooImage from "../../assets/images/Mooo.png";
 
 const LogIn = ({ onLogin }) => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPopUp, setShowPopUp] = useState(false); // State to control the pop-up visibility
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Validate if username and password are not empty
-    const isValid = username.trim() && password.trim();
-
-    if (isValid) {
-      // Show the pop-up
-      setShowPopUp(true);
-      // Simulate login process by calling onLogin function after 3 seconds
+  
+    try {
+      const response = await fetch("http://localhost:3000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+  
+      if (!response.ok) {
+        const errorMessage = await response.json();
+        throw new Error(errorMessage.error);
+      }
+  
+      const user = await response.json();
+      localStorage.setItem("loggedInUser", JSON.stringify(user));
+      onLogin();
+      setErrorMessage(""); // Reset error message state
       setTimeout(() => {
-        onLogin();
-        // Redirect user to dashboard after login
-        navigate("/dashboard");
+        navigate("/dashboard"); // Navigate to dashboard using useNavigate hook
       }, 1000);
+    } catch (error) {
+      setErrorMessage("User does not exist or password is incorrect");
     }
   };
 
   return (
     <>
-      {showPopUp && (
-        <div className="fixed bottom-10 left-0 right-0 flex justify-center">
-          <div className="bg-green-500 text-white py-2 px-4 rounded-lg">
-            Welcome Back! You have successfully logged in.
-          </div>
-        </div>
-      )}
+      
       <section className={`h-full bg-neutral-200 dark:bg-neutral-700 `}>
-        {/* Render the login form */}
         <div className="container h-full p-10">
           <div className="g-6 flex h-full flex-wrap items-center justify-center text-neutral-800 dark:text-neutral-200">
             <div className="w-full">
@@ -53,15 +58,14 @@ const LogIn = ({ onLogin }) => {
                           We are GesCow
                         </h4>
                       </div>
-
                       <form onSubmit={handleSubmit}>
                         <p className="mb-4">Please login to your account</p>
                         <input
-                          type="text"
+                          type="email"
                           className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
-                          placeholder="Username"
-                          value={username}
-                          onChange={(e) => setUsername(e.target.value)}
+                          placeholder="Email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
                         />
                         <input
                           type="password"
@@ -70,6 +74,9 @@ const LogIn = ({ onLogin }) => {
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                         />
+                        {errorMessage && (
+                          <p className="text-red-500 mb-4">{errorMessage}</p>
+                        )}
                         <div className="mb-12 pb-1 pt-1 text-center">
                           <button
                             className="mb-3 inline-block w-full rounded px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white bg-secondary hover:bg-primary"

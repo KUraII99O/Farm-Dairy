@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   MdOutlineKeyboardDoubleArrowLeft,
@@ -19,11 +19,22 @@ import { GrCatalog } from "react-icons/gr";
 import { IoSettings } from "react-icons/io5";
 import { FaChartColumn } from "react-icons/fa6";
 import { MdSpaceDashboard } from "react-icons/md";
+import { useTranslation } from "../Translator/Provider";
 
 const Sidebar: React.FC = () => {
+  const { translate } = useTranslation();
   const [isOpen, setIsOpen] = useState(true);
   const [openSubmenuIndex, setOpenSubmenuIndex] = useState(-1);
   const [isHovered, setIsHovered] = useState(false);
+  const [type, setType] = useState(""); // Declare 'type' state variable
+
+  useEffect(() => {
+    const loggedInUser = localStorage.getItem("loggedInUser");
+    if (loggedInUser) {
+      const { type } = JSON.parse(loggedInUser);
+      setType(type); // Set the user's type retrieved from local storage
+    }
+  }, []);
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -32,9 +43,7 @@ const Sidebar: React.FC = () => {
     }
   };
 
-  const toggleSubmenu = (index: number) => {
-    setOpenSubmenuIndex(openSubmenuIndex === index ? -1 : index);
-  };
+ 
 
   const handleMenuItemClick = (index: number) => {
     if (openSubmenuIndex === index) {
@@ -46,98 +55,114 @@ const Sidebar: React.FC = () => {
   };
 
   const menuItems = [
-    { name: "Dashboard", icon: MdSpaceDashboard, link: "/Dashboard" },
+    { name: translate("dashboard"), icon: MdSpaceDashboard, link: "/Dashboard" },
     {
-      name: "Human Resource",
+      name: translate("humanResource"),
       icon: FaUserFriends,
       link: "/human-resource",
       submenu: [
-        { name: "Staff List", link: "/staff" },
-        { name: "User List", link: "/User" },
-        { name: "Employee Salary", link: "/Employee" },
+        { name: translate("staffList"), link: "/staff" },
+        { name: translate("userList"), link: "/User" },
+        { name: translate("employeeSalary"), link: "/Employee" },
       ],
     },
     {
-      name: "Milk Parlor",
+      name: translate("milkParlor"),
       icon: GiMilkCarton,
       link: "/milk-parlor",
       submenu: [
-        { name: "Collect Milk", link: "/Milk" }, // Update link path to "/Milk"
-        { name: "Sale Milk", link: "/Milk-Sale" },
-        { name: "Sale Due Collection", link: "/SaleDueCollection" },
+        { name: translate("collectMilk"), link: "/Milk" }, // Update link path to "/Milk"
+        { name: translate("saleMilk"), link: "/Milk-Sale" },
+        { name: translate("saleDueCollection"), link: "/SaleDueCollection" },
       ],
     },
-    { name: "Cow Feed", icon: PiForkKnifeFill, link: "/cow-feed" },
+    { name: translate("cowFeed"), icon: PiForkKnifeFill, link: "/cow-feed" },
     {
-      name: "Cow Monitor",
+      name: translate("cowMonitor"),
       icon: CgScreen,
       link: "/cow-monitor",
       submenu: [
-        { name: "Routine Monitor", link: "/Routine-Monitor" },
-        { name: "Vaccine Monitor", link: "/Vaccine-Monitor" },
-        { name: "Animal Pregnancy", link: "/Animal-Pregnancy" },
+        { name: translate("routineMonitor"), link: "/Routine-Monitor" },
+        { name: translate("vaccineMonitor"), link: "/Vaccine-Monitor" },
+        { name: translate("animalPregnancy"), link: "/Animal-Pregnancy" },
       ],
     },
     {
-      name: "Cow Sale",
+      name: translate("cowSale"),
       icon: FaMoneyBillAlt,
       link: "/cow-sale",
       submenu: [
-        { name: "Sale List", link: "/Cow-Sale-List" },
-        { name: "Sale Due Collection", link: "/submenu-2" },
+        { name: translate("saleList"), link: "/Cow-Sale-List" },
+        { name: translate("saleDueCollection"), link: "/submenu-2" },
       ],
     },
     {
-      name: "Farm Expense",
+      name: translate("farmExpense"),
       icon: FaDollarSign,
       link: "/farm-expense",
       submenu: [
-        { name: "Expense List", link: "/Expense-List" },
-        { name: "Expense Purpose", link: "/Purpose-List" },
+        { name: translate("expenseList"), link: "/Expense-List" },
+        { name: translate("expensePurpose"), link: "/Purpose-List" },
       ],
     },
-    { name: "Suppliers", icon: IoMdPerson, link: "/suppliers" },
-    { name: "Manage Cow", icon: FaCow, link: "/manage-cow" },
-    { name: "Manage Cow Calf", icon: SiHappycow, link: "/manage-cow-calf" },
+    { name: translate("suppliers"), icon: IoMdPerson, link: "/suppliers" },
+    { name: translate("manageCow"), icon: FaCow, link: "/manage-cow" },
+    { name: translate("manageCowCalf"), icon: SiHappycow, link: "/manage-cow-calf" },
     {
-      name: "Manage Stall",
+      name: translate("manageStall"),
       icon: FaHouse,
       link: "/manage-stall",
     },
     {
-      name: "Catalog",
+      name: translate("catalog"),
       icon: GrCatalog,
       link: "/catalog",
       submenu: [
-        { name: "Branch", link: "/Branch-List" },
-        { name: "User Type", link: "/" },
-        { name: "Designation", link: "/Designation-List" },
-        { name: "Colors", link: "/Color-List" },
-        { name: "Animal Types", link: "/Animal-Type" },
-        { name: "Vaccines", link: "/Vaccine-List" },
-        { name: "Food Unit", link: "/submenu-2" },
-        { name: "Food Item", link: "/submenu-2" },
-        { name: "Monitoring Services", link: "/submenu-2" },
+        { name: translate("branch"), link: "/Branch-List" },
+        { name: translate("userType"), link: "/User-Type-List" },
+        { name: translate("designation"), link: "/Designation-List" },
+        { name: translate("colors"), link: "/Color-List" },
+        { name: translate("animalTypes"), link: "/Animal-Type" },
+        { name: translate("vaccines"), link: "/Vaccine-List" },
+        { name: translate("foodUnit"), link: "/submenu-2" },
+        { name: translate("foodItem"), link: "/submenu-2" },
+        { name: translate("monitoringServices"), link: "/submenu-2" },
       ],
     },
-    { name: "Settings", icon: IoSettings, link: "/settings" },
+    { name: translate("settings"), icon: IoSettings, link: "/settings" },
     {
-      name: "Reports",
+      name: translate("reports"),
       icon: FaChartColumn,
       link: "/reports",
     },
   ];
 
   const hideArrows = [
-    "Dashboard",
-    "Cow Feed",
-    "Suppliers",
-    "Manage Cow",
-    "Manage Cow Calf",
-    "Settings",
-    "Manage Stall",
-    "Reports",
+    translate("dashboard"),
+    translate("cowFeed"),
+    translate("suppliers"),
+    translate("manageCow"),
+    translate("manageCowCalf"),
+    translate("settings"),
+    translate("manageStall"),
+    translate("reports"),
   ];
+
+  const filteredMenuItems = menuItems.filter((item) => {
+    if (type === "admin") {
+      return true; // Admin can see all menu items
+    } else if (type === "user") {
+      // Hide "Catalog", "Suppliers", and "Reports" for regular users
+      return ![translate("catalog"), translate("suppliers"), translate("reports")].includes(item.name);
+    } else if (type === "staff") {
+      // Hide "Catalog", "Suppliers", "Reports", and "Farm Expense" for staff
+      return ![translate("catalog"), translate("suppliers"), translate("reports"), translate("farmExpense")].includes(
+        item.name
+      );
+    } else {
+      return true; // Default to showing all items if user type is not recognized
+    }
+  });
 
   return (
     <div
@@ -172,7 +197,7 @@ const Sidebar: React.FC = () => {
               </h3>
             </Link>{" "}
             <ul className="mt-6 space-y-2">
-              {menuItems.map((item, index) => (
+              {filteredMenuItems.map((item, index) => (
                 <li key={index} className="min-w-max">
                   {item.submenu ? (
                     <>
@@ -230,20 +255,17 @@ const Sidebar: React.FC = () => {
           </div>
         </div>
         <div className="absolute bottom-0 left-0 right-0 flex justify-end ">
-          <button
-            onClick={toggleSidebar}
-            className="px-4 py-2 text-white"
-          >
+          <button onClick={toggleSidebar} className="px-4 py-2 text-white">
             {isOpen ? (
-              <MdOutlineKeyboardDoubleArrowLeft className="h-6 w-6 text-black" />
+              <MdKeyboardArrowLeft className="h-6 w-6 text-black" />
             ) : (
-              <MdKeyboardArrowLeft className="h-6 w-6 text-black transform rotate-180" />
+              < MdOutlineKeyboardDoubleArrowLeft className="h-6 w-6 text-black transform rotate-180" />
             )}
+            
           </button>
         </div>
       </div>
     </div>
-    
   );
 };
 

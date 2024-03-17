@@ -1,0 +1,7 @@
+.rtl {
+    direction: rtl;
+  }
+  .arabic-layout {
+    justify-content: space-between; /* Adjust spacing between items */
+    /* Add any other necessary styles for Arabic layout */
+  }

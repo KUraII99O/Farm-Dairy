@@ -38,19 +38,48 @@ const SignUpForm: React.FC = () => {
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      // Submit form logic here
-      // For demonstration, show a success message and navigate to the dashboard
-      setShowSuccess(true); // Show success pop-up
-      setTimeout(() => {
-        setShowSuccess(false); // Hide success pop-up after 3 seconds
-        navigate("/dashboard"); // Navigate to the dashboard
-      }, 3000); // Hide pop-up after 3 seconds
+      // Create a user object with the form data
+      const newUser = {
+        mobile: mobile,
+        username: username,
+        email: email,
+        password: password,
+        role: "user", // Set the role to "user" by default
+      };
+
+      try {
+        const response = await fetch("http://localhost:3000/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newUser),
+        });
+
+        if (!response.ok) {
+          const errorMessage = await response.json();
+          throw new Error(errorMessage.error);
+        }
+
+        const data = await response.json();
+        console.log(data.message); // Print success message
+
+        // Show success pop-up
+        setShowSuccess(true);
+
+        // Navigate to the dashboard after 3 seconds
+        setTimeout(() => {
+          setShowSuccess(false);
+          navigate("/login");
+        }, 2000);
+      } catch (error) {
+        console.error("Registration failed:", error.message);
+      }
     }
   };
-
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -77,7 +106,7 @@ const SignUpForm: React.FC = () => {
                         alt="Mooo Image"
                       />
                       <h4 className="mb-12 mt-4 pb-1 text-xl font-semibold">
-                        We are GesCow 
+                        We are GesCow
                       </h4>
                     </div>
 

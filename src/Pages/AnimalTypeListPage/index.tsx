@@ -1,11 +1,15 @@
-import React from 'react'
-import AnimalTypeList from '../../component/Animaltype/List'
+import AnimalTypeList from '../../component/Animaltype/List';
 
 const AnimalListPage = () => {
+ 
+
   return (
-    <AnimalTypeList />
+    <div>
+    
+      <AnimalTypeList />
+     
+    </div>
+  );
+};
 
-  )
-}
-
-export default AnimalListPage
+export default AnimalListPage;

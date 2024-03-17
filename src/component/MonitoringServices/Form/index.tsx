@@ -1,20 +1,20 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-const EditDesignationForm = ({ designation, onSubmit, onClose }) => {
+const EditMonitoringServiceForm = ({ service, onSubmit, onClose }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const formRef = useRef(null);
 
   const [formData, setFormData] = useState({
-    name: "",
+    serviceName: "",
   });
 
   useEffect(() => {
-    if (designation) {
-      setFormData(designation);
+    if (service) {
+      setFormData(service);
     }
-  }, [designation]);
+  }, [service]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,7 +31,7 @@ const EditDesignationForm = ({ designation, onSubmit, onClose }) => {
 
   const handleCloseDrawer = () => {
     onClose(); // Call the onClose function passed from the parent component
-    navigate("/Designation-List");
+    navigate("/manage-monitoring-service");
   };
 
   const handleOutsideClick = (e) => {
@@ -54,7 +54,7 @@ const EditDesignationForm = ({ designation, onSubmit, onClose }) => {
         className="fixed inset-0 bg-gray-200 bg-opacity-50 z-40"
         onClick={handleCloseDrawer}
       ></div>
-      {/* Edit designation form */}
+      {/* Edit monitoring service form */}
       <div className="fixed inset-0 overflow-y-auto z-50 flex justify-end">
         <div className="w-96 bg-white h-full shadow-lg p-6" ref={formRef}>
           <button
@@ -74,13 +74,13 @@ const EditDesignationForm = ({ designation, onSubmit, onClose }) => {
             </svg>
           </button>
           <form onSubmit={handleSubmit}>
-            <h2 className="text-xl font-bold mb-4">{designation ? "Edit Designation" : "Add New Designation"}</h2>
+            <h2 className="text-xl font-bold mb-4">{service ? "Edit Monitoring Service" : "Add New Monitoring Service"}</h2>
             <div className="mb-4">
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">Designation Name * :</label>
+              <label htmlFor="serviceName" className="block text-sm font-medium text-gray-700">Service Name * :</label>
               <input
                 type="text"
-                name="name"
-                value={formData.name}
+                name="serviceName"
+                value={formData.serviceName}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                 required
@@ -91,7 +91,7 @@ const EditDesignationForm = ({ designation, onSubmit, onClose }) => {
                 type="submit"
                 className="bg-secondary hover:bg-primary text-white font-bold py-2 px-4 rounded"
               >
-                {designation ? "Update Designation" : "Add Designation"}
+                {service ? "Update Monitoring Service" : "Add Monitoring Service"}
               </button>
             </div>
           </form>
@@ -101,4 +101,4 @@ const EditDesignationForm = ({ designation, onSubmit, onClose }) => {
   );
 };
 
-export default EditDesignationForm; // Ensure you export the component as default
+export default EditMonitoringServiceForm;

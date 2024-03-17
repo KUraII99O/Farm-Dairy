@@ -13,6 +13,13 @@ export default function Example() {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
+  const handleSignOut = () => {
+    // Remove the logged-in user from local storage
+    localStorage.removeItem("loggedInUser");
+    // You can redirect to the login page or perform any additional actions here
+    window.location.href = "/LogIn"; // Redirect to the login page
+  };
+
   return (
     <div className="bg-gray-100 ">
       <Disclosure as="nav" className="bg-primary">
@@ -65,12 +72,12 @@ export default function Example() {
                       </Menu.Item>
                       <Menu.Item>
                         {({ active }) => (
-                          <a
-                            href="LogIn"
-                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                          <button
+                            onClick={handleSignOut}
+                            className={classNames(active ? 'bg-gray-100' : '', 'block w-full text-left px-4 py-2 text-sm text-gray-700')}
                           >
                             Sign out
-                          </a>
+                          </button>
                         )}
                       </Menu.Item>
                     </Menu.Items>

@@ -62,6 +62,14 @@ import AnimalListPage from "./Pages/AnimalTypeListPage";
 import { ManageAnimalTypeProvider } from "./component/Animaltype/Provider";
 import VaccineList from "./component/Vaccine/List";
 import { ManageVaccineProvider } from "./component/Vaccine/Provider";
+import FoodUnitListPage from "./Pages/FoodUnitListPage";
+import { FoodUnitProvider } from "./component/FoodUnit/Provider";
+import FoodItemListPage from "./Pages/FoodItemListPage";
+import { FoodItemProvider } from "./component/FoodItem/Provider";
+import MonitoringServiceListPage from "./Pages/MonitoringServiceListPage";
+import { MonitoringServiceProvider } from "./component/MonitoringServices/Provider";
+import UserTypeListPage from "./Pages/UserTypeListPage";
+import { UserTypeProvider } from "./component/UserType/Provider";
 
 const App: React.FC = () => {
   return (
@@ -85,6 +93,12 @@ const App: React.FC = () => {
                 <ManageColorProvider>
                 <ManageAnimalTypeProvider>
                 <ManageVaccineProvider>
+                <FoodUnitProvider>
+                <FoodItemProvider>
+                <MonitoringServiceProvider>
+                <UserTypeProvider>
+                
+
                   <Router>
 
                     <Routes>
@@ -463,8 +477,46 @@ const App: React.FC = () => {
                           </RequireAuthentication>
                         }
                       />
+                       <Route
+                        path="/Food-Unit-List"
+                        element={
+                          <RequireAuthentication>
+                            <FoodUnitListPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                       <Route
+                        path="/Food-Item-List"
+                        element={
+                          <RequireAuthentication>
+                            <FoodItemListPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                      
+                       <Route
+                        path="/Monitoring-Service-List"
+                        element={
+                          <RequireAuthentication>
+                            <MonitoringServiceListPage />
+                          </RequireAuthentication>
+                        }
+                      />
+                       <Route
+                        path="/User-Type-List"
+                        element={
+                          <RequireAuthentication>
+                            <UserTypeListPage />
+                          </RequireAuthentication>
+                        }
+                      />
                     </Routes>
                   </Router>
+
+                  </UserTypeProvider>
+                  </MonitoringServiceProvider>
+                  </FoodItemProvider>
+                  </FoodUnitProvider>
                   </ManageVaccineProvider>
                   </ManageAnimalTypeProvider>
                   </ManageColorProvider>

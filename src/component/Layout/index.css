@@ -1,0 +1,19 @@
+/* Scrollbar styles for LTR direction */
+.ltr-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+    direction: ltr; /* Ensure LTR direction */
+  }
+  
+  /* Scrollbar styles for RTL direction */
+  .rtl-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: transparent rgba(0, 0, 0, 0.3);
+    direction: rtl; /* Ensure RTL direction */
+  }
+  
+  /* Move scrollbar to the left for RTL direction */
+  .rtl-scrollbar::-webkit-scrollbar {
+    right: 0;
+    left: auto;
+  }
