@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "../Translator/Provider"; // Assuming you have a translation context or hook
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 const expenses = [
   { dateKey: "jan082023", purposeKey: "shareProfit", amount: "TND.100.00" },
@@ -15,19 +15,22 @@ interface ExpenseHistoryProps {
 }
 
 const ExpenseHistory: React.FC<ExpenseHistoryProps> = ({ className }) => {
-  const { translate } = useTranslation(); // Assuming you have a translate function from your translation hook or context
+  const { translate, language } = useTranslation(); // Assuming you have a translate function from your translation hook or context
 
   return (
     <div className="p-4 border border-green-500 mt-6  ${className}">
       <div className="flex items-center mb-4">
-        <FontAwesomeIcon icon={faInfoCircle} className="text-blue-500 " />
-        <h1 className="text-xl">{translate("lastFiveExpenseHistory")}</h1> {/* Translate the heading */}
+        <FontAwesomeIcon icon={faInfoCircle} className="text-blue-500 mr-2 " />
+        <div className={`text-center ${language === "ar" ? "mr-2" : "mb-0"}`}>
+          <h1 className="text-xl">{translate("lastFiveExpenseHistory")}</h1>
+        </div>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr>
-              <th className="p-2 border">{translate("date")}</th> {/* Translate table headers */}
+              <th className="p-2 border">{translate("date")}</th>{" "}
+              {/* Translate table headers */}
               <th className="p-2 border">{translate("expensePurpose")}</th>
               <th className="p-2 border">{translate("amount")}</th>
             </tr>
@@ -35,8 +38,12 @@ const ExpenseHistory: React.FC<ExpenseHistoryProps> = ({ className }) => {
           <tbody>
             {expenses.map((expense, index) => (
               <tr key={index}>
-                <td className="p-2 border">{translate(expense.dateKey)}</td> {/* Translate date */}
-                <td className="p-2 border">{translate(expense.purposeKey)}</td> {/* Translate purpose */}
+                <td className="p-2 border">{translate(expense.dateKey)}</td>{" "}
+                {/* Translate date */}
+                <td className="p-2 border">
+                  {translate(expense.purposeKey)}
+                </td>{" "}
+                {/* Translate purpose */}
                 <td className="p-2 border">{expense.amount}</td>
               </tr>
             ))}

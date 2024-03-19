@@ -24,7 +24,7 @@ const Dashboard: React.FC = () => {
   const items = [
     // Dashboard items with translated titles
     { id: 1, title: translate("dashboard"), icon: <FontAwesomeIcon icon={faUsers} />, color: "bg-red-500", value: "0" },
-    { id: 2, title: translate("manageCow"), icon: <FontAwesomeIcon icon={faCow} />, color: "bg-blue-500", value: "0" },
+    { id: 2, title: translate("manageCow"), icon: <FontAwesomeIcon icon={faCow} />, color: "bg-blue-500 ", value: "0" },
     { id: 3, title: translate("manageCowCalf"), icon: <FontAwesomeIcon icon={faBaby} />, color: "bg-green-500", value: "0" },
     { id: 4, title: translate("suppliers"), icon: <FontAwesomeIcon icon={faTruck} />, color: "bg-yellow-500", value: "0" },
     { id: 5, title: translate("manageStall"), icon: <FontAwesomeIcon icon={faWarehouse} />, color: "bg-purple-500", value: "0" },

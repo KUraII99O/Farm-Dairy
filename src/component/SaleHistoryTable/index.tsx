@@ -21,11 +21,16 @@ const SaleHistory: React.FC<SaleHistoryProps> = ({ className }) => {
   const isArabic = language === "ar"; // Check if language is Arabic
 
   return (
-    <div className={`p-4 border border-green-500 mt-6 ${isArabic ? 'mr-4' : ''} ${className}`}>
+    <div className={`p-4 border border-green-500 mt-6 ${isArabic ? 'mr-4' : ' ml-0'} ${className}`}>
       <div className="flex items-center mb-4">
         <FontAwesomeIcon icon={faInfoCircle} className="text-blue-500 mr-2" />
-        <h1 className="text-xl">{translate("LastFiveMilkSaleHistory")}</h1> {/* Translate the heading */}
-      </div>
+        <div className={`text-center ${language === "ar" ? "mr-2" : "mb-0"}`}>
+      <h1 className="text-xl">
+        {translate("LastFiveMilkSaleHistory")}
+      </h1>
+    </div> 
+    
+         </div>
       <div className="overflow-x-auto">
         <table className="w-full table-auto">
           <thead>

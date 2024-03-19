@@ -13,10 +13,10 @@ interface DashboardItemProps {
 
 const DashboardItem: React.FC<DashboardItemProps> = ({ item, isRTL }) => {
   return (
-    <div className={`flex items-center bg-white border rounded-sm overflow-hidden shadow`} key={item.id}>
-      <div className={`p-4 w-1/6 ${item.color} flex items-center justify-center`}>
+    <div className={`flex items-center bg-white border rounded-sm overflow-hidden shadow `} key={item.id}>
+      <div className={`p-4 w-1/6 ${item.color} flex items-center justify-center `}>
         {item.icon && (
-          <div className="h-16 w-16 text-white">
+          <div className="h-16 w-16 text-white pt-5">
             {React.cloneElement(item.icon as React.ReactElement, {
               style: { transform: 'scale(2)' }, 
             })}

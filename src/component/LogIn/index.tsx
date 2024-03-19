@@ -1,16 +1,23 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MoooImage from "../../assets/images/Mooo.png";
+import { useTranslation } from "../Translator/Provider";
 
 const LogIn = ({ onLogin }) => {
+  const { translate, setLanguage, language } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
+  const handleChangeLanguage = (newLanguage: string) => {
+    console.log("Changing language to:", newLanguage);
+    setLanguage(newLanguage);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
       const response = await fetch("http://localhost:3000/login", {
         method: "POST",
@@ -19,12 +26,12 @@ const LogIn = ({ onLogin }) => {
         },
         body: JSON.stringify({ email, password }),
       });
-  
+
       if (!response.ok) {
         const errorMessage = await response.json();
         throw new Error(errorMessage.error);
       }
-  
+
       const user = await response.json();
       localStorage.setItem("loggedInUser", JSON.stringify(user));
       onLogin();
@@ -33,13 +40,15 @@ const LogIn = ({ onLogin }) => {
         navigate("/dashboard"); // Navigate to dashboard using useNavigate hook
       }, 1000);
     } catch (error) {
-      setErrorMessage("User does not exist or password is incorrect");
+      setErrorMessage(translate("login_error"));
     }
   };
+  const isRTL = language === "ar";
+  const isArabic = language === "ar";
+  const formClass = isArabic ? "rtl" : "ltr";
 
   return (
     <>
-      
       <section className={`h-full bg-neutral-200 dark:bg-neutral-700 `}>
         <div className="container h-full p-10">
           <div className="g-6 flex h-full flex-wrap items-center justify-center text-neutral-800 dark:text-neutral-200">
@@ -58,19 +67,40 @@ const LogIn = ({ onLogin }) => {
                           We are GesCow
                         </h4>
                       </div>
-                      <form onSubmit={handleSubmit}>
-                        <p className="mb-4">Please login to your account</p>
+                      <div className="flex items-center">
+                        <select
+                          value={language}
+                          onChange={(e) => handleChangeLanguage(e.target.value)}
+                          className="mr-2"
+                        >
+                          <option value="en">🇺🇸</option> {/* USA flag emoji */}
+                          <option value="fr">🇫🇷</option>{" "}
+                          {/* France flag emoji */}
+                          <option value="ar">🇹🇳</option>{" "}
+                          {/* Tunisia flag emoji */}
+                        </select>
+                      </div>
+                      <form
+                        onSubmit={handleSubmit}
+                        className={`flex flex-col ${formClass}`}
+                      >
+                        <style>{`
+                      .rtl {
+                      direction: rtl;
+                               }
+                      `}</style>
+                        <p className="mb-4 font-bold">{translate("login_title")}</p>
                         <input
                           type="email"
                           className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
-                          placeholder="Email"
+                          placeholder={translate("email")}
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                         />
                         <input
                           type="password"
                           className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
-                          placeholder="Password"
+                          placeholder={translate("password")}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                         />
@@ -82,14 +112,17 @@ const LogIn = ({ onLogin }) => {
                             className="mb-3 inline-block w-full rounded px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white bg-secondary hover:bg-primary"
                             type="submit"
                           >
-                            Log in
+                            {translate("login")}
                           </button>
-                          <a href="/Rest-Password">Forgot password?</a>
+                          <a href="/Rest-Password">
+                            {translate("forgot_password")}
+                          </a>
                         </div>
                         <div className="flex items-center justify-between pb-6">
-                          <p className="mb-0 mr-2">
-                            Don't have an account?
-                          </p>
+                          <div className="flex items-center justify-between pb-6">
+                            <p className="mb-0 mr-2"></p>
+                            <a href="/Signup">{translate("no_account")}</a>
+                          </div>
                           <button
                             type="button"
                             className="inline-block rounded border-2 border-danger px-6 pb-[6px] pt-2 text-xs font-medium uppercase leading-normal text-danger transition duration-150 ease-in-out hover:border-danger-600 hover:bg- hover:bg-opacity-10 hover:text-danger-600 focus:border-danger-600 focus:text-danger-600 focus:outline-none focus:ring-0 active:border-danger-700 active:text-danger-700 dark:hover:bg-neutral-100 dark:hover:bg-opacity-10"
@@ -97,7 +130,7 @@ const LogIn = ({ onLogin }) => {
                               window.location.href = "/Signup";
                             }}
                           >
-                            Register
+                            {translate("register_account")}
                           </button>
                         </div>
                       </form>
@@ -112,7 +145,7 @@ const LogIn = ({ onLogin }) => {
                   >
                     <div className="px-4 py-6 text-white md:mx-6 md:p-12">
                       <h4 className="mb-6 text-xl font-semibold">
-                        We are more than just a company
+                        {translate("company_description")}
                       </h4>
                       <p className="text-sm">
                         Lorem ipsum dolor sit amet, consectetur adipisicing

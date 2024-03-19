@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import MoooImage from "../../assets/images/Mooo.png";
 import { FaRegEyeSlash, FaRegEye } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "../Translator/Provider";
 
 const SignUpForm: React.FC = () => {
+  const { translate, setLanguage, language } = useTranslation();
+
   const [mobile, setMobile] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -12,27 +15,31 @@ const SignUpForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [showSuccess, setShowSuccess] = useState(false); // State for success pop-up
   const navigate = useNavigate(); // Use the useNavigate hook
+
+  const handleChangeLanguage = (newLanguage: string) => {
+    console.log("Changing language to:", newLanguage);
+    setLanguage(newLanguage);
+  };
 
   const validateForm = () => {
     const errors: { [key: string]: string } = {};
     if (!mobile.trim()) {
-      errors.mobile = "Phone Number is required";
+      errors.mobile = translate("phone_number_required");
     } else if (!/^\d{8}$/i.test(mobile.trim())) {
-      errors.mobile = "Phone Number must be 8 digits";
+      errors.mobile = translate("phone_number_invalid");
     }
     if (!username.trim()) {
-      errors.username = "Username is required";
+      errors.username = translate("username_required");
     }
     if (!email.trim()) {
-      errors.email = "Email is required";
+      errors.email = translate("email_required");
     }
     if (!password.trim()) {
-      errors.password = "Password is required";
+      errors.password = translate("password_required");
     }
     if (!confirmPassword.trim()) {
-      errors.confirmPassword = "Confirm Password is required";
+      errors.confirmPassword = translate("confirm_password_required");
     }
     setErrors(errors);
     return Object.keys(errors).length === 0;
@@ -68,18 +75,17 @@ const SignUpForm: React.FC = () => {
         console.log(data.message); // Print success message
 
         // Show success pop-up
-        setShowSuccess(true);
 
         // Navigate to the dashboard after 3 seconds
         setTimeout(() => {
-          setShowSuccess(false);
           navigate("/login");
-        }, 2000);
+        }, 1000);
       } catch (error) {
         console.error("Registration failed:", error.message);
       }
     }
   };
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -88,9 +94,16 @@ const SignUpForm: React.FC = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
+  const isRTL = language === "ar";
+  const iconPosition = isRTL ? "left-0" : "right-0"; // Adjust icon position based on language direction
+
+  const isArabic = language === "ar";
+
+  const formClass = isArabic ? "rtl" : "ltr";
+
   return (
-    <section className="h-full bg-neutral-200 dark:bg-neutral-700">
-      <div className="container h-full p-10 ">
+    <section className=" bg-neutral-200 dark:bg-neutral-700">
+      <div className="container p-10 ">
         <div className="g-6 flex h-full flex-wrap items-center justify-center text-neutral-800 dark:text-neutral-200">
           <div className="w-full">
             <div className="block rounded-lg bg-white shadow-lg dark:bg-neutral-800">
@@ -109,9 +122,28 @@ const SignUpForm: React.FC = () => {
                         We are GesCow
                       </h4>
                     </div>
-
-                    <form onSubmit={handleSubmit}>
-                      <p className="mb-4">Please register an account</p>
+                    <div className="flex items-center">
+                      <select
+                        value={language}
+                        onChange={(e) => handleChangeLanguage(e.target.value)}
+                        className="mr-2"
+                      >
+                        <option value="en">🇺🇸</option> {/* USA flag emoji */}
+                        <option value="fr">🇫🇷</option> {/* France flag emoji */}
+                        <option value="ar">🇹🇳</option>{" "}
+                        {/* Tunisia flag emoji */}
+                      </select>
+                    </div>
+                    <form
+                      onSubmit={handleSubmit}
+                      className={`flex flex-col ${formClass}`}
+                    >
+                      <style>{`
+                      .rtl {
+                      direction: rtl;
+                               }
+                      `}</style>
+                      <p className="mb-4 font-bold">{translate("register_account")}</p>
                       {/* Mobile input */}
                       {errors.mobile && (
                         <p className="text-red-500">{errors.mobile}</p>
@@ -119,7 +151,7 @@ const SignUpForm: React.FC = () => {
                       <input
                         type="text"
                         className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
-                        placeholder="Phone Number"
+                        placeholder={translate("phone_number")}
                         value={mobile}
                         onChange={(e) => setMobile(e.target.value)}
                       />
@@ -131,7 +163,7 @@ const SignUpForm: React.FC = () => {
                       <input
                         type="text"
                         className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
-                        placeholder="Username"
+                        placeholder={translate("username")}
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                       />
@@ -143,7 +175,7 @@ const SignUpForm: React.FC = () => {
                       <input
                         type="email"
                         className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
-                        placeholder="Email"
+                        placeholder={translate("email")}
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                       />
@@ -155,13 +187,17 @@ const SignUpForm: React.FC = () => {
                       <div className="relative flex items-center">
                         <input
                           type={showPassword ? "text" : "password"}
-                          className="w-full border border-gray-300 rounded px-3 py-2 mb-4 pr-10"
+                          className="w-full border border-gray-300 rounded px-3 py-2 mb-4 "
                           value={password}
-                          placeholder="Password"
+                          placeholder={translate("password")}
                           onChange={(e) => setPassword(e.target.value)}
                         />
                         <div
-                          className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                          className={`absolute inset-y-0 ${iconPosition} flex items-center pr-3 cursor-pointer`}
+                          style={{
+                            marginRight: isRTL ? "0" : "0",
+                            marginLeft: isRTL ? "8px" : "",
+                          }} // Add margin based on language direction
                           onClick={togglePasswordVisibility}
                         >
                           {showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
@@ -175,13 +211,17 @@ const SignUpForm: React.FC = () => {
                       <div className="relative flex items-center">
                         <input
                           type={showConfirmPassword ? "text" : "password"}
-                          className="w-full border border-gray-300 rounded px-3 py-2 mb-4 pr-10"
-                          placeholder="Confirm Password"
+                          className="w-full border border-gray-300 rounded px-3 py-2 mb-4 "
+                          placeholder={translate("confirm_password")}
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
                         />
                         <div
-                          className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                          className={`absolute inset-y-0 ${iconPosition} flex items-center pr-3 cursor-pointer`}
+                          style={{
+                            marginRight: isRTL ? "8px" : "0",
+                            marginLeft: isRTL ? "8px" : "8px",
+                          }} // Add margin based on language direction
                           onClick={toggleConfirmPasswordVisibility}
                         >
                           {showConfirmPassword ? (
@@ -198,19 +238,21 @@ const SignUpForm: React.FC = () => {
                           className="mb-3 inline-block w-full rounded px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white bg-secondary hover:bg-primary"
                           type="submit"
                         >
-                          Sign up
+                          {translate("sign_up")}
                         </button>
                       </div>
 
                       {/* Register button */}
                       <div className="flex items-center justify-between pb-6">
-                        <p className="mb-0 mr-2">Have an account?</p>
+                        <a href="/login" className="mb-0 mr-2">
+                          {translate("have_account")}
+                        </a>
                         <a href="/login">
                           <button
                             type="button"
                             className="inline-block rounded border-2 border-danger px-6 pb-[6px] pt-2 text-xs font-medium uppercase leading-normal text-danger transition duration-150 ease-in-out hover:border-danger-600 hover:bg-neutral-500 hover:bg-opacity-10 hover:text-danger-600 focus:border-danger-600 focus:text-danger-600 focus:outline-none focus:ring-0 active:border-danger-700 active:text-danger-700 dark:hover:bg-neutral-100 dark:hover:bg-opacity-10"
                           >
-                            Login
+                            {translate("login")}
                           </button>
                         </a>
                       </div>
@@ -243,14 +285,6 @@ const SignUpForm: React.FC = () => {
           </div>
         </div>
       </div>
-      {/* Success pop-up */}
-      {showSuccess && (
-        <div className="fixed bottom-10 left-0 right-0 flex justify-center">
-          <div className="bg-green-500 text-white py-2 px-4 rounded-lg">
-            Welcome! You have successfully signed up.
-          </div>
-        </div>
-      )}
     </section>
   );
 };

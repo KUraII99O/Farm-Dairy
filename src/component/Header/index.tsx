@@ -1,148 +1,116 @@
-import { Fragment, useState } from 'react';
-import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { BellIcon } from '@heroicons/react/24/outline';
+import React, { useState, useRef, useEffect } from "react";
+import { BellIcon } from "@heroicons/react/24/outline";
+import { useTranslation } from "../Translator/Provider";
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ');
-}
+const NavBar: React.FC = () => {
+  const { translate, isRTL } = useTranslation();
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
 
-export default function Example() {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
+  const toggleProfile = () => {
+    setIsProfileOpen(!isProfileOpen);
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(event.target as Node)
+      ) {
+        setIsProfileOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+    };
+  }, []);
   const handleSignOut = () => {
     // Remove the logged-in user from local storage
     localStorage.removeItem("loggedInUser");
     // You can redirect to the login page or perform any additional actions here
     window.location.href = "/LogIn"; // Redirect to the login page
   };
-
   return (
-    <div className="bg-gray-100 ">
-      <Disclosure as="nav" className="bg-primary">
-        {() => (
-          <>
-            <div className="mx-auto px-2 sm:px-6 lg:px-8 relative z-10">
-              <div className="flex items-center justify-between h-16">
-                {/* Profile dropdown */}
-                <Menu as="div" className="relative ml-auto">
-                  <div>
-                    <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                      <span className="absolute -inset-1.5" />
-                      <span className="sr-only">Open user menu</span>
-                      <img
-                        className="h-8 w-8 rounded-full"
-                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                        alt=""
-                      />
-                    </Menu.Button>
-                  </div>
-                  <Transition
-                    as={Fragment}
-                    enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
-                    leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95"
-                  >
-                    <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            href="Profile"
-                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                          >
-                            Your Profile
-                          </a>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            href="#"
-                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                          >
-                            Settings
-                          </a>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <button
-                            onClick={handleSignOut}
-                            className={classNames(active ? 'bg-gray-100' : '', 'block w-full text-left px-4 py-2 text-sm text-gray-700')}
-                          >
-                            Sign out
-                          </button>
-                        )}
-                      </Menu.Item>
-                    </Menu.Items>
-                  </Transition>
-                </Menu>
-
-                {/* Bell Icon */}
-                <button
-                  type="button"
-                  className="relative ml-3 sm:hidden rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                  onClick={toggleDropdown}
-                >
-                  <span className="absolute -inset-1.5" />
-                  <span className="sr-only">View notifications</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
-                </button>
-
-                {/* Responsive Bell Icon for larger screens */}
-                <div className="hidden sm:ml-6 sm:block">
-                  <button
-                    type="button"
-                    className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                    onClick={toggleDropdown}
-                  >
-                    <span className="absolute -inset-1.5" />
-                    <span className="sr-only">View notifications</span>
-                    <BellIcon className="h-6 w-6" aria-hidden="true" />
-                  </button>
+    <nav className="bg-primary p-4 relative">
+      <div className="flex justify-between items-center">
+        <div className="flex items-center space-x-4">
+          <a href="#" className="text-white"></a>
+        </div>
+        <div className="flex items-center space-x-4">
+          <div className="relative flex items-center">
+            <button
+              onClick={toggleProfile}
+              className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+            >
+              <span className="absolute -inset-1.5" />
+              <span className="sr-only">{"Open user menu"}</span>
+              <img
+                className="h-8 w-8 rounded-full"
+                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                alt=""
+              />
+            </button>
+            <button
+              type="button"
+              className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 ml-4 mr-4"
+            >
+              <span className="absolute -inset-1.5" />
+              <span className="sr-only">{"View notifications"}</span>
+              <BellIcon className="h-6 w-6" aria-hidden="true" />
+            </button>
+            <div
+              ref={profileRef}
+              className={`absolute ${isProfileOpen ? "block" : "hidden"} ${
+                isRTL ? "right-0" : "left-0"
+              } top-full mt-2 w-32 sm:w-48 bg-white rounded-lg shadow-lg`}
+              style={{
+                [isRTL ? "right" : "left"]: isRTL ? "-100%" : "-100%",
+                [isRTL ? "left" : "right"]: isRTL ? "-100%" : "-100%",
+              }}
+            >
+              <div className="flex items-center p-3">
+                <img
+                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                  alt="Profile"
+                  className="h-8 w-8 rounded-full"
+                />
+                <div className="ml-2">
+                  <p className="text-gray-800 font-medium text-sm">
+                    {"John Doe"}
+                  </p>
+                  <p className="text-gray-600 text-xs overflow-hidden overflow-ellipsis">
+                    {"johndoe@example.com"}
+                  </p>
                 </div>
+              </div>
+              <a
+                href="Profile"
+                className="block px-3 py-2 text-gray-800 hover:bg-gray-200 text-sm"
+              >
+                {translate("Profile")}
+              </a>
+              <a
+                href="#"
+                className="block px-3 py-2 text-gray-800 hover:bg-gray-200 text-sm"
+              >
+                {translate("settings")}
+              </a>
 
-                {/* Notification dropdown */}
-                <Transition
-                  show={isDropdownOpen}
-                  enter="transition ease-out duration-100"
-                  enterFrom="transform opacity-0 scale-95"
-                  enterTo="transform opacity-100 scale-100"
-                  leave="transition ease-in duration-75"
-                  leaveFrom="transform opacity-100 scale-100"
-                  leaveTo="transform opacity-0 scale-95"
+              <div className="block px-3 py-2 text-gray-800 hover:bg-secondary text-sm w-full bg-primary  ">
+                <button
+                  onClick={handleSignOut}
+                  className="inline-block w-full h-full"
                 >
-                  {isDropdownOpen && (
-                    <div className="absolute z-20 mt-12 w-48 right-0 bg-white rounded-lg shadow-lg origin-top-right">
-                      <div className="py-1">
-                        <a
-                          href="#"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          Notification 1
-                        </a>
-                        <a
-                          href="#"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          Notification 2
-                        </a>
-                        {/* Add more notifications as needed */}
-                      </div>
-                    </div>
-                  )}
-                </Transition>
+                  {translate("logout")}
+                </button>
               </div>
             </div>
-          </>
-        )}
-      </Disclosure>
-    </div>
+          </div>
+        </div>
+      </div>
+    </nav>
   );
-}
+};
+
+export default NavBar;

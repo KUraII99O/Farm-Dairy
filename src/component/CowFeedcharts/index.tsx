@@ -1,7 +1,7 @@
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUtensils } from '@fortawesome/free-solid-svg-icons';
-import { useTranslation } from '../Translator/Provider';
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUtensils } from "@fortawesome/free-solid-svg-icons";
+import { useTranslation } from "../Translator/Provider";
 
 interface CowFeedChartProps {
   data: {
@@ -13,48 +13,50 @@ interface CowFeedChartProps {
 }
 
 const CowFeedChart: React.FC<CowFeedChartProps> = ({ data }) => {
-  const { translate } = useTranslation(); // Use your translation hook or context
+  const { translate, language } = useTranslation();
 
   return (
-    <div className="w-full my-8">
-      <h2 className="text-2xl font-bold mb-4 text-secondary">
-        <FontAwesomeIcon icon={faUtensils} className="mr-2" />
-        {translate('CowFeedChart')} {/* Translate the chart title */}
-      </h2>
-      <table className="min-w-full bg-white border border-secondary">
+    <div className="p-4 border border-green-500 mt-6  ${className}">
+      <div className={`${language === "ar" ? "mb-4" : "mb-0"}`}>
+        <div className="flex items-center mb-4">
+          <FontAwesomeIcon
+            icon={faUtensils}
+            className="text-blue-500 mr-2 "
+          />
+          <div className={`text-center ${language === "ar" ? "mr-2" : "mb-0"}`}>
+            <h1 className="text-xl">{translate('CowFeedChart')}</h1>
+          </div>
+        </div>
+      </div>
+      <table className="min-w-full bg-white ">
         <thead>
           <tr>
-            <th className="py-2 px-4 border-b">{translate('StallNumber')}</th> {/* Translate table headers */}
-            <th className="py-2 px-4 border-b">{translate('Grass')}</th>
-            <th className="py-2 px-4 border-b">{translate('Salt')}</th>
-            <th className="py-2 px-4 border-b">{translate('Water')}</th>
+            <th className="p-2 border">{translate("StallNumber")}</th>{" "}
+            {/* Translate table headers */}
+            <th className="p-2 border">{translate("Grass")}</th>
+            <th className="p-2 border">{translate("Salt")}</th>
+            <th className="p-2 border">{translate("Water")}</th>
           </tr>
         </thead>
         <tbody>
           {data.map((item) => (
             <tr key={item.stallNumber}>
-              <td className="py-2 px-4 border-b">{item.stallNumber}</td>
-              <td className="py-2 px-4 border-b">
-                <span className="flex items-center">
-                  🌱 {item.grass}
-                </span>
+              <td className="p-2 border">{item.stallNumber}</td>
+              <td className="p-2 border">
+                <span className="flex items-center">🌱 {item.grass}</span>
               </td>
-              <td className="py-2 px-4 border-b">
-                <span className="flex items-center">
-                  🧂 {item.salt}
-                </span>
+              <td className="p-2 border">
+                <span className="flex items-center">🧂 {item.salt}</span>
               </td>
-              <td className="py-2 px-4 border-b">
-                <span className="flex items-center">
-                  💧 {item.water}
-                </span>
+              <td className="p-2 border">
+                <span className="flex items-center">💧 {item.water}</span>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
       <button className="mt-4 bg-secondary text-black py-2 px-4 rounded hover:bg-primary">
-        {translate('SetFeedChart')} {/* Translate the button text */}
+        {translate("SetFeedChart")} {/* Translate the button text */}
       </button>
     </div>
   );
