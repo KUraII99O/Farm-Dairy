@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { HiArrowLeft } from "react-icons/hi";
 import { HiArrowNarrowRight } from "react-icons/hi";
+import { useTranslation } from "../Translator/Provider"; // Import the translation hook
 
 interface PaginationProps {
   totalItems: number;
@@ -17,6 +18,7 @@ const Pagination: React.FC<PaginationProps> = ({
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(defaultItemsPerPage);
+  const { translate, language } = useTranslation(); // Get the translation function and current language
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -35,14 +37,19 @@ const Pagination: React.FC<PaginationProps> = ({
     setCurrentPage(1);
   };
 
+  // Determine the direction based on the current language
+  const isRTL = language === "ar"; // Change to your RTL language code if different
+
   return (
-    <div className="flex justify-between items-center mt-4">
+    <div className={`flex justify-between items-center mt-4 ${isRTL ? 'rtl' : ''}`}>
       <div className="flex items-center">
-        <span className="mr-2">Items per page:</span>
+        <span className={`mr-2 ${isRTL ? 'ml-2' : ''}`}>
+          {translate("itemsPerPage")}: {/* Translate "Items per page" */}
+        </span>
         <select
           value={itemsPerPage}
           onChange={handleItemsPerPageChange}
-          className="border border-gray-300 rounded-md px-2 py-1"
+          className={`border border-gray-300 rounded-md px-2 py-1 ${isRTL ? 'rtl' : ''}`}
         >
           {itemsPerPageOptions.map((option) => (
             <option key={option} value={option}>
@@ -55,19 +62,17 @@ const Pagination: React.FC<PaginationProps> = ({
         <button
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="px-3 py-1 rounded-md bg-gray-200 mr-2 cursor-pointer"
+          className={`px-3 py-1 rounded-md bg-gray-200 mr-2 cursor-pointer ${isRTL ? 'ml-2' : ''}`}
         >
-          <HiArrowLeft />
- {/* Unicode character for left arrow */}
+          {isRTL ? <HiArrowNarrowRight /> : <HiArrowLeft />}
         </button>
-        <span className="mr-2">{`Page ${currentPage} of ${totalPages}`}</span>
+        <span className="mr-2">{`${translate("page")} ${currentPage}  `}</span>
         <button
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="px-3 py-1 rounded-md bg-gray-200 cursor-pointer"
+          className={`px-3 py-1 rounded-md bg-gray-200 cursor-pointer ${isRTL ? 'mr-2' : ''}`}
         >
-          <HiArrowNarrowRight />
-{/* Unicode character for right arrow */}
+          {isRTL ? <HiArrowLeft /> : <HiArrowNarrowRight />}
         </button>
       </div>
     </div>

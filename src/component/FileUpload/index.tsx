@@ -1,69 +1,42 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-const ProfileImageUploader: React.FC<{
-  onImageChange: (imagePath: string) => void;
-  image: string | null; // Add image prop
-}> = ({ onImageChange, image }) => {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+const ImageUploadForm = () => {
+  const [file, setFile] = useState(null);
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      const reader = new FileReader();
-  
-      reader.onload = (e) => {
-        const imageData = e.target?.result as string;
-        setSelectedImage(imageData);
-        onImageChange(imageData); // Call the onImageChange callback with the new image data
-      };
-  
-      reader.onerror = (error) => {
-        console.error('Error reading the file:', error);
-      };
-  
-      reader.readAsDataURL(event.target.files[0]);
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]);
+  };
+
+  const handleUpload = async () => {
+    if (!file) return;
+    
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const response = await fetch('http://localhost:3000/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (response.ok) {
+        const filePath = await response.text();
+        console.log('File uploaded successfully:', filePath);
+        // Handle the file path as needed, e.g., update state with the file path
+      } else {
+        console.error('Failed to upload file');
+      }
+    } catch (error) {
+      console.error('Error uploading file:', error);
     }
   };
 
   return (
-    <div className="container pl-4 bg-white">
-      <h2 className="text-xl font-bold text-gray-700 mb-4 flex items-center">
-      </h2>
-      <div className="flex justify-center">
-        <label htmlFor="fileUpload" className="cursor-pointer flex flex-col">
-          {selectedImage ? (
-            <img
-              src={selectedImage}
-              alt="Selected profile"
-              className="rounded-lg h-48 w-48 object-cover"
-            />
-          ) : (
-            <div className="h-48 w-48 bg-gray-200 rounded-lg flex items-center justify-center">
-              <span className="text-gray-500">No image selected</span>
-            </div>
-          )}
-          {/* Hide the default file input */}
-          <input
-            id="fileUpload"
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="hidden"
-          />
-        </label>
-      </div>
-      {/* Center the button */}
-      <div className="text-center">
-        <button
-          type="button"
-          onClick={() => document.getElementById("fileUpload")?.click()}
-          className="mt-4 px-4 py-2 bg-secondary text-white rounded-md hover:bg-primary item"
-        >
-          Browse
-        </button>
-        
-      </div>
+    <div>
+      <input type="file" accept="image/*" onChange={handleFileChange} />
+      <button onClick={handleUpload}>Upload</button>
     </div>
   );
 };
 
-export default ProfileImageUploader;
+export default ImageUploadForm;

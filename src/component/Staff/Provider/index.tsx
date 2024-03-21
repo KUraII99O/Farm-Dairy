@@ -1,45 +1,145 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from "react";
+import { toast } from "react-toastify";
+import { useTranslation } from "../../Translator/Provider";
 
-export const StaffContext = createContext();
+// Define an interface for staff members
+interface StaffMember {
+  id: number;
+  name: string;
+  email: string;
+  mobile: string;
+  designation: string;
+  joiningDate: string;
+  grossSalary: string;
+  status: boolean;
+  image: File; // Add image property
+}
 
-export const StaffProvider = ({ children }) => {
-  const [staff, setStaff] = useState([
-    { id: 1, name: 'dariues', email: 'dariues@example.com', mobile: '1234567890', designation: 'Manager', joiningDate: '2024-01-01', GrossSalary: 50000, status: true , image: 'path_to_image1' },
-    { id: 2, name: 'garen', email: 'garen@example.com', mobile: '9876543210', designation: 'Developer', joiningDate: '2024-02-01', GrossSalary: 60000, status: true , image: 'path_to_image2'  },
-    { id: 3, name: 'akali', email: 'akali@example.com', mobile: '5678901234', designation: 'Designer', joiningDate: '2024-03-01', GrossSalary: 70000, status: true , image: 'path_to_image3' },
-    { id: 4, name: 'zed', email: 'zed@example.com', mobile: '1234567890', designation: 'Manager', joiningDate: '2024-01-01', GrossSalary: 50000, status: true  , image: 'path_to_image4'},
-    { id: 5, name: 'rammus', email: 'rammus@example.com', mobile: '9876543210', designation: 'Developer', joiningDate: '2024-02-01', GrossSalary: 60000, status: true , image: 'path_to_image5'},
-    { id: 6, name: 'evelyn', email: 'evelyn@example.com', mobile: '5678901234', designation: 'Designer', joiningDate: '2024-03-01', GrossSalary: 70000, status: true , image: 'path_to_image6'},
-    { id: 7, name: 'kayn', email: 'kayn@example.com', mobile: '1234567890', designation: 'Manager', joiningDate: '2024-01-01', GrossSalary: 50000, status: true , image: 'path_to_image7'},
-    { id: 8, name: 'aatrox', email: 'aatrox@example.com', mobile: '9876543210', designation: 'Developer', joiningDate: '2024-02-01', GrossSalary: 60000, status: true , image: 'path_to_image8'},
-    { id: 9, name: 'lulu', email: 'lulu@example.com', mobile: '5678901234', designation: 'Designer', joiningDate: '2024-03-01', GrossSalary: 70000, status: true , image: 'path_to_image9'},
-    // Add more mock data as needed
-  ])  ;
+export const StaffContext = createContext<any>(null);
 
-  const addStaff = (newStaff) => {
-    const maxId = Math.max(...staff.map(s => s.id), 0);
-    const newStaffWithId = { ...newStaff, id: maxId + 1 };
-    setStaff([...staff, newStaffWithId]);
-  };
+export const StaffProvider: React.FC = ({ children }) => {
+  const [staff, setStaff,] = useState<StaffMember[]>([]);
+  const { translate } = useTranslation();
 
-  const editStaff = (id, updatedStaff) => {
-    const updatedStaffList = staff.map(item => (item.id === id ? { ...item, ...updatedStaff } : item));
-    setStaff(updatedStaffList);
-  };
-
-  const deleteStaffMember = (id) => {
-    const updatedStaff = staff.filter((staffMember) => staffMember.id !== id);
-    setStaff(updatedStaff);
-  };
-
-  const toggleStatus = (id) => {
-    const updatedStaff = staff.map((staffMember) => {
-      if (staffMember.id === id) {
-        return { ...staffMember, status: !staffMember.status };
+  useEffect(() => {
+    const fetchStaff = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/staffs");
+        if (!response.ok) {
+          throw new Error("Failed to fetch staff data");
+        }
+        const data = await response.json();
+        setStaff(data);
+      } catch (error) {
+        console.error("Error fetching staff data:", error.message);
       }
-      return staffMember;
-    });
-    setStaff(updatedStaff);
+    };
+
+    fetchStaff();
+  }, []);
+
+  const addStaff = async (newStaff: Omit<StaffMember, "id">) => {
+    try {
+      // Generate a unique ID for the new staff member
+      const id = staff.length + 1;
+
+      // Create the new staff member object with the generated ID
+      const staffWithId: StaffMember = { id, ...newStaff };
+
+      const response = await fetch("http://localhost:3000/staffs", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(staffWithId),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add staff");
+      }
+
+      // Update the client-side state with the new staff member
+      setStaff([...staff, staffWithId]);
+
+      toast.success("Staff added successfully");
+    } catch (error) {
+      console.error("Error:", error.message);
+      toast.error("Failed to add staff");
+    }
+  };
+
+  const editStaff = async (id: number, updatedStaff: StaffMember) => {
+    try {
+      const response = await fetch(`http://localhost:3000/staffs/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedStaff),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to update staff");
+      }
+  
+      // No need to parse response JSON if there's no data returned
+      // Assume the update was successful if response is OK
+      // Update the client-side state with the updated staff data
+      setStaff((prevStaff) =>
+        prevStaff.map((staffMember) =>
+          staffMember.id === id ? { ...staffMember, ...updatedStaff } : staffMember
+        )
+      );
+  
+      toast.success("Staff updated successfully");
+    } catch (error) {
+      console.error("Error:", error.message);
+      toast.error("Failed to update staff");
+    }
+  };
+
+  const deleteStaffMember = async (id: number) => {
+    try {
+      const response = await fetch(`http://localhost:3000/staffs/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete staff member");
+      }
+
+      setStaff((prevStaff) => prevStaff.filter((staffMember) => staffMember.id !== id));
+
+      toast.success("Staff member deleted successfully");
+    } catch (error) {
+      console.error("Error:", error.message);
+      toast.error("Failed to delete staff member");
+    }
+  };
+
+  const toggleStatus = async (id: number) => {
+    try {
+      const response = await fetch(`http://localhost:3000/staffs/${id}/toggle-status`, {
+        method: "PUT",
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to toggle staff status");
+      }
+  
+      const data = await response.json();
+  
+      setStaff((prevStaff) =>
+        prevStaff.map((staffMember) =>
+          staffMember.id === id ? { ...staffMember, status: !staffMember.status } : staffMember
+        )
+      );
+  
+      toast.info(translate("Staffstatusupdatedsuccessfully"), { autoClose: 1000, hideProgressBar: true });
+    } catch (error) {
+      console.error("Error:", error.message);
+      toast.error("Failed to toggle staff status", { autoClose: 2000, hideProgressBar: true });
+    }
   };
 
   const value = {
@@ -50,13 +150,17 @@ export const StaffProvider = ({ children }) => {
     toggleStatus,
   };
 
-  return <StaffContext.Provider value={value}>{children}</StaffContext.Provider>;
+  return (
+    <StaffContext.Provider value={value}>
+      {children}
+    </StaffContext.Provider>
+  );
 };
 
 export const useStaff = () => {
   const context = useContext(StaffContext);
   if (!context) {
-    throw new Error('useStaff must be used within a StaffProvider');
+    throw new Error("useStaff must be used within a StaffProvider");
   }
   return context;
 };

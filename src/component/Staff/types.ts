@@ -1,14 +1,14 @@
 // types.ts
-export interface Staff {
-  image: string | undefined;
+export interface staffMember {
   id: number;
   name: string;
   email: string;
   mobile: string;
   designation: string;
   joiningDate: string;
-  GrossSalary: number;
+  grossSalary: number;
   status: 'Active' | 'Inactive';
+  image:File;
 } 
   
 export interface User {
