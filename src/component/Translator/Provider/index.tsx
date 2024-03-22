@@ -131,7 +131,10 @@ export const TranslationProvider: React.FC = ({ children }) => {
       updateStaff: "Update Staff",
       informationUpdatedSuccessfully: "Information updated successfully!",
       selectImage: "Select Image",
-      Staffstatusupdatedsuccessfully:"Staff status updated successfully"
+      Staffstatusupdatedsuccessfully:"Staff status updated successfully",
+      UserTable:"User Table",
+      adduser:"Add User",
+      Userstatusupdatedsuccessfully:"User status updated successfully"
 
 
 
@@ -260,7 +263,10 @@ export const TranslationProvider: React.FC = ({ children }) => {
       updateStaff: "Mettre à jour le personnel",
       informationUpdatedSuccessfully: "Informations mises à jour avec succès!",
       selectImage: "Sélectionner une image",
-      Staffstatusupdatedsuccessfully:"Mise à jour du statut du personnel réussie"
+      Staffstatusupdatedsuccessfully:"Mise à jour du statut du personnel réussie",
+      UserTable:"Table des utilisateurs",
+      adduser:"Ajouter un utilisateur",
+      Userstatusupdatedsuccessfully:"Mise à jour du statut du d'utilisateur réussie"
 
 
 
@@ -391,8 +397,10 @@ export const TranslationProvider: React.FC = ({ children }) => {
       updateStaff: "تحديث الموظف",
       informationUpdatedSuccessfully: "تم تحديث المعلومات بنجاح!",
       selectImage: "اختر صورة",
-      Staffstatusupdatedsuccessfully:" تم تحديث حالة الموظفين بنجاح"
-
+      Staffstatusupdatedsuccessfully:" تم تحديث حالة الموظفين بنجاح",
+      UserTable:"جدول المستخدمين",
+      adduser:"إضافة مستخدم",
+      Userstatusupdatedsuccessfully:"تم تحديث حالة الموظفين بنجاح"
       
 
 

@@ -8,9 +8,12 @@ import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import Pagination from "../../Pagination";
 import { BsPencil } from "react-icons/bs";
 import { AiOutlineDelete } from "react-icons/ai";
+import { useTranslation } from "../../Translator/Provider";
 
 const UserTable: React.FC = () => {
   const { users, toggleStatus, deleteUser } = useContext(UserContext);
+  const { translate } = useTranslation();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
@@ -53,9 +56,6 @@ const UserTable: React.FC = () => {
 
   const handleToggleStatus = (id: number) => {
     toggleStatus(id);
-    const user = users.find((user) => user.id === id);
-    const statusMessage = user.status ? "enabled" : "disabled";
-    toast.success(`Toggle status ${statusMessage} successfully`);
   };
 
   const handleSort = (fieldName: string) => {
@@ -95,150 +95,165 @@ const UserTable: React.FC = () => {
   return (
     <div className="overflow-x-auto">
       <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center"></div>
         <div className="flex items-center">
-          
-        </div>
-        <div className="flex items-center">
-          
           <input
             type="text"
-            placeholder="Search..."
+            placeholder={translate("searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="p-2 rounded border border-gray-300 "
+            className="p-2 rounded border border-gray-300 ml-2"
           />
           <Link
-            to="/Add-User "
+            to="/add-user"
             className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary ml-2"
           >
-            Add User 
+            {translate("adduser")}
           </Link>
         </div>
       </div>
-      <h1 className="text-xl font-bold mb-4">User Table</h1>
-      <table className="min-w-full bg-white border-collapse">
-        {/* Table header */}
-        <thead>
-          <tr>
-            <th className="border border-gray-300 px-4 py-2 cursor-pointer">
-              <div className="flex items-center">Image</div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("name")}
-            >
-              <div className="flex items-center">
-                User Name
-                {sortIcon("name")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("email")}
-            >
-              <div className="flex items-center">
-                Email
-                {sortIcon("email")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("mobile")}
-            >
-              <div className="flex items-center">
-                Mobile No
-                {sortIcon("mobile")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("designation")}
-            >
-              <div className="flex items-center">
-                Designation
-                {sortIcon("designation")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("userType")}
-            >
-              <div className="flex items-center">
-                User Type
-                {sortIcon("userType")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("joiningDate")}
-            >
-              <div className="flex items-center">
-                Joining Date
-                {sortIcon("joiningDate")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("status")}
-            >
-              <div className="flex items-center">Status</div>
-            </th>
-            <th className="border border-gray-300 px-4 py-2">Action</th>{" "}
-          </tr>
-        </thead>
-        {/* Table body */}
-        <tbody>
-          {currentUser.map((user: User) => (
-            <tr key={user.id}>
-              <td className="border border-gray-300 px-4 py-2">
-                <img
-                  src={user.image}
-                  alt="Profile"
-                  className="h-12 w-12 rounded-full"
-                />
-              </td>
-              <td className="border border-gray-300 px-4 py-2">{user.name}</td>
-              <td className="border border-gray-300 px-4 py-2">{user.email}</td>
-              <td className="border border-gray-300 px-4 py-2">{user.mobile}</td>
-              <td className="border border-gray-300 px-4 py-2">{user.designation}</td>
-              <td className="border border-gray-300 px-4 py-2">{user.userType}</td>
-              <td className="border border-gray-300 px-4 py-2">{user.joiningDate}</td>
-              <td className="border border-gray-300 px-4 py-2">
-                <label className="inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className={`sr-only peer`}
-                    checked={user.status}
-                    onChange={() => handleToggleStatus(user.id)}
-                  />
-                  <div
-                    className={`relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600`}
-                  ></div>
-                  <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
-                    {user.status ? "Active" : "Inactive"}
-                  </span>
-                </label>
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
+      <h1 className="text-xl font-bold mb-4">{translate("UserTable")}</h1>{" "}
+      {/* Translate table title */}
+      <div className="rtl:mirror-x">
+        <table className="min-w-full bg-white border-collapse">
+          {/* Table header */}
+          <thead>
+            <tr>
+              <th className="border border-gray-300 px-4 py-2 cursor-pointer">
+                <div className="flex items-center">{translate("image")}</div>{" "}
+                {/* Translate table header */}
+              </th>
+              <th
+                className="border border-gray-300 px-4 py-2 cursor-pointer"
+                onClick={() => handleSort("name")}
+              >
                 <div className="flex items-center">
-                  <Link
-                    to={`/edit-user/${user.id}`}
-                    className="text-blue-500 hover:underline flex items-center mr-2"
-                  >
-                    <BsPencil className="w-5 h-5 mr-1" />
-                  </Link>
-                  <button
-                    onClick={() => handleDeleteConfirmation(user.id)}
-                    className="text-red-500 hover:text-red-700 focus:outline-none flex items-center"
-                  >
-                    <AiOutlineDelete className="w-5 h-5 mr-1" />
-                  </button>
+                  {translate("staffName")} {/* Translate table header */}
+                  {sortIcon("name")}
                 </div>
-              </td>
+              </th>
+              <th
+                className="border border-gray-300 px-4 py-2 cursor-pointer"
+                onClick={() => handleSort("email")}
+              >
+                <div className="flex items-center">
+                  {translate("email")}
+                  {sortIcon("email")}
+                </div>
+              </th>
+              <th
+                className="border border-gray-300 px-4 py-2 cursor-pointer"
+                onClick={() => handleSort("mobile")}
+              >
+                <div className="flex items-center">
+                  {translate("mobile")}
+                  {sortIcon("mobile")}
+                </div>
+              </th>
+              <th
+                className="border border-gray-300 px-4 py-2 cursor-pointer"
+                onClick={() => handleSort("designation")}
+              >
+                <div className="flex items-center">
+                  {translate("designation")}
+                  {sortIcon("designation")}
+                </div>
+              </th>
+              <th
+                className="border border-gray-300 px-4 py-2 cursor-pointer"
+                onClick={() => handleSort("joiningDate")}
+              >
+                <div className="flex items-center">
+                  {translate("joiningDate")}
+                  {sortIcon("joiningDate")}
+                </div>
+              </th>
+              <th
+                className="border border-gray-300 px-4 py-2 cursor-pointer"
+                onClick={() => handleSort("salary")}
+              >
+                <div className="flex items-center">
+                  {translate("salary")}
+                  {sortIcon("GrossSalary")}
+                </div>
+              </th>
+              <th
+                className="border border-gray-300 px-4 py-2 cursor-pointer"
+                onClick={() => handleSort("status")}
+              >
+                <div className="flex items-center">{translate("status")}</div>
+              </th>
+              <th className="border border-gray-300 px-4 py-2">
+                {translate("action")}
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          {/* Table body */}
+          <tbody>
+            {currentUser.map((User) => (
+              <tr key={User.id}>
+                <td className="border border-gray-300 px-4 py-2">
+                  <img
+                    src={User.image}
+                    alt="Profile"
+                    className="h-12 w-12 rounded-full"
+                  />
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {User.name}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {User.email}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {User.mobile}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {User.designation}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {User.joiningDate}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {User.grossSalary}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  <label className="inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className={`sr-only peer`}
+                      checked={User.status}
+                      onChange={() => handleToggleStatus(User.id)}
+                    />
+                    <div
+                      className={`relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600`}
+                    ></div>
+                    <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+                      {User.status ? "Active" : "Inactive"}
+                    </span>
+                  </label>
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  <div className="flex items-center">
+                    <Link
+                      to={`/edit-user/${User.id}`}
+                      className="text-blue-500 hover:underline flex items-center mr-2"
+                    >
+                      <BsPencil className="w-5 h-5 mr-1" />
+                    </Link>
+                    <button
+                      onClick={() => handleDeleteConfirmation(User.id)}
+                      className="text-red-500 hover:text-red-700 focus:outline-none flex items-center"
+                    >
+                      <AiOutlineDelete className="w-5 h-5 mr-1" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {/* Pagination */}
       <Pagination
         totalItems={sortedUsers.length}

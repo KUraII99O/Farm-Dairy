@@ -8,11 +8,11 @@ export interface staffMember {
   joiningDate: string;
   grossSalary: number;
   status: 'Active' | 'Inactive';
-  image:File;
+  image:File |string ;
 } 
   
 export interface User {
-  image: string | undefined;
+  image:File |string ;
   id: number;
   userName: string;
   email: string;

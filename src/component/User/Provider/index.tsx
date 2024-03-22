@@ -1,87 +1,141 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from "react";
+import { toast } from "react-toastify";
+import { useTranslation } from "../../Translator/Provider";
 
-export const UserContext = createContext();
+// Define an interface for users
+interface User {
+  id: number;
+  username: string;
+  password: string;
+  type: string;
+}
 
-export const UserProvider = ({ children }) => {
-  const [users, setUsers] = useState([
-    { 
-      id: 1, 
-      name: 'dariues', 
-      email: 'dariues@example.com', 
-      mobile: '1234567890', 
-      designation: 'Accountant', 
-      userType: 'Admin', 
-      joiningDate: '2024-01-01', 
-      salary: 50000, 
-      status: true, 
-      image: 'path_to_image1', 
-      presentAddress: 'test adress', 
-      permanentAddress: 'same adress ', 
-      basicSalary: 99877, 
-      grossSalary: 87876, 
-      nid: '675896754'
-    },
-    { 
-      id: 2, 
-      name: 'garen', 
-      email: 'garen@example.com', 
-      mobile: '9876543210', 
-      designation: 'Executive', 
-      userType: 'Accountant', 
-      joiningDate: '2024-02-01', 
-      salary: 60000, 
-      status: true, 
-      image: 'path_to_image2', 
-      presentAddress: 'testest', 
-      permanentAddress: 'random', 
-      basicSalary: 98867565, 
-      grossSalary: 98675, 
-      nid: '23456Y7U8U  '
-    },
-    { 
-      id: 3, 
-      name: 'akali', 
-      email: 'akali@example.com', 
-      mobile: '5678901234', 
-      designation: 'Executive', 
-      userType: 'Marketing', 
-      joiningDate: '2024-03-01', 
-      salary: 70000, 
-      status: true, 
-      image: 'path_to_image3', 
-      presentAddress: '', 
-      permanentAddress: '', 
-      basicSalary: 0, 
-      grossSalary: 0, 
-      nid: ''
-    },
-    // Add more mock data as needed
-  ]);
+export const UserContext = createContext<any>(null);
 
-  const addUser = (newUser) => {
-    const maxId = Math.max(...users.map(s => s.id), 0);
-    const newUserWithId = { ...newUser, id: maxId + 1 };
-    setUsers([...users, newUserWithId]);
-  };
+export const UserProvider: React.FC = ({ children }) => {
+  const [users, setUsers] = useState<User[]>([]);
+  const { translate } = useTranslation();
 
-  const editUser = (id, updatedUser) => {
-    const updatedUserList = users.map(item => (item.id === id ? { ...item, ...updatedUser } : item));
-    setUsers(updatedUserList);
-  };
 
-  const deleteUser = (id) => {
-    const updatedUsers = users.filter((user) => user.id !== id);
-    setUsers(updatedUsers);
-  };
-
-  const toggleStatus = (id) => {
-    const updatedUsers = users.map((user) => {
-      if (user.id === id) {
-        return { ...user, status: !user.status };
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/users");
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+        const data = await response.json();
+        setUsers(data);
+      } catch (error) {
+        console.error("Error fetching user data:", error.message);
       }
-      return user;
-    });
-    setUsers(updatedUsers);
+    };
+
+    fetchUsers();
+  }, []);
+
+  const addUser = async (newUser: Omit<User, "id">) => {
+    try {
+      // Generate a unique ID for the new user
+      const id = users.length + 1;
+
+      // Create the new user object with the generated ID
+      const userWithId: User = { id, ...newUser };
+
+      const response = await fetch("http://localhost:3000/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userWithId),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add user");
+      }
+
+      // Update the client-side state with the new user
+      setUsers([...users, userWithId]);
+
+      toast.success("User added successfully");
+    } catch (error) {
+      console.error("Error:", error.message);
+      toast.error("Failed to add user");
+    }
+  };
+
+  const editUser = async (id: number, updatedUser: User) => {
+    try {
+      const response = await fetch(`http://localhost:3000/users/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedUser),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to update user");
+      }
+  
+      // No need to parse response JSON if there's no data returned
+      // Assume the update was successful if response is OK
+      // Update the client-side state with the updated user data
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === id ? { ...user, ...updatedUser } : user
+        )
+      );
+  
+      toast.success("User updated successfully");
+    } catch (error) {
+      console.error("Error:", error.message);
+      toast.error("Failed to update user");
+    }
+  };
+
+  const deleteUser = async (id: number) => {
+    try {
+      const response = await fetch(`http://localhost:3000/users/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete user");
+      }
+
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+
+      toast.success("User deleted successfully");
+    } catch (error) {
+      console.error("Error:", error.message);
+      toast.error("Failed to delete user");
+    }
+  };
+
+  const toggleStatus = async (id: number) => {
+    try {
+      const response = await fetch(`http://localhost:3000/Users/${id}/toggle-status`, {
+        method: "PUT",
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to toggle User status");
+      }
+  
+      const data = await response.json();
+  
+      setUsers((prevUser) =>
+        prevUser.map((User) =>
+          User.id === id ? { ...User, status: !User.status } : User
+        )
+      );
+  
+      toast.info(translate("Userstatusupdatedsuccessfully"), { autoClose: 1000, hideProgressBar: true });
+    } catch (error) {
+      console.error("Error:", error.message);
+      toast.error("Failed to toggle User status", { autoClose: 2000, hideProgressBar: true });
+    }
   };
 
   const value = {
@@ -92,13 +146,17 @@ export const UserProvider = ({ children }) => {
     toggleStatus,
   };
 
-  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
+  return (
+    <UserContext.Provider value={value}>
+      {children}
+    </UserContext.Provider>
+  );
 };
 
 export const useUser = () => {
   const context = useContext(UserContext);
   if (!context) {
-    throw new Error('useUser must be used within a UserProvider');
+    throw new Error("useUser must be used within a UserProvider");
   }
   return context;
 };
