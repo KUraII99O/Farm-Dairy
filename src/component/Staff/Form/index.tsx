@@ -342,7 +342,9 @@ const EditStaff = () => {
               onChange={handleFileChange}
               className="hidden"
               id="uploadInput"
-            />
+              accept="image/jpg"
+              capture="environment"
+                          />
             <label
               htmlFor="uploadInput"
               className={`cursor-pointer border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white hover:bg-gray-100 text-center ${

@@ -1,85 +1,133 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import { toast } from "react-toastify";
 
-export const MilkSaleContext = createContext();
+interface MilkSales {
+  id: number;
+  Date: string;
+  AccountNo: string;
+  StallNo: string;
+  AnimalID: string;
+  Liter: number;
+  Fate: string;
+  Price: number;
+  Total: number;
+  CollectedFrom: string;
+  AddedBy: string;
+  invoice: string;
+}
+
+export const MilkSaleContext = createContext<any>(null);
 
 export const MilkSaleProvider = ({ children }) => {
-  const [milkSales, setMilkSales] = useState([
-    { 
-      id: 1, 
-      invoice: 'INV001',
-      date: '2024-01-01', 
-      accountNo: '123456', 
-      name: 'John Doe', 
-      contact: '123-456-7890',
-      email: 'john@example.com',
-      litre: 10, 
-      price: 5, 
-      total: 50,
-      paid: 30,
-      due: 20, 
-      soldBy: 'Admin',
-      address: 'Uttara Dhaka Bangladesh' // Added comma here
-    },
-    { 
-      id: 2, 
-      invoice: 'INV002',
-      date: '2024-01-02', 
-      accountNo: '789012', 
-      name: 'Jane Smith', 
-      contact: '987-654-3210',
-      email: 'jane@example.com',
-      litre: 12, 
-      price: 5, 
-      total: 60,
-      paid: 60,
-      due: 0, 
-      soldBy: 'Manager',
-      address: 'Uttara Dhaka Bangladesh' // Added comma here
-    },
-    { 
-      id: 3, 
-      invoice: 'INV003',
-      date: '2024-01-03', 
-      accountNo: '345678', 
-      name: 'Alice Johnson', 
-      contact: '111-222-3333',
-      email: 'alice@example.com',
-      litre: 8, 
-      price: 6, 
-      total: 48,
-      paid: 48,
-      due: 0, 
-      soldBy: 'Supervisor',
-      address: 'Uttara Dhaka Bangladesh' // Added comma here
-    },
-    // Add more mock data as needed
-  ]);
+  const [milkSales, setMilkSales] = useState<MilkSales[]>([]);
 
-  const addMilkSale = (newMilkSale) => {
-    const maxId = Math.max(...milkSales.map(milkSale => milkSale.id), 0);
-    const newMilkSaleWithId = { ...newMilkSale, id: maxId + 1 };
-    setMilkSales([...milkSales, newMilkSaleWithId]);
+  useEffect(() => {
+    const fetchMilkSale = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/milksale");
+        if (!response.ok) {
+          throw new Error("Failed to fetch MilkSales data");
+        }
+        const data = await response.json();
+        setMilkSales(data);
+      } catch (error) {
+        console.error("Error fetching MilkSales data:", error.message);
+      }
+    };
+
+    fetchMilkSale();
+  }, []);
+
+  const addMilkSales = async (newMilkSales: Omit<MilkSales, "id">) => {
+    try {
+      const id = milkSales.length + 1;
+      const MilkSalesWithId: MilkSales = { id, ...newMilkSales };
+
+      const response = await fetch("http://localhost:3000/milksale", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(MilkSalesWithId),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add MilkSales");
+      }
+
+      setMilkSales([...milkSales, MilkSalesWithId]);
+      toast.success("MilkSales added successfully");
+    } catch (error) {
+      console.error("Error:", error.message);
+      toast.error("Failed to add MilkSales");
+    }
   };
 
-  const editMilkSale = (id, updatedMilkSale) => {
-    const updatedMilkSaleList = milkSales.map(item => (item.id === id ? { ...item, ...updatedMilkSale } : item));
-    setMilkSales(updatedMilkSaleList);
+  const editMilkSale = async (id: number, updatedMilkSales: Omit<MilkSales, "id">) => {
+    try {
+      const response = await fetch(`http://localhost:3000/milksale/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedMilkSales),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update milk record");
+      }
+
+      setMilkSales(prevMilkSales =>
+        prevMilkSales.map(milkSale =>
+          milkSale.id === id ? { ...milkSale, ...updatedMilkSales } : milkSale
+        )
+      );
+
+      toast.success("Milk record updated successfully");
+    } catch (error) {
+      console.error("Error:", error.message);
+      toast.error("Failed to update milk record");
+    }
   };
 
-  const deleteMilkSale = (id) => {
-    const updatedMilkSales = milkSales.filter((milkSale) => milkSale.id !== id);
-    setMilkSales(updatedMilkSales);
+  const deleteMilkSale = async (id: number) => {
+    try {
+      const response = await fetch(`http://localhost:3000/milksale/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete milk record");
+      }
+
+      setMilkSales(prevMilkSales => prevMilkSales.filter(milkSale => milkSale.id !== id));
+      toast.success("Milk record deleted successfully");
+    } catch (error) {
+      console.error("Error:", error.message);
+      toast.error("Failed to delete milk record");
+    }
   };
-  const getInvoiceById = (id) => {
-    // Find and return the invoice with the given ID
-    return milkSales.find((invoice) => invoice.id === id);
+
+  const getInvoiceById = (id: number) => {
+    return milkSales.find(invoice => invoice.id === id);
   };
+
+  const generateRandomInvoice = () => {
+    const characters = '0123456789';
+    let invoice = '';
+    for (let i = 0; i < 4; i++) {
+      invoice += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return invoice;
+  };
+
   const value = {
     milkSales,
-    addMilkSale,
+    addMilkSales,
     editMilkSale,
     deleteMilkSale,
     getInvoiceById,
+    generateRandomInvoice
   };
 
   return <MilkSaleContext.Provider value={value}>{children}</MilkSaleContext.Provider>;

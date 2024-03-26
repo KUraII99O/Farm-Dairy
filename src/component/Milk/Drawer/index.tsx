@@ -4,30 +4,31 @@ import { MdEdit } from "react-icons/md";
 import { FaUserPlus } from "react-icons/fa";
 import { useTranslation } from "../../Translator/Provider";
 
-const EditEmployeeForm = ({ employee, onSubmit, onClose }) => {
+const EditMilkRecordForm = ({ MilkRecord, onSubmit, onClose }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const formRef = useRef(null);
   const { translate,language  } = useTranslation();
 
   const [formData, setFormData] = useState({
-    payDate: "",
-    month: "",
-    year: "",
-    employeeName: "",
-    monthlySalary: "",
-    additionMoney: "",
-    note: "",
-    image: "",
+    accountNumber: "",
+    stallNumber: "",
+    animalID: "",
+    liter: "",
+    collectedfromName: "",
+    Address: "",
+    Fate : "",
+    Priceliter: "",
+    total: "",
   });
 
   useEffect(() => {
-    if (employee) {
+    if (MilkRecord) {
       setFormData({
-        ...employee,
+        ...MilkRecord,
       });
     }
-  }, [employee]);
+  }, [MilkRecord]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -44,7 +45,7 @@ const EditEmployeeForm = ({ employee, onSubmit, onClose }) => {
 
   const handleCloseDrawer = () => {
     onClose(); // Call the onClose function passed from the parent component
-    navigate("/employee");
+    navigate("/Collect-Milk");
   };
 
   const handleOutsideClick = (e) => {
@@ -87,7 +88,7 @@ const EditEmployeeForm = ({ employee, onSubmit, onClose }) => {
           </button>
           <div className="flex items-center justify-center mb-4">
             <h2 className="text-2xl font-bold flex items-center">
-              {employee ? (
+              {MilkRecord ? (
                 <>
                   <MdEdit className="mr-2 ml-2" /> {translate("editemployee")}
                 </>
@@ -108,8 +109,8 @@ const EditEmployeeForm = ({ employee, onSubmit, onClose }) => {
               </label>
               <input
                 type="date"
-                name="payDate"
-                value={formData.payDate}
+                name="accountNumber"
+                value={formData.accountNumber}
                 onChange={handleChange}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -124,8 +125,8 @@ const EditEmployeeForm = ({ employee, onSubmit, onClose }) => {
               </label>
               <input
                 type="text"
-                name="month"
-                value={formData.month}
+                name="stallNumber"
+                value={formData.stallNumber}
                 onChange={handleChange}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -140,8 +141,8 @@ const EditEmployeeForm = ({ employee, onSubmit, onClose }) => {
               </label>
               <input
                 type="number"
-                name="year"
-                value={formData.year}
+                name="animalID"
+                value={formData.animalID}
                 onChange={handleChange}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -149,15 +150,15 @@ const EditEmployeeForm = ({ employee, onSubmit, onClose }) => {
             </div>
             <div className="mb-4">
               <label
-                htmlFor="employeeName"
+                htmlFor="liter"
                 className="block text-sm font-medium text-gray-700"
               >
                 {translate("selectemloyee")} * :
               </label>
               <input
                 type="text"
-                name="employeeName"
-                value={formData.employeeName}
+                name="liter"
+                value={formData.liter}
                 onChange={handleChange}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -165,45 +166,73 @@ const EditEmployeeForm = ({ employee, onSubmit, onClose }) => {
             </div>
             <div className="mb-4">
               <label
-                htmlFor="monthlySalary"
+                htmlFor="collectedfromName"
                 className="block text-sm font-medium text-gray-700"
               >
-                {translate("monthlysalary")}:
+                {translate("collectedfromName")}:
               </label>
               <input
                 type="number"
-                name="monthlySalary"
-                value={formData.monthlySalary}
+                name="collectedfromName"
+                value={formData.collectedfromName}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
             <div className="mb-4">
               <label
-                htmlFor="additionMoney"
+                htmlFor="Address"
                 className="block text-sm font-medium text-gray-700"
               >
                 {translate("AdditionAmount")} :
               </label>
               <input
                 type="number"
-                name="additionMoney"
-                value={formData.additionMoney}
+                name="Address"
+                value={formData.Address}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
             <div className="mb-4">
               <label
-                htmlFor="note"
+                htmlFor="Fate"
                 className="block text-sm font-medium text-gray-700"
               >
-                {translate("note")} :
+                {translate("Fate")} :
               </label>
               <input
                 type="text"
-                name="note"
-                value={formData.note}
+                name="Fate"
+                value={formData.Fate}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                className="block text-sm font-medium text-gray-700"
+              >
+                {translate("Priceliter")} :
+              </label>
+              <input
+                type="text"
+                name="Priceliter"
+                value={formData.Priceliter}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                className="block text-sm font-medium text-gray-700"
+              >
+                {translate("total")} :
+              </label>
+              <input
+                type="text"
+                name="total"
+                value={formData.total}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
@@ -212,7 +241,7 @@ const EditEmployeeForm = ({ employee, onSubmit, onClose }) => {
               type="submit"
               className="bg-secondary hover:primary text-white font-bold py-2 px-4 rounded"
             >
-              {employee ? translate("editemployee") : translate("addemployee")}
+              {MilkRecord ? translate("editMilkRecord") : translate("addMilkRecord")}
             </button>
           </form>
         </div>
@@ -221,4 +250,4 @@ const EditEmployeeForm = ({ employee, onSubmit, onClose }) => {
   );
 };
 
-export default EditEmployeeForm;
+export default EditMilkRecordForm;

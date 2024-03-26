@@ -1,7 +1,8 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext,useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { Link } from "react-router-dom";
 import { LiaFileInvoiceSolid } from "react-icons/lia";
+import { useTranslation } from "../../Translator/Provider";
 
 import "react-toastify/dist/ReactToastify.css";
 import { MilkSaleContext } from "../Provider"; // Assuming MilkSaleContext is provided similarly to UserContext
@@ -19,8 +20,14 @@ const MilkSaleTable: React.FC = () => {
   const [itemsPerPage, setItemsPerPage] = useState(5); // Number of milk entries per page
   const [isDeleting, setIsDeleting] = useState(false);
   const [milkToDelete, setMilkToDelete] = useState<number | null>(null);
+  const [user, setUser] = useState<{ name: string; email: string; }>({
+    name: "",
+    email: "",
+    
+  });
+  const [currentDate, setCurrentDate] = useState<string>("");
+  const { translate} = useTranslation();
 
-  // Filter milkSales based on search term
   const filteredMilkSales = milkSales.filter(
     (milkSale: { [s: string]: unknown } | ArrayLike<unknown>) =>
       Object.values(milkSale).some((field) =>
@@ -28,7 +35,36 @@ const MilkSaleTable: React.FC = () => {
       )
   );
 
-  // Sort milkSales based on the selected field
+  useEffect(() => {
+    const date = new Date();
+    const formattedDate = date.toLocaleDateString(); // Adjust the date format as needed
+    setCurrentDate(formattedDate);
+  }, []);
+
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/users"); // Adjust the API endpoint accordingly
+        if (response.ok) {
+          const userData = await response.json();
+          if (userData.length > 0) {
+            const { username, email } = userData[0]; // Assuming you only have one user for now
+            setUser({ name: username, email: email });
+          }
+        } else {
+          console.error("Failed to fetch user data");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+
+  }, []); 
+
+
   const sortedMilkSales = sortBy
     ? filteredMilkSales.sort((a, b) =>
         sortOrder === "asc"
@@ -94,37 +130,37 @@ const MilkSaleTable: React.FC = () => {
         <div className="flex items-center">
           <input
             type="text"
-            placeholder="Search..."
+            placeholder={translate("searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="p-2 rounded border border-gray-300 "
+            className="p-2 rounded border border-gray-300 ml-2"
           />
 
           <Link
-            to="/Collect-Milk "
+            to="/add-milk-sale "
             className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary ml-2"
           >
-            Collect New
+            {translate("collectnew")}
           </Link>
         </div>
       </div>
-      <h1 className="text-xl font-bold mb-4">Milk Sale Table</h1>
+      <h1 className="text-xl font-bold mb-4 mr-4">{translate("milksaletable")}</h1>
       <table className="min-w-full bg-white border-collapse">
         {/* Table header */}
         <thead>
           <tr>
             <th className="border border-gray-300 px-4 py-2 cursor-pointer">
-              <div className="flex items-center">Invoice</div>
+              <div className="flex items-center">{translate("invocie")}</div>
             </th>
             <th className="border border-gray-300 px-4 py-2 cursor-pointer">
-              <div className="flex items-center">Date</div>
+              <div className="flex items-center">{translate("date")}</div>
             </th>
             <th
               className="border border-gray-300 px-4 py-2 cursor-pointer"
               onClick={() => handleSort("accountNo")}
             >
               <div className="flex items-center">
-                Account No
+              {translate("accountNo")}
                 {sortIcon("accountNo")}
               </div>
             </th>
@@ -133,7 +169,7 @@ const MilkSaleTable: React.FC = () => {
               onClick={() => handleSort("name")}
             >
               <div className="flex items-center">
-                Name
+              {translate("name")}
                 {sortIcon("name")}
               </div>
             </th>
@@ -142,7 +178,7 @@ const MilkSaleTable: React.FC = () => {
               onClick={() => handleSort("contact")}
             >
               <div className="flex items-center">
-                Contact
+              {translate("contact")}
                 {sortIcon("contact")}
               </div>
             </th>
@@ -151,7 +187,7 @@ const MilkSaleTable: React.FC = () => {
               onClick={() => handleSort("email")}
             >
               <div className="flex items-center">
-                Email
+              {translate("email")}
                 {sortIcon("email")}
               </div>
             </th>
@@ -160,7 +196,7 @@ const MilkSaleTable: React.FC = () => {
               onClick={() => handleSort("litre")}
             >
               <div className="flex items-center">
-                Litre
+              {translate("liter")}
                 {sortIcon("litre")}
               </div>
             </th>
@@ -169,7 +205,7 @@ const MilkSaleTable: React.FC = () => {
               onClick={() => handleSort("price")}
             >
               <div className="flex items-center">
-                Price
+              {translate("price")}
                 {sortIcon("price")}
               </div>
             </th>
@@ -178,7 +214,7 @@ const MilkSaleTable: React.FC = () => {
               onClick={() => handleSort("total")}
             >
               <div className="flex items-center">
-                Total
+              {translate("Total")}
                 {sortIcon("total")}
               </div>
             </th>
@@ -187,7 +223,7 @@ const MilkSaleTable: React.FC = () => {
               onClick={() => handleSort("paid")}
             >
               <div className="flex items-center">
-                Paid
+              {translate("paid")}
                 {sortIcon("paid")}
               </div>
             </th>
@@ -196,7 +232,7 @@ const MilkSaleTable: React.FC = () => {
               onClick={() => handleSort("due")}
             >
               <div className="flex items-center">
-                Due
+              {translate("due")}
                 {sortIcon("due")}
               </div>
             </th>
@@ -205,11 +241,11 @@ const MilkSaleTable: React.FC = () => {
               onClick={() => handleSort("soldBy")}
             >
               <div className="flex items-center">
-                Sold By
+              {translate("soldby")}
                 {sortIcon("soldBy")}
               </div>
             </th>
-            <th className="border border-gray-300 px-4 py-2">Action</th>{" "}
+            <th className="border border-gray-300 px-4 py-2">{translate("action")}</th>{" "}
           </tr>
         </thead>
         {/* Table body */}
@@ -218,7 +254,7 @@ const MilkSaleTable: React.FC = () => {
             <tr key={milkSale.id}>
               {/* Render each field accordingly */}
               <td className="border border-gray-300 px-4 py-2">{milkSale.invoice}</td>
-              <td className="border border-gray-300 px-4 py-2">{milkSale.date}</td>
+              <td className="border border-gray-300 px-4 py-2">{currentDate}</td>
               <td className="border border-gray-300 px-4 py-2">
                 {milkSale.accountNo}
               </td>
@@ -236,7 +272,7 @@ const MilkSaleTable: React.FC = () => {
               <td className="border border-gray-300 px-4 py-2">{milkSale.total}</td>
               <td className="border border-gray-300 px-4 py-2">{milkSale.paid}</td>
               <td className="border border-gray-300 px-4 py-2">{milkSale.due}</td>
-              <td className="border border-gray-300 px-4 py-2">{milkSale.soldBy}</td>
+              <td className="border border-gray-300 px-4 py-2">{user.name}</td>
               <td className="border border-gray-300 px-4 py-2">
                 <div className="flex items-center">
                   <Link

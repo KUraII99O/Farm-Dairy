@@ -1,88 +1,111 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from "react";
+import { toast } from "react-toastify";
 
-export const EmployeeContext = createContext();
+ interface Employee {
+  id: number;
+  image: string;
+  name: string;
+  payDate: string; // Assuming payDate is a string representing a date
+  month: string;
+  year: number;
+  salaryAmount: number;
+  additionAmount: number;
+  total: number;
+}
 
-export const EmployeeProvider = ({ children }) => {
-  const [employees, setEmployees] = useState([
-    { 
-      id: 1, 
-      name: 'dariues', 
-      PayDate: '14/03/2023', 
-      Month: 'January', 
-      Year: '2023', 
-      SalaryAmount: '4000', 
-      AdditionAmount: '3000', 
-      Total: 70000, 
-      status: true, 
-      image: 'path_to_image1', 
-      presentAddress: 'test adress', 
-      permanentAddress: 'same adress ', 
-      basicSalary: 99877, 
-      grossSalary: 87876, 
-      nid: '675896754'
-    },
-    { 
-      id: 2, 
-      name: 'Briar', 
-      PayDate: '14/06/2023', 
-      Month: 'July', 
-      Year: '2023', 
-      SalaryAmount: '3000', 
-      AdditionAmount: '2000', 
-      Total: 50000, 
-      status: true, 
-      image: 'path_to_image1', 
-      presentAddress: 'test adress', 
-      permanentAddress: 'same adress ', 
-      basicSalary: 99877, 
-      grossSalary: 87876, 
-      nid: '675896754'
-    },
-    { 
-      id: 3, 
-      name: 'Kayn', 
-      PayDate: '20/03/2023', 
-      Month: 'June', 
-      Year: '2023', 
-      SalaryAmount: '6000', 
-      AdditionAmount: '1000', 
-      Total: 7000, 
-      status: true, 
-      image: 'path_to_image1', 
-      presentAddress: 'test adress', 
-      permanentAddress: 'same adress ', 
-      basicSalary: 99877, 
-      grossSalary: 87876, 
-      nid: '675896754'
-    },
-    
-    // Add more mock data as needed
-  ]);
+export const EmployeeContext = createContext<any>(null);
 
-  const addEmployee = (newEmployee) => {
-    const maxId = Math.max(...employees.map(s => s.id), 0);
-    const newEmployeeWithId = { ...newEmployee, id: maxId + 1 };
-    setEmployees([...employees, newEmployeeWithId]);
-  };
+export const EmployeeProvider: React.FC = ({ children }) => {
+  const [employees, setEmployees] = useState<Employee[]>([]);
 
-  const editEmployee = (id, updatedEmployee) => {
-    const updatedEmployeeList = employees.map(item => (item.id === id ? { ...item, ...updatedEmployee } : item));
-    setEmployees(updatedEmployeeList);
-  };
-
-  const deleteEmployee = (id) => {
-    const updatedEmployees = employees.filter((employee) => employee.id !== id);
-    setEmployees(updatedEmployees);
-  };
-
-  const toggleStatus = (id) => {
-    const updatedEmployees = employees.map((employee) => {
-      if (employee.id === id) {
-        return { ...employee, status: !employee.status };
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/employees");
+        if (!response.ok) {
+          throw new Error("Failed to fetch employee data");
+        }
+        const data = await response.json();
+        setEmployees(data);
+      } catch (error) {
+        console.error("Error fetching employee data:", error.message);
       }
-      return employee;
-    });
-    setEmployees(updatedEmployees);
+    };
+
+    fetchEmployees();
+  }, []);
+
+  const addEmployee = async (newEmployee: Omit<Employee, "id">) => {
+    try {
+      const id = employees.length + 1;
+      const employeeWithId: Employee = { id, ...newEmployee };
+
+      const response = await fetch("http://localhost:3000/employees", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(employeeWithId),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add employee");
+      }
+
+      setEmployees([...employees, employeeWithId]);
+      toast.success("Employee added successfully");
+    } catch (error) {
+      console.error("Error:", error.message);
+      toast.error("Failed to add employee");
+    }
+  };
+
+  const editEmployee = async (id: number, updatedEmployee: Employee) => {
+    try {
+      const response = await fetch(`http://localhost:3000/employees/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedEmployee),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update employee");
+      }
+
+      setEmployees((prevEmployees) =>
+        prevEmployees.map((employee) =>
+          employee.id === id ? { ...employee, ...updatedEmployee } : employee
+        )
+      );
+
+      toast.success("Employee updated successfully");
+    } catch (error) {
+      console.error("Error:", error.message);
+      toast.error("Failed to update employee");
+    }
+  };
+
+  const deleteEmployee = async (id: number) => {
+    try {
+      const response = await fetch(`http://localhost:3000/employees/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete employee");
+      }
+
+      setEmployees((prevEmployees) =>
+        prevEmployees.filter((employee) => employee.id !== id)
+      );
+
+      toast.success("Employee deleted successfully");
+    } catch (error) {
+      console.error("Error:", error.message);
+      toast.error("Failed to delete employee");
+    }
   };
 
   const value = {
@@ -90,7 +113,6 @@ export const EmployeeProvider = ({ children }) => {
     addEmployee,
     editEmployee,
     deleteEmployee,
-    toggleStatus,
   };
 
   return (
@@ -103,7 +125,7 @@ export const EmployeeProvider = ({ children }) => {
 export const useEmployee = () => {
   const context = useContext(EmployeeContext);
   if (!context) {
-    throw new Error('useEmployee must be used within an EmployeeProvider');
+    throw new Error("useEmployee must be used within an EmployeeProvider");
   }
   return context;
 };

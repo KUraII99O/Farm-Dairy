@@ -43,7 +43,6 @@ const LogIn = ({ onLogin }) => {
       setErrorMessage(translate("login_error"));
     }
   };
-  const isRTL = language === "ar";
   const isArabic = language === "ar";
   const formClass = isArabic ? "rtl" : "ltr";
 

@@ -12,7 +12,7 @@ import { useTranslation } from "../../Translator/Provider";
 
 const StaffTable: React.FC = () => {
   const { staff, toggleStatus, deleteStaffMember } = useContext(StaffContext);
-  const { translate } = useTranslation();
+  const { translate, language } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
@@ -83,9 +83,10 @@ const StaffTable: React.FC = () => {
       }
     }
   };
-
+  const isArabic = language === "ar";
+  const formClass = isArabic ? "rtl" : "ltr";
+  
   return (
-    
     <div className="overflow-x-auto">
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center"></div>
@@ -210,19 +211,37 @@ const StaffTable: React.FC = () => {
                 <td className="border border-gray-300 px-4 py-2">
                   {staffMember.grossSalary}
                 </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  <label className="inline-flex items-center cursor-pointer">
+                <td className="border border-gray-300 px-4 py-2 ">
+                  <label
+                    className={`inline-flex items-center cursor-pointer ${
+                      formClass === "rtl" ? "flex-row-reverse" : ""
+                    }`}
+                  >
                     <input
                       type="checkbox"
-                      className={`sr-only peer`}
+                      className="sr-only peer"
                       checked={staffMember.status}
                       onChange={() => handleToggleStatus(staffMember.id)}
                     />
                     <div
-                      className={`relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600`}
+                      className={`relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 ${
+                        formClass === "ltr"
+                          ? "peer-checked:after:-translate-x-full"
+                          : "peer-checked:before:translate-x-full"
+                      } peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 ${
+                        formClass === "rtl"
+                        ? "peer-checked:after:-translate-x-full"
+                        : "peer-checked:after:translate-x-full"
+                      } after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-transform duration-200 ease-in-out dark:border-gray-600 peer-checked:bg-green-600`}
                     ></div>
-                    <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
-                      {staffMember.status ? "Active" : "Inactive"}
+                    <span
+                      className={`ms-3 text-sm font-medium text-gray-900 dark:text-gray-300 ${
+                        formClass === "rtl" ? "me-3" : "ms-3"
+                      }`}
+                    >
+                      {staffMember.status
+                        ? translate("active")
+                        : translate("inactive")}
                     </span>
                   </label>
                 </td>

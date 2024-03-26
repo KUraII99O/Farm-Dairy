@@ -69,11 +69,12 @@ const EditSupplierForm = ({ supplier, onSubmit, onClose }) => {
 
   return (
     <>
-      {/* Semi-transparent overlay */}
       <div
         className="fixed inset-0 bg-gray-500 bg-opacity-70 z-40"
         onClick={handleCloseDrawer}
-      ></div>
+      >
+
+      </div>
       {/* Edit supplier form */}
       <div className="fixed inset-0  z-50 flex justify-end ">
         <div className="w-full max-w-md bg-white shadow-lg p-6" ref={formRef}>

@@ -5,6 +5,11 @@ import { useTranslation } from "../Translator/Provider";
 const NavBar: React.FC = () => {
   const { translate, isRTL } = useTranslation();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [user, setUser] = useState<{ name: string; email: string; image: string }>({
+    name: "",
+    email: "",
+    image: ""
+  });
   const profileRef = useRef<HTMLDivElement>(null);
 
   const toggleProfile = () => {
@@ -12,18 +17,24 @@ const NavBar: React.FC = () => {
   };
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        profileRef.current &&
-        !profileRef.current.contains(event.target as Node)
-      ) {
-        setIsProfileOpen(false);
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/users"); // Adjust the API endpoint accordingly
+        if (response.ok) {
+          const userData = await response.json();
+          if (userData.length > 0) {
+            const { username, email, Image } = userData[0]; // Assuming you only have one user for now
+            setUser({ name: username, email: email, image: Image });
+          }
+        } else {
+          console.error("Failed to fetch user data");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-    };
+    fetchUserData();
   }, []);
   const handleSignOut = () => {
     // Remove the logged-in user from local storage
@@ -47,7 +58,7 @@ const NavBar: React.FC = () => {
               <span className="sr-only">{"Open user menu"}</span>
               <img
                 className="h-8 w-8 rounded-full"
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                src={user.image}
                 alt=""
               />
             </button>
@@ -71,16 +82,16 @@ const NavBar: React.FC = () => {
             >
               <div className="flex items-center p-3">
                 <img
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                  src={user.image}
                   alt="Profile"
                   className="h-8 w-8 rounded-full"
                 />
                 <div className="ml-2">
                   <p className="text-gray-800 font-medium text-sm">
-                    {"John Doe"}
+                  {user.name}
                   </p>
                   <p className="text-gray-600 text-xs overflow-hidden overflow-ellipsis">
-                    {"johndoe@example.com"}
+                  {user.email}
                   </p>
                 </div>
               </div>
@@ -97,7 +108,7 @@ const NavBar: React.FC = () => {
                 {translate("settings")}
               </a>
 
-              <div className="block px-3 py-2 text-gray-800 hover:bg-secondary text-sm w-full bg-primary  ">
+              <div className="block px-3 py-2 text-gray-800 hover:bg-primary text-sm w-full bg-secondary  ">
                 <button
                   onClick={handleSignOut}
                   className="inline-block w-full h-full"
