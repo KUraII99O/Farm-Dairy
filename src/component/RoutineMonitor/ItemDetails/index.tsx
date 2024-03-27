@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
+import { useTranslation } from "../../Translator/Provider";
 
 interface Props {
   isOpen: boolean;
@@ -15,45 +16,95 @@ interface Props {
   };
 }
 
-const RoutineMonitorDetailsDrawer: React.FC<Props> = ({ isOpen, onClose, routineMonitor }) => {
+const ItemDetailDrawer = ({ isOpen, onClose, routineMonitor  }) => {
+  const { translate } = useTranslation();
+  const ref = useRef(null);
 
-  if (!isOpen || !routineMonitor) return null;
+  const handleClickOutside = (event) => {
+    if (ref.current && !ref.current.contains(event.target)) {
+      onClose();
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
-    <div className={`fixed inset-0 overflow-hidden flex justify-end z-50 ${isOpen ? "" : "pointer-events-none"}`}>
-      <div className={`routine-monitor-drawer bg-white w-2/3 max-w-md h-full shadow-lg transform ${isOpen ? "translate-x-0" : "translate-x-full"} transition-transform ease-in-out duration-300`}>
-        <div className="flex justify-between items-center p-4 border-b border-gray-200">
-          <h2 className="text-xl font-semibold">Routine Monitor Details</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+    <>
+      {isOpen && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-70 z-40" >
+          <div className="fixed inset-0  z-50 flex justify-end ">
+
+            <div ref={ref}  className="w-full max-w-md bg-white shadow-lg p-6">
+
+            <h1 className=" inline-block text-xl font-bold mb-4">
+
+                
+                {translate("itemdetails")}
+              </h1>
+              <button
+                className="absolute top-0 right-0 m-2 text-gray-600 hover:text-gray-900 focus:outline-none"
+                onClick={onClose}
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+              <table className="w-full border-collapse mt-4">
+                <thead>
+                  <tr>
+                    <th className="border border-gray-400 px-3 py-2">
+                      {translate("servicename")}
+                    </th>
+                    <th className="border border-gray-400 px-3 py-2">
+                      {translate("result")}
+                    </th>
+                    <th className="border border-gray-400 px-3 py-2">
+                      {translate("monitoringtime")}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {routineMonitor.informations.map((info, index) => (
+                    <tr key={index}>
+                      <td className="border border-gray-400 px-3 py-2">
+                        {info.ServiceName}
+                      </td>
+                      <td className="border border-gray-400 px-3 py-2">
+                        {info.Result} {info.unit}
+                      </td>
+                      <td className="border border-gray-400 px-3 py-2">
+                        {info.MonitoringTime}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <button
+                onClick={onClose}
+                className="mt-4 bg-secondary hover:primary text-white py-2 px-4 rounded"
+              >
+                {translate("close")}
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="p-4">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr>
-                <th className="border border-gray-400 px-3 py-2">Service Name</th>
-                <th className="border border-gray-400 px-3 py-2">Result</th>
-                <th className="border border-gray-400 px-3 py-2">Monitoring Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              {routineMonitor.informations.map((info, index) => (
-                <tr key={index}>
-                  <td className="border border-gray-400 px-3 py-2">{info.ServiceName}</td>
-                  <td className="border border-gray-400 px-3 py-2">{info.Result}</td>
-                  <td className="border border-gray-400 px-3 py-2">{info.MonitoringTime}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div onClick={onClose} className={`fixed inset-0 bg-black opacity-25 ${isOpen ? "block" : "hidden"}`}></div>
-    </div>
+      )}
+    </>
   );
 };
 
-export default RoutineMonitorDetailsDrawer;
+export default ItemDetailDrawer;
+

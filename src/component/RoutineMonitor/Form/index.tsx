@@ -1,10 +1,11 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useHistory } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { RoutineMonitorContext } from "../Provider";
-import { PiForkKnifeBold } from "react-icons/pi";
+import { PiMonitor } from "react-icons/pi";
 import { IoInformationCircle } from "react-icons/io5";
 import { TiMinus } from "react-icons/ti"; // Import TiMinus icon
 import { FaRegEdit } from "react-icons/fa"; // Import FaRegEdit icon
+import { useTranslation } from "../../Translator/Provider";
 
 const EditRoutineMonitorForm = () => {
   const { id } = useParams<{ id: string }>();
@@ -12,13 +13,24 @@ const EditRoutineMonitorForm = () => {
     RoutineMonitorContext
   );
   const navigate = useNavigate();
+  const [currentDate, setCurrentDate] = useState<string>("");
+  const { translate, language } = useTranslation();
 
   const isEditMode = !!id;
+
+  const handleClick = () => {
+    history.back();
+  };
+  useEffect(() => {
+    const date = new Date();
+    const formattedDate = date.toLocaleDateString(); // Adjust the date format as needed
+    setCurrentDate(formattedDate);
+  }, []);
 
   const [formData, setFormData] = useState({
     stallNo: "",
     animalID: "",
-    date: "",
+    date: currentDate,
     note: "",
     healthStatus: 50,
     informations: Array.from({ length: 3 }, () => ({
@@ -111,117 +123,124 @@ const EditRoutineMonitorForm = () => {
   return (
     <div>
       <form onSubmit={handleSubmit} className="flex flex-col w-full space-y-4">
-        <h2 className="text-xl font-bold mb-4 flex items-center">
-          <PiForkKnifeBold className="mr-2" />
-          <span>Routine Monitor</span>
+        <h2
+          className={`text-xl font-bold mb-4 flex items-center ${
+            language === "ar" ? "space-x-2" : ""
+          }`}
+        >
+          <PiMonitor className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
+          <span>{translate("cowmonitor")}</span>
         </h2>
         <h2 className="text-xl font-bold mt-2 mb-4 flex items-center">
-          <IoInformationCircle className="mr-2" />
-          <span>Basic Information:</span>
+          <IoInformationCircle className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
+          <span>{translate("basicinformation")}:</span>
         </h2>
-        <div className="flex flex-col space-y-1">
-          <label className="text-sm font-medium text-gray-700">Stall No:</label>
-          <input
-            style={{ width: "800px" }}
-            type="text"
-            placeholder="Stall No"
-            name="stallNo"
-            value={formData.stallNo}
-            onChange={(e) => handleChange(e, -1)}
-            className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-            required
-          />
-        </div>
+        <div className="flex flex-wrap -mx-2">
+        <div className="flex flex-col space-y-1 px-2 w-1/2">
+        <label className="text-sm font-medium text-gray-700">
+              {translate("stallNo")}
+            </label>
+            <input
+              type="text"
+              placeholder={translate("stallNo")}
+              name="stallNo"
+              value={formData.stallNo}
+              onChange={(e) => handleChange(e, -1)}
+              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
 
-        <div className="flex flex-col space-y-1">
-          <label className="text-sm font-medium text-gray-700">
-            Animal ID:
-          </label>
-          <input
-            style={{ width: "800px" }}
-            type="text"
-            placeholder="Animal ID"
-            name="animalID"
-            value={formData.animalID}
-            onChange={(e) => handleChange(e, -1)}
-            className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-            required
-          />
+          <div className="flex flex-col space-y-1 px-2 w-1/2">
+            <label className="text-sm font-medium text-gray-700">
+              {translate("animalID")}:
+            </label>
+            <input
+              // Adjusted width as needed
+              type="text"
+              placeholder={translate("animalID")}
+              name="animalID"
+              value={formData.animalID}
+              onChange={(e) => handleChange(e, -1)}
+              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
         </div>
 
         <h2 className="text-xl font-bold mt-2 mb-4 flex items-center">
-          <FaRegEdit className="mr-2" />
-          <span>Result and Note :</span>
+          <FaRegEdit className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
+          <span> {translate("resultandnote")} :</span>
         </h2>
 
-        <div className="flex flex-col space-y-1">
-          <label className="text-sm font-medium text-gray-700">
-            Updated Weight (KG):
-          </label>
-          <input
-            style={{ width: "800px" }}
-            type="number"
-            placeholder="Updated Weight"
-            name="updatedWeight"
-            value={formData.updatedWeight}
-            onChange={(e) => handleChange(e, -1)}
-            className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-            required
-          />
+        <div className="flex flex-wrap -mx-2">
+        <div className="flex flex-col space-y-1 px-2 w-1/2">
+            <label className="text-sm font-medium text-gray-700 ">
+              {translate("updatedweight")}:
+            </label>
+            <input
+              type="number"
+              placeholder={translate("updatedweight")}
+              name="updatedWeight"
+              value={formData.updatedWeight}
+              onChange={(e) => handleChange(e, -1)}
+              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="flex flex-col space-y-1 px-2 w-1/2">
+            <label className="text-sm font-medium text-gray-700">
+              {translate("updatedheight")}:
+            </label>
+            <input
+              // Adjusted width as needed
+              type="number"
+              placeholder={translate("updatedheight")}
+              name="updatedHeight"
+              value={formData.updatedHeight}
+              onChange={(e) => handleChange(e, -1)}
+              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-wrap -mx-2">
+        <div className="flex flex-col space-y-1 px-2 w-1/2">
+            <label className="text-sm font-medium text-gray-700 ">
+              {translate("milkperday")}:
+            </label>
+            <input
+              // Adjusted width as needed
+              type="number"
+              placeholder={translate("milkperday")}
+              name="milkPerDay"
+              value={formData.milkPerDay}
+              onChange={(e) => handleChange(e, -1)}
+              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="flex flex-col space-y-1 px-2 w-1/2">
+            <label className="text-sm font-medium text-gray-700">
+              {translate("monitoringdate")}:
+            </label>
+            <input
+              // Adjusted width as needed
+              type="date"
+              placeholder={translate("monitoringdate")}
+              name="monitoringDate"
+              value={formData.monitoringDate}
+              onChange={(e) => handleChange(e, -1)}
+              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
         </div>
 
         <div className="flex flex-col space-y-1">
           <label className="text-sm font-medium text-gray-700">
-            Updated Height (INCH):
+            {translate("reports")}:
           </label>
-          <input
-            style={{ width: "800px" }}
-            type="number"
-            placeholder="Updated Height"
-            name="updatedHeight"
-            value={formData.updatedHeight}
-            onChange={(e) => handleChange(e, -1)}
-            className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-            required
-          />
-        </div>
-
-        <div className="flex flex-col space-y-1">
-          <label className="text-sm font-medium text-gray-700">
-            Milk Per Day (LTR):
-          </label>
-          <input
-            style={{ width: "800px" }}
-            type="number"
-            placeholder="Milk Per Day"
-            name="milkPerDay"
-            value={formData.milkPerDay}
-            onChange={(e) => handleChange(e, -1)}
-            className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-          />
-        </div>
-
-        <div className="flex flex-col space-y-1">
-          <label className="text-sm font-medium text-gray-700">
-            Monitoring Date:
-          </label>
-          <input
-            style={{ width: "800px" }}
-            type="date"
-            placeholder="Monitoring Date"
-            name="monitoringDate"
-            value={formData.monitoringDate}
-            onChange={(e) => handleChange(e, -1)}
-            className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-            required
-          />
-        </div>
-
-        <div className="flex flex-col space-y-1">
-          <label className="text-sm font-medium text-gray-700">Reports:</label>
           <textarea
-            style={{ width: "800px", height: "100px" }}
-            placeholder="note"
+            style={{ height: "100px" }}
+            placeholder={translate("reports")}
             name="note"
             value={formData.note}
             onChange={(e) => handleChange(e, -1)}
@@ -229,40 +248,46 @@ const EditRoutineMonitorForm = () => {
           />
         </div>
         <h2 className="text-xl font-bold mt-2 mb-4 flex items-center">
-          <FaRegEdit className="mr-2" />
-          <span> Monitor Informations :</span>
+          <FaRegEdit className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
+          <span> {translate("monitorinformations")} :</span>
         </h2>
 
-        <div className="flex flex-col space-y-4 items-center">
-          <label className="text-sm font-medium text-secondary">
-            Health Status:
-          </label>
-          <div className="relative w-80">
-            <input
-              type="range"
-              min="0"
-              max="100"
-              step="1"
-              name="healthStatus"
-              value={formData.healthStatus}
-              onChange={handleHealthStatusChange}
-              className="appearance-none h-3 w-full bg-green-200 rounded-full outline-none focus:outline-none"
-            />
-            <div className="absolute top-0 left-0 h-3 w-full bg-gradient-to-r from-secondary to-primary rounded-full"></div>
-            <div className="absolute top-0 left-0 h-3 w-1/3 bg-secondary rounded-full"></div>
-            <span className="absolute top-0 right-0 -mt-6 text-secondary font-bold">
-              {formData.healthStatus}%
-            </span>
-          </div>
-        </div>
+        <div className="flex flex-col space-y-4 ">
+  <label className="text-xl font-medium text-secondary text-center ">
+    {translate("healthstatus")}:
+  </label>
+  <div className={`relative w-full ${language ? 'flex-row-reverse' : 'flex-row'}`}>
+    <input
+      type="range"
+      min="0"
+      max="100"
+      step="1"
+      name="healthStatus"
+      value={formData.healthStatus}
+      onChange={handleHealthStatusChange}
+      className="appearance-none h-3 w-full bg-green-200 rounded-full outline-none focus:outline-none"
+      style={{
+        direction: language ? 'rtl' : 'ltr',
+        background: `linear-gradient(to ${language ? 'left' : 'right'}, #32CD32 ${formData.healthStatus}%, #D3D3D3 0%)`,
+      }}
+    />
+    <span className={`absolute top-0 ${language ? 'left-0' : 'right-0'} -mt-6 text-secondary font-bold`}>
+      {formData.healthStatus}%
+    </span>
+  </div>
+</div>
 
-        <table className="border-collapse w-full" style={{ width: "800px" }}>
+        <table className="border-collapse w-full">
           <thead>
             <tr>
-              <th className="border border-gray-400 px-3 py-2">ServiceName</th>
-              <th className="border border-gray-400 px-3 py-2">Result</th>
               <th className="border border-gray-400 px-3 py-2">
-                MonitoringTime
+                {translate("servicename")}
+              </th>
+              <th className="border border-gray-400 px-3 py-2">
+                {translate("result")}
+              </th>
+              <th className="border border-gray-400 px-3 py-2">
+                {translate("monitoringtime")}
               </th>
             </tr>
           </thead>
@@ -272,35 +297,31 @@ const EditRoutineMonitorForm = () => {
                 <td className="border border-gray-400 px-3 py-2">
                   <input
                     type="string"
-                    placeholder="Service Name"
+                    placeholder={translate("servicename")}
                     name="ServiceName"
                     value={info.ServiceName}
                     onChange={(e) => handleChange(e, index)}
                     className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    required
                   />
                 </td>
                 <td className="border border-gray-400 px-3 py-2">
                   <input
                     type="string"
-                    placeholder="Result"
+                    placeholder={translate("result")}
                     name="Result"
                     value={info.Result}
                     onChange={(e) => handleChange(e, index)}
                     className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    required
                   />
                 </td>
                 <td className="border border-gray-400 px-3 py-2">
-                  
                   <input
                     type="string"
-                    placeholder="Monitoring Time"
+                    placeholder={translate("monitoringtime")}
                     name="MonitoringTime"
                     value={info.MonitoringTime}
                     onChange={(e) => handleChange(e, index)}
                     className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    required
                   />
                   <button
                     type="button"
@@ -314,33 +335,34 @@ const EditRoutineMonitorForm = () => {
             ))}
           </tbody>
         </table>
-        
 
         <button
-          style={{ width: "800px" }}
+          style={{ width: "200px" }}
           type="submit"
-          className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary"
+          className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary self-end"
           disabled={loading}
         >
-          {loading ? "Loading..." : isEditMode ? "Save" : "Add Routine Monitor"}
+          {loading
+            ? "Loading..."
+            : isEditMode
+            ? translate("save")
+            : translate("addroutinemonitor")}
         </button>
         <button
-          style={{ width: "800px" }}
+          style={{ width: "200px" }}
           type="button"
           onClick={handleAddRow}
-          className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary"
+          className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary self-end"
         >
-          Add Row
+          {translate("addrow")}
         </button>
-
-        {successPopup && (
-          <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="bg-white p-4 rounded shadow-md">
-              <p>Information updated successfully!</p>
-            </div>
-          </div>
-        )}
       </form>
+      <button
+        onClick={handleClick}
+        className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary"
+      >
+        {translate("goback")}
+      </button>
     </div>
   );
 };

@@ -15,7 +15,7 @@ const EditMilkSale = () => {
   });
 
   const [currentDate, setCurrentDate] = useState<string>("");
-  const { translate } = useTranslation();
+  const { translate, language } = useTranslation();
 
   const isEditMode = !!id;
 
@@ -87,19 +87,19 @@ const EditMilkSale = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-  
+
     // Generate sequential invoice number
     const invoice = generateRandomInvoice();
-  
+
     // Update formData with generated invoice number
     const updatedFormData = { ...formData, invoice };
-  
+
     if (isEditMode) {
       await editMilkSales(parseInt(id), updatedFormData);
     } else {
       await addMilkSales(updatedFormData);
     }
-  
+
     setLoading(false);
     setSuccessPopup(true);
     setTimeout(() => {
@@ -110,80 +110,76 @@ const EditMilkSale = () => {
 
   return (
     <div>
-  <form onSubmit={handleSubmit} className="flex flex-col w-full space-y-4">
-    <h2 className="text-xl font-bold text-gray-700 mb-4 flex items-center">
-      <FaUserPlus className="mr-2" />
-      <span>Milk Sale Information</span>
-    </h2>
-    <div className="flex flex-wrap -mx-2">
-      <div className="flex flex-col space-y-1 px-2 w-1/2">
-        <label className="text-sm font-medium text-gray-700">
-          Account Number:
-        </label>
-        <input
-          style={{ width: "800px" }}
-          type="text"
-          placeholder="Account Number"
-          name="accountNo"
-          value={formData.accountNo}
-          onChange={handleChange}
-          className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-          required
-        />
-      </div>
+      <form onSubmit={handleSubmit} className="flex flex-col w-full space-y-4">
+        <h2 className="text-xl font-bold text-gray-700 mb-4 flex items-center">
+          <FaUserPlus className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
+          <span>{translate("milksaleInformation")}</span>
+        </h2>
+        <div className="flex flex-wrap -mx-2">
+          <div className="flex flex-col space-y-1 px-2 w-1/2">
+            <label className="text-sm font-medium text-gray-700">
+              {translate("accountNo")}
+            </label>
+            <input
+              type="text"
+              placeholder={translate("accountNo")}
+              name="accountNo"
+              value={formData.accountNo}
+              onChange={handleChange}
+              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              required
+            />
+          </div>
 
-      <div className="flex flex-col space-y-1 px-2 w-1/2">
-        <label className="text-sm font-medium text-gray-700">
-          Supplier:
-        </label>
-        <input
-          style={{ width: "800px" }}
-          type="text"
-          placeholder="Supplier"
-          name="supplier"
-          value={formData.supplier}
-          onChange={handleChange}
-          className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-          required
-        />
-      </div>
-    </div>
+          <div className="flex flex-col space-y-1 px-2 w-1/2">
+            <label className="text-sm font-medium text-gray-700">
+              {translate("suppliers")} :
+            </label>
+            <input
+              type="text"
+              placeholder={translate("suppliers")}
+              name="supplier"
+              value={formData.supplier}
+              onChange={handleChange}
+              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              required
+            />
+          </div>
+        </div>
 
-    <div className="flex flex-wrap -mx-2">
-      <div className="flex flex-col space-y-1 px-2 w-1/2">
-        <label className="text-sm font-medium text-gray-700">
-          Name:
-        </label>
-        <input
-          style={{ width: "800px" }}
-          type="text"
-          placeholder="Name"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-          required
-        />
-      </div>
+        <div className="flex flex-wrap -mx-2">
+          <div className="flex flex-col space-y-1 px-2 w-1/2">
+            <label className="text-sm font-medium text-gray-700">
+              {translate("name")} :
+            </label>
+            <input
+              type="text"
+              placeholder={translate("name")}
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              required
+            />
+          </div>
 
-      <div className="flex flex-col space-y-1 px-2 w-1/2">
-        <label className="text-sm font-medium text-gray-700">
-          Contact:
-        </label>
-        <input
-          style={{ width: "800px" }}
-          type="text"
-          placeholder="Contact"
-          name="contact"
-          value={formData.contact}
-          onChange={handleChange}
-          className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-          required
-        />
-      </div>
-    </div>
+          <div className="flex flex-col space-y-1 px-2 w-1/2">
+            <label className="text-sm font-medium text-gray-700">
+              {translate("contact")}:
+            </label>
+            <input
+              type="text"
+              placeholder={translate("contact")}
+              name="contact"
+              value={formData.contact}
+              onChange={handleChange}
+              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              required
+            />
+          </div>
+        </div>
 
-    <div className="flex flex-wrap -mx-2">
+        <div className="flex flex-wrap -mx-2">
           <div className="flex flex-col space-y-1 px-2 w-full">
             <label className="text-sm font-medium text-gray-700">
               {translate("address")}:
@@ -200,125 +196,115 @@ const EditMilkSale = () => {
           </div>
         </div>
 
-    <div className="flex flex-wrap -mx-2">
-      <div className="flex flex-col space-y-1 px-2 w-1/2">
-        <label className="text-sm font-medium text-gray-700">
-          Email:
-        </label>
-        <input
-          style={{ width: "800px" }}
-          type="email"
-          placeholder="Email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-          required
-        />
-      </div>
+        <div className="flex flex-wrap -mx-2">
+          <div className="flex flex-col space-y-1 px-2 w-1/2">
+            <label className="text-sm font-medium text-gray-700">
+              {translate("email")} :
+            </label>
+            <input
+              type="email"
+              placeholder={translate("email")}
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              required
+            />
+          </div>
 
-      <div className="flex flex-col space-y-1 px-2 w-1/2">
-        <label className="text-sm font-medium text-gray-700">
-          Litre *:
-        </label>
-        <input
-          style={{ width: "800px" }}
-          type="text"
-          placeholder="Litre"
-          name="litre"
-          value={formData.litre}
-          onChange={handleChange}
-          className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-          required
-        />
-      </div>
+          <div className="flex flex-col space-y-1 px-2 w-1/2">
+            <label className="text-sm font-medium text-gray-700">
+              {translate("liter")}*:
+            </label>
+            <input
+              type="text"
+              placeholder={translate("liter")}
+              name="litre"
+              value={formData.litre}
+              onChange={handleChange}
+              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              required
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-wrap -mx-2">
+          <div className="flex flex-col space-y-1 px-2 w-1/2">
+            <label className="text-sm font-medium text-gray-700">
+              {translate("price")}/{translate("liter")}:
+            </label>
+            <input
+              type="text"
+              placeholder={`${translate("price")}/${translate("liter")}`}
+              name="price"
+              value={formData.price}
+              onChange={handleChange}
+              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          <div className="flex flex-col space-y-1 px-2 w-1/2">
+            <label className="text-sm font-medium text-gray-700">
+              {translate("total")} :
+            </label>
+            <input
+              type="text"
+              placeholder={translate("total")}
+              name="total"
+              value={formData.total}
+              onChange={handleChange}
+              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              required
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-wrap -mx-2">
+          <div className="flex flex-col space-y-1 px-2 w-1/2">
+            <label className="text-sm font-medium text-gray-700">
+              {translate("paid")} :
+            </label>
+            <input
+              type="text"
+              placeholder={translate("paid")}
+              name="paid"
+              value={formData.paid}
+              onChange={handleChange}
+              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          <div className="flex flex-col space-y-1 px-2 w-1/2">
+            <label className="text-sm font-medium text-gray-700">
+              {translate("due")}*:
+            </label>
+            <input
+              type="text"
+              placeholder={translate("due")}
+              name="due"
+              value={formData.due}
+              onChange={handleChange}
+              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              required
+            />
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary w-full"
+          disabled={loading}
+        >
+          {loading
+            ? "Loading..."
+            : isEditMode
+            ? translate("save")
+            : translate("addmilksale")}
+        </button>
+      </form>
     </div>
-
-    <div className="flex flex-wrap -mx-2">
-      <div className="flex flex-col space-y-1 px-2 w-1/2">
-        <label className="text-sm font-medium text-gray-700">
-          Price/Liter:
-        </label>
-        <input
-          style={{ width: "800px" }}
-          type="text"
-          placeholder="Price/Liter"
-          name="price"
-          value={formData.price}
-          onChange={handleChange}
-          className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-          required
-        />
-      </div>
-
-      <div className="flex flex-col space-y-1 px-2 w-1/2">
-        <label className="text-sm font-medium text-gray-700">
-          Total:
-        </label>
-        <input
-          style={{ width: "800px" }}
-          type="text"
-          placeholder="Total"
-          name="total"
-          value={formData.total}
-          onChange={handleChange}
-          className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-          required
-        />
-      </div>
-    </div>
-
-    <div className="flex flex-wrap -mx-2">
-      <div className="flex flex-col space-y-1 px-2 w-1/2">
-        <label className="text-sm font-medium text-gray-700">
-          Paid:
-        </label>
-        <input
-          style={{ width: "800px" }}
-          type="text"
-          placeholder="Paid"
-          name="paid"
-          value={formData.paid}
-          onChange={handleChange}
-          className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-          required
-        />
-      </div>
-
-      <div className="flex flex-col space-y-1 px-2 w-1/2">
-        <label className="text-sm font-medium text-gray-700">
-          Due *:
-        </label>
-        <input
-          style={{ width: "800px" }}
-          type="text"
-          placeholder="Due"
-          name="due"
-          value={formData.due}
-          onChange={handleChange}
-          className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-          required
-        />
-      </div>
-    </div>
-
-    <button
-      type="submit"
-      className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary w-full"
-      disabled={loading}
-    >
-      {loading ? "Loading..." : isEditMode ? "Save" : "Add Milk Sale"}
-    </button>
-  </form>
-
-  {successPopup && (
-    <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="bg-white p-4 rounded shadow-md">
-        <p>Information updated successfully!</p>
-      </div>
-    </div>
-  )}
-</div>
   );
 };
 

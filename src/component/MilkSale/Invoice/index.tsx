@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect,useRef } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { MilkSaleContext } from "../Provider";
 import { useTranslation } from "../../Translator/Provider";
@@ -8,13 +8,12 @@ import ReactToPrint from 'react-to-print';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
-
 const MilkSaleInvoice: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { milkSales } = useContext(MilkSaleContext);
 
   const isEditMode = !!id;
-  const { translate } = useTranslation();
+  const { translate, language } = useTranslation();
 
   const [formData, setFormData] = useState({
     accountNo: "",
@@ -42,37 +41,35 @@ const MilkSaleInvoice: React.FC = () => {
     }
   }, [id, isEditMode, milkSales]);
 
- 
   const componentRef: any = useRef();
 
   const handleSaveAsPDF = () => {
-    html2canvas(componentRef.current).then((canvas) => {
+    html2canvas(componentRef.current, { scale: 2 }).then((canvas) => {
       const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF();
-      const imgWidth = 210;
-      const pageHeight = 295;
+      const pdf = new jsPDF('p', 'mm', 'a4'); // Specify page dimensions as per your requirements
+      const imgWidth = pdf.internal.pageSize.getWidth();
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
 
+      let heightLeft = imgHeight;
       let position = 0;
 
       pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
+      heightLeft -= imgHeight;
 
       while (heightLeft >= 0) {
         position = heightLeft - imgHeight;
         pdf.addPage();
         pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+        heightLeft -= imgHeight;
       }
+
       pdf.save("invoice.pdf");
     });
   };
 
-
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
-      <div className="p-8 bg-white shadow-lg rounded-lg w-4/5" ref={componentRef} >
+      <div className="p-8 bg-white border w-4/5" ref={componentRef} style={{ direction: language === 'ar' ? 'rtl' : 'ltr' }}>
         <h2 className="text-2xl font-bold mb-4">
           {translate("milksaleinvoice")}
         </h2>
@@ -151,28 +148,23 @@ const MilkSaleInvoice: React.FC = () => {
             </tbody>
           </table>
         )}
-
-      
       </div>
       <div className="flex justify-between w-4/5 mt-4">
-      <div className="flex justify-between w-5/5 mt-4 ">
-        <button onClick={handleSaveAsPDF} className="flex items-center px-4 py-2 rounded-lg bg-secondary text-white hover:bg-primary focus:outline-none ml-4">
-          <FaSave className=" items-center" />
-          
-        </button>
-        <ReactToPrint
-          trigger={() => (
-            <button className="flex items-center px-4 py-2 rounded-lg bg-secondary text-white hover:bg-primary focus:outline-none ml-4">
-              <FaPrint className=" items-center " />
-             
-            </button>
-          )}
-          content={() => componentRef.current}
-        />
+        <div className="flex justify-between w-5/5 mt-4 ">
+          <button onClick={handleSaveAsPDF} className="flex items-center px-4 py-2 rounded-lg bg-secondary text-white hover:bg-primary focus:outline-none ml-4">
+            <FaSave className=" items-center" />
+          </button>
+          <ReactToPrint
+            trigger={() => (
+              <button className="flex items-center px-4 py-2 rounded-lg bg-secondary text-white hover:bg-primary focus:outline-none ml-4">
+                <FaPrint className=" items-center " />
+              </button>
+            )}
+            content={() => componentRef.current}
+          />
+        </div>
       </div>
     </div>
-    </div>
-    
   );
 };
 

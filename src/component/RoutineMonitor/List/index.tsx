@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { BsPencil } from "react-icons/bs";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -8,6 +8,8 @@ import { BiListUl } from "react-icons/bi";
 import { FaEye } from "react-icons/fa";
 import { RoutineMonitorContext } from "../Provider";
 import RoutineMonitorDetailsDrawer from "../ItemDetails";
+import { toast } from "react-toastify";
+import { useTranslation } from "../../Translator/Provider";
 
 const RoutineMonitorTable: React.FC = () => {
   const { routineMonitors, deleteRoutineMonitor } = useContext(
@@ -21,6 +23,36 @@ const RoutineMonitorTable: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedRoutineMonitor, setSelectedRoutineMonitor] = useState(null);
   const [isDetailsDrawerOpen, setIsDetailsDrawerOpen] = useState(false); // State to control the visibility of the details drawer
+  const [currentDate, setCurrentDate] = useState<string>("");
+  const [user, setUser] = useState<{ name: string; email: string; }>({
+    name: "",
+    email: "",
+    
+  });
+  const { translate} = useTranslation();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/users"); // Adjust the API endpoint accordingly
+        if (response.ok) {
+          const userData = await response.json();
+          if (userData.length > 0) {
+            const { username, email } = userData[0]; // Assuming you only have one user for now
+            setUser({ name: username, email: email });
+          }
+        } else {
+          console.error("Failed to fetch user data");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+
+
+  }, []); 
 
   const handleSort = (fieldName: string) => {
     if (sortBy === fieldName) {
@@ -37,6 +69,11 @@ const RoutineMonitorTable: React.FC = () => {
     }
     return <FaSort />;
   };
+  useEffect(() => {
+    const date = new Date();
+    const formattedDate = date.toLocaleDateString(); // Adjust the date format as needed
+    setCurrentDate(formattedDate);
+  }, []);
 
   // Sorting function for array of objects
   const dynamicSort = (property: string) => {
@@ -141,23 +178,24 @@ const RoutineMonitorTable: React.FC = () => {
         <div className="flex items-center">
           <input
             type="text"
-            placeholder="Search..."
+            placeholder={translate("searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="p-2 rounded border border-gray-300 "
+            className="p-2 rounded border border-gray-300 ml-2 "
           />
 
           <Link
             to="/Add-routine-monitor "
             className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary ml-2"
           >
-            Add New
+            {translate("addNew")}
           </Link>
         </div>
       </div>
       <h1 className="text-xl font-bold mb-4">
-        <BiListUl className="inline-block mr-2" />
-        Routine Monitor List
+        <BiListUl className="inline-block mr-2 ml-2 style={{ fontSize: '1.5em' }}" />
+        
+        {translate("routinemonitorlist")}
       </h1>
       <table className="min-w-full bg-white border-collapse">
         {/* Table header */}
@@ -168,7 +206,7 @@ const RoutineMonitorTable: React.FC = () => {
               onClick={() => handleSort("date")}
             >
               <div className="flex items-center">
-                Date
+              {translate("date")}
                 {sortIcon("date")}
               </div>
             </th>
@@ -177,7 +215,7 @@ const RoutineMonitorTable: React.FC = () => {
               onClick={() => handleSort("stallNo")}
             >
               <div className="flex items-center">
-                Stall No
+              {translate("stallNo")}
                 {sortIcon("stallNo")}
               </div>
             </th>
@@ -186,7 +224,7 @@ const RoutineMonitorTable: React.FC = () => {
               onClick={() => handleSort("animalID")}
             >
               <div className="flex items-center">
-                Animal ID
+              {translate("animalID")}
                 {sortIcon("animalID")}
               </div>
             </th>
@@ -195,7 +233,7 @@ const RoutineMonitorTable: React.FC = () => {
               onClick={() => handleSort("note")} // Assuming you want to enable sorting for the "Note" column
             >
               <div className="flex items-center">
-                Note
+              {translate("note")}
                 {sortIcon("note")}
               </div>
             </th>
@@ -204,7 +242,7 @@ const RoutineMonitorTable: React.FC = () => {
               onClick={() => handleSort("healthStatus")}
             >
               <div className="flex items-center">
-                Health Status
+              {translate("healthstatus")}
                 {sortIcon("healthStatus")}
               </div>
             </th>
@@ -213,11 +251,11 @@ const RoutineMonitorTable: React.FC = () => {
               onClick={() => handleSort("reportedBy")}
             >
               <div className="flex items-center">
-                Reported By
+              {translate("reportedby")}
                 {sortIcon("reportedBy")}
               </div>
             </th>
-            <th className="border border-gray-300 px-4 py-2">Action</th>{" "}
+            <th className="border border-gray-300 px-4 py-2">{translate("action")}</th>{" "}
           </tr>
         </thead>
         {/* Table body */}
@@ -226,7 +264,7 @@ const RoutineMonitorTable: React.FC = () => {
             <tr key={routineMonitor.id}>
               {/* Render each field accordingly */}
               <td className="border border-gray-300 px-4 py-2">
-                {routineMonitor.date}
+                {currentDate}
               </td>
               <td className="border border-gray-300 px-4 py-2">
                 {routineMonitor.stallNo}
@@ -239,7 +277,7 @@ const RoutineMonitorTable: React.FC = () => {
 </td>
               <td className="border border-gray-300 px-4 py-2">
                 <div>
-                  <div className="bg-gray-300 h-6 w-full rounded-full relative">
+                  <div className="bg-gray-300 h-6 w-full  relative">
                     <div
                       className={`h-full ${
                         determineHealthStatus(routineMonitor.healthStatus).color
@@ -247,6 +285,8 @@ const RoutineMonitorTable: React.FC = () => {
                       style={{
                         width: `${routineMonitor.healthStatus}%`,
                         transition: "width 0.3s ease-in-out",
+
+
                       }}
                     ></div>
                   </div>
@@ -263,7 +303,7 @@ const RoutineMonitorTable: React.FC = () => {
                 </div>
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                {routineMonitor.reportedBy}
+                {user.name}
               </td>
               <td className="border border-gray-300 px-2 py-2">
                 <div className="flex items-center">

@@ -4,29 +4,40 @@ import { CowFeedContext } from "../Provider";
 import { PiForkKnifeBold } from "react-icons/pi";
 import { IoInformationCircle } from "react-icons/io5";
 import { TiMinus } from "react-icons/ti"; // Import TiMinus icon
+import { useTranslation } from "../../Translator/Provider";
 
 const EditCowFeedForm = () => {
   const { id } = useParams<{ id: string }>();
-  const { cowFeeds, addCowFeed, editCowFeed } = useContext(CowFeedContext);
+  const { cowFeeds, addcowFeed, editcowFeed } = useContext(CowFeedContext);
   const navigate = useNavigate();
+  const [currentDate, setCurrentDate] = useState<string>("");
+  const { translate, language } = useTranslation();
 
   const isEditMode = !!id;
 
   const [formData, setFormData] = useState({
     stallNo: "",
     cowNumber: "",
-    date: "",
+    date: currentDate,
     note: "",
-    unit: "",
     informations: Array.from({ length: 3 }, () => ({
       foodItem: "",
       quantity: "",
       feedingTime: "",
+      unit: "",
     })), // Change: Initialize informations as an empty array
   });
 
   const [loading, setLoading] = useState(false);
   const [successPopup, setSuccessPopup] = useState(false);
+
+  useEffect(() => {
+    const date = new Date();
+    const formattedDate = date.toLocaleDateString(); // Adjust the date format as needed
+    setCurrentDate(formattedDate);
+  }, []);
+
+
 
   useEffect(() => {
     if (isEditMode) {
@@ -73,16 +84,16 @@ const EditCowFeedForm = () => {
     e.preventDefault();
     setLoading(true);
     if (isEditMode) {
-      await editCowFeed(parseInt(id), formData);
+      await editcowFeed(parseInt(id), formData);
     } else {
-      await addCowFeed(formData);
+      await addcowFeed(formData);
     }
     setLoading(false);
     setSuccessPopup(true);
     setTimeout(() => {
       setSuccessPopup(false);
       navigate("/Cow-Feed");
-    }, 2000);
+    }, 1000);
   };
   const handleRemoveRow = (indexToRemove) => {
     setFormData({
@@ -95,19 +106,18 @@ const EditCowFeedForm = () => {
     <div>
       <form onSubmit={handleSubmit} className="flex flex-col w-full space-y-4">
         <h2 className="text-xl font-bold  mb-4 flex items-center">
-          <PiForkKnifeBold className="mr-2" />
-          <span>Cow Feed </span>
+          <PiForkKnifeBold className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
+          <span>{translate("cowfeed")} </span>
         </h2>
         <h2 className="text-xl font-bold mt-2 mb-4 flex items-center">
-          <IoInformationCircle className="mr-2" />
-          <span>Basic Information :</span>
+          <IoInformationCircle className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
+          <span>{translate("basicinformation")} :</span>
         </h2>
         <div className="flex flex-col space-y-1">
-          <label className="text-sm font-medium text-gray-700">Stall No:</label>
+          <label className="text-sm font-medium text-gray-700">{translate("stallNo")}:</label>
           <input
-            style={{ width: "800px" }}
             type="text"
-            placeholder="Stall No"
+            placeholder={translate("stallNo")}
             name="stallNo"
             value={formData.stallNo}
             onChange={(e) => handleChange(e, -1)}
@@ -118,12 +128,11 @@ const EditCowFeedForm = () => {
 
         <div className="flex flex-col space-y-1">
           <label className="text-sm font-medium text-gray-700">
-            Cow Number:
+          {translate("cownumber")}
           </label>
           <input
-            style={{ width: "800px" }}
             type="text"
-            placeholder="Cow Number"
+            placeholder={translate("cownumber")}
             name="cowNumber"
             value={formData.cowNumber}
             onChange={(e) => handleChange(e, -1)}
@@ -133,11 +142,10 @@ const EditCowFeedForm = () => {
         </div>
 
         <div className="flex flex-col space-y-1">
-          <label className="text-sm font-medium text-gray-700">Date:</label>
+          <label className="text-sm font-medium text-gray-700">{translate("date")}:</label>
           <input
-            style={{ width: "800px" }}
             type="date"
-            placeholder="Date"
+            placeholder={translate("date")}
             name="date"
             value={formData.date}
             onChange={(e) => handleChange(e, -1)}
@@ -147,11 +155,10 @@ const EditCowFeedForm = () => {
         </div>
 
         <div className="flex flex-col space-y-1">
-          <label className="text-sm font-medium text-gray-700">Note:</label>
+          <label className="text-sm font-medium text-gray-700">{translate("note")}:</label>
           <input
-            style={{ width: "800px" }}
             type="text"
-            placeholder="Note"
+            placeholder={translate("note")}
             name="note"
             value={formData.note}
             onChange={(e) => handleChange(e, -1)}
@@ -161,19 +168,19 @@ const EditCowFeedForm = () => {
         </div>
 
         <h2 className="text-xl font-bold mt-2 mb-4 flex items-center">
-          <IoInformationCircle className="mr-2" />
-          <span>Feed Informations :</span>
+          <IoInformationCircle className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
+          <span>{translate("feedinformation")} :</span>
         </h2>
 
-        <table className="border-collapse w-full" style={{ width: "800px" }}>
+        <table className="border-collapse w-full" >
           <thead>
             <tr>
-              <th className="border border-gray-400 px-3 py-2">Food Item</th>
+              <th className="border border-gray-400 px-3 py-2">{translate("fooditem")}</th>
               <th className="border border-gray-400 px-3 py-2">
-                Item Quantity
+              {translate("itemquantity")}
               </th>
-              <th className="border border-gray-400 px-3 py-2">Unit</th>
-              <th className="border border-gray-400 px-3 py-2">Feeding Time</th>
+              <th className="border border-gray-400 px-3 py-2">{translate("unit")}</th>
+              <th className="border border-gray-400 px-3 py-2">{translate("feedingtime")}</th>
             </tr>
           </thead>
           <tbody>
@@ -182,7 +189,7 @@ const EditCowFeedForm = () => {
                 <td className="border border-gray-400 px-3 py-2">
                   <input
                     type="string"
-                    placeholder="Food Item"
+                    placeholder={translate("fooditem")}
                     name="foodItem"
                     value={info.foodItem}
                     onChange={(e) => handleChange(e, index)}
@@ -193,7 +200,7 @@ const EditCowFeedForm = () => {
                 <td className="border border-gray-400 px-3 py-2">
                   <input
                     type="string"
-                    placeholder="Item Quantity"
+                    placeholder={translate("itemquantity")}
                     name="quantity"
                     value={info.quantity}
                     onChange={(e) => handleChange(e, index)}
@@ -208,9 +215,9 @@ const EditCowFeedForm = () => {
                     onChange={(e) => handleChange(e, index)}
                     className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                   >
-                    <option value="kg">Kg</option>
-                    <option value="gram">Gram</option>
-                    <option value="liters">Liters</option>
+                    <option value="kg">{translate("kg")}</option>
+                    <option value="gram">{translate("gram")}</option>
+                    <option value="liters">{translate("liters")}</option>
                   </select>
                 </td>
                 <td className="border border-gray-400 px-1 py-2 text-right">
@@ -223,7 +230,7 @@ const EditCowFeedForm = () => {
                   </button>
                   <input
                     type="string"
-                    placeholder="Feeding Time"
+                    placeholder={translate("feedingtime")}
                     name="feedingTime"
                     value={info.feedingTime}
                     onChange={(e) => handleChange(e, index)}
@@ -237,31 +244,28 @@ const EditCowFeedForm = () => {
         </table>
 
         <button
-          style={{ width: "800px" }}
+         
           type="button"
           onClick={handleAddRow}
           className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary"
         >
-          Add Row
+         {translate("addrow")}
         </button>
 
         <button
-          style={{ width: "800px" }}
           type="submit"
-          className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary"
+          className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary  w-full "
           disabled={loading}
         >
-          {loading ? "Loading..." : isEditMode ? "Save" : "Add Cow Feed"}
+          {loading
+            ? "Loading..."
+            : isEditMode
+            ? translate("save")
+            : translate("addcowfeed")}
         </button>
       </form>
 
-      {successPopup && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded shadow-md">
-            <p>Information updated successfully!</p>
-          </div>
-        </div>
-      )}
+      
     </div>
   );
 };

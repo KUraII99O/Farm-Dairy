@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { BsPencil } from "react-icons/bs";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -8,9 +8,11 @@ import { BiListUl } from "react-icons/bi";
 import { FaEye } from "react-icons/fa";
 import ItemDetailDrawer from "../ItemDetails";
 import { CowFeedContext } from "../Provider";
+import { toast } from "react-toastify";
+import { useTranslation } from "../../Translator/Provider";
 
 const CowFeedTable: React.FC = () => {
-  const { cowFeeds, deleteCowFeed } = useContext(CowFeedContext);
+  const { cowFeeds, deletecowFeed } = useContext(CowFeedContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
@@ -19,6 +21,10 @@ const CowFeedTable: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [cowFeedToDelete, setCowFeedToDelete] = useState<number | null>(null);
   const [selectedCowFeed, setSelectedCowFeed] = useState(null);
+  const [currentDate, setCurrentDate] = useState<string>("");
+  const { translate} = useTranslation();
+
+
 
   const handleSort = (fieldName: string) => {
     if (sortBy === fieldName) {
@@ -28,6 +34,12 @@ const CowFeedTable: React.FC = () => {
       setSortOrder("asc");
     }
   };
+
+  useEffect(() => {
+    const date = new Date();
+    const formattedDate = date.toLocaleDateString(); // Adjust the date format as needed
+    setCurrentDate(formattedDate);
+  }, []);
 
   const sortIcon = (fieldName: string) => {
     if (sortBy === fieldName) {
@@ -93,7 +105,7 @@ const CowFeedTable: React.FC = () => {
   const handleDelete = async (id: number) => {
     setIsDeleting(true);
     try {
-      await deleteCowFeed(id);
+      await deletecowFeed(id);
       setIsDeleting(false);
       toast.success("Cow feed entry deleted successfully!");
     } catch (error) {
@@ -117,23 +129,24 @@ const CowFeedTable: React.FC = () => {
         <div className="flex items-center">
           <input
             type="text"
-            placeholder="Search..."
-            value={searchTerm}
+            placeholder={translate("searchPlaceholder")}
+             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="p-2 rounded border border-gray-300 "
+            className="p-2 rounded border border-gray-300 ml-2"
           />
 
           <Link
             to="/Add-cow-feed "
             className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary ml-2"
           >
-            Add New
+            
+            {translate("addNew")}
           </Link>
         </div>
       </div>
       <h1 className="text-xl font-bold mb-4">
-        <BiListUl className="inline-block mr-2" />
-        Cow Feed List
+        <BiListUl className="inline-block mr-2 ml-2" />
+        {translate("cowfeedlist")}
       </h1>
       <table className="min-w-full bg-white border-collapse">
         {/* Table header */}
@@ -144,7 +157,7 @@ const CowFeedTable: React.FC = () => {
               onClick={() => handleSort("date")}
             >
               <div className="flex items-center">
-                Date
+              {translate("date")}
                 {sortIcon("date")}
               </div>
             </th>
@@ -153,7 +166,7 @@ const CowFeedTable: React.FC = () => {
               onClick={() => handleSort("stallNo")}
             >
               <div className="flex items-center">
-                Stall No
+              {translate("stallNo")}
                 {sortIcon("stallNo")}
               </div>
             </th>
@@ -162,7 +175,7 @@ const CowFeedTable: React.FC = () => {
               onClick={() => handleSort("cowNumber")}
             >
               <div className="flex items-center">
-                Cow Number
+              {translate("cownumber")}
                 {sortIcon("cowNumber")}
               </div>
             </th>
@@ -171,11 +184,11 @@ const CowFeedTable: React.FC = () => {
               onClick={() => handleSort("note")}
             >
               <div className="flex items-center">
-                Note
+              {translate("note")}
                 {sortIcon("note")}
               </div>
             </th>
-            <th className="border border-gray-300 px-4 py-2">Action</th>{" "}
+            <th className="border border-gray-300 px-4 py-2">{translate("action")}</th>{" "}
           </tr>
         </thead>
         {/* Table body */}
@@ -184,7 +197,7 @@ const CowFeedTable: React.FC = () => {
             <tr key={cowFeed.id}>
               {/* Render each field accordingly */}
               <td className="border border-gray-300 px-4 py-2">
-                {cowFeed.date}
+                {currentDate}
               </td>
               <td className="border border-gray-300 px-4 py-2">
                 {cowFeed.stallNo}

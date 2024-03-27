@@ -132,6 +132,7 @@ const EditMilk = () => {
             />
           </div>
         </div>
+
         <div className="flex flex-wrap -mx-2">
           <div className="flex flex-col space-y-1 px-2 w-1/2">
             <label className="text-sm font-medium text-gray-700">
@@ -147,6 +148,7 @@ const EditMilk = () => {
               required
             />
           </div>
+
           <div className="flex flex-col space-y-1 px-2 w-1/2">
             <label className="text-sm font-medium text-gray-700">
               {" "}
@@ -163,6 +165,7 @@ const EditMilk = () => {
             />
           </div>
         </div>
+
         <div className="flex flex-wrap -mx-2">
           <div className="flex flex-col space-y-1 px-2 w-full">
             <label className="text-sm font-medium text-gray-700">
@@ -251,14 +254,6 @@ const EditMilk = () => {
             : translate("addmilk")}
         </button>
       </form>
-
-      {successPopup && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded shadow-md">
-            <p>Information updated successfully!</p>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -1,74 +1,91 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import { toast } from 'react-toastify';
 
-export const RoutineMonitorContext = createContext();
+export const RoutineMonitorContext = createContext<any>(null);
 
-export const RoutineMonitorProvider = ({ children }) => {
-  const [routineMonitors, setRoutineMonitors] = useState([
-    { 
-      id: 1, 
-      date: '2024-01-01', 
-      stallNo: 'A1', 
-      animalID: 'A001',
-      note:'testets' ,
-      healthStatus: 'Healthy', 
-      reportedBy: 'John Doe', 
-      informations: [
-        { ServiceName: 'Monitoring', Result: 'Done', MonitoringTime: '10:00' },
-        { ServiceName: 'Monthly Tika', Result: 'Done', MonitoringTime: '10:00' },
-        { ServiceName: 'Weekly Tika', Result: 'Done', MonitoringTime: '10:00' },
-      ]
-    },
-    { 
-      id: 2, 
-      date: '2024-01-02', 
-      stallNo: 'B2', 
-      animalID: 'A002',
-      note:'test the testing note '  ,
-      healthStatus: 'Sick', 
-      reportedBy: 'Jane Smith', 
-      informations: [
-        { ServiceName: 'Monitoring', Result: 'Done', MonitoringTime: '10:00' },
-        { ServiceName: 'Monthly Tika', Result: 'Done', MonitoringTime: '10:00' },
-        { ServiceName: 'Weekly Tika', Result: 'Done', MonitoringTime: '10:00' },
-      ]
-    },
-    // Add more mock data as needed
-    { 
-      id: 3, 
-      date: '2024-01-02', 
-      stallNo: 'B2', 
-      animalID: 'A002',
-      note:'same testinfg test '  , 
-      healthStatus: 'Sick', 
-      reportedBy: 'Jane Smith', 
-      informations: [
-        { ServiceName: 'Monitoring', Result: 'Done', MonitoringTime: '10:00' },
-        { ServiceName: 'Monthly Tika', Result: 'Done', MonitoringTime: '10:00' },
-        { ServiceName: 'Weekly Tika', Result: 'Done', MonitoringTime: '10:00' },
-      ]
-    },
-    // Add more mock data as needed
-  ]);
+interface RoutineMonitor {
+  id: number;
+  date: string;
+  StallNo: string;
+  healthStatus: string;
+  note: number;
+  reportedBy: string;
+  quantity: number;
+  ServiceName: string;
+  Result: string;
+  MonitoringTime: string;
+}
 
-  const addRoutineMonitor = (newRoutineMonitor) => {
-    const maxId = Math.max(...routineMonitors.map(routineMonitor => routineMonitor.id), 0);
-    const newRoutineMonitorWithId = { ...newRoutineMonitor, id: maxId + 1 };
-    setRoutineMonitors([...routineMonitors, newRoutineMonitorWithId]);
+export const RoutineMonitorProvider: React.FC = ({ children }) => {
+  const [routineMonitors, setRoutineMonitors] = useState<RoutineMonitor[]>([]);
+
+  useEffect(() => {
+    const fetchRoutineMonitors = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/routineMonitors');
+        if (!response.ok) {
+          throw new Error('Failed to fetch routine Monitors data');
+        }
+        const data = await response.json();
+        setRoutineMonitors(data);
+      } catch (error) {
+        console.error('Error fetching routine Monitors data:', error.message);
+      }
+    };
+
+    fetchRoutineMonitors();
+  }, []);
+
+  const addRoutineMonitor = async (newRoutineMonitor: Omit<RoutineMonitor, 'id'>) => {
+    try {
+      const id = routineMonitors.length + 1;
+      const routineMonitorWithId: RoutineMonitor = { id, ...newRoutineMonitor };
+
+      const response = await fetch('http://localhost:3000/routineMonitors', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(routineMonitorWithId),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add routine Monitor');
+      }
+
+      setRoutineMonitors([...routineMonitors, routineMonitorWithId]);
+      toast.success('Routine Monitor added successfully');
+    } catch (error) {
+      console.error('Error:', error.message);
+      toast.error('Failed to add Routine Monitor');
+    }
   };
 
-  const editRoutineMonitor = (id, updatedRoutineMonitor) => {
-    const updatedRoutineMonitorList = routineMonitors.map(item => (item.id === id ? { ...item, ...updatedRoutineMonitor } : item));
+  const editRoutineMonitor = (id: number, updatedRoutineMonitor: Partial<RoutineMonitor>) => {
+    const updatedRoutineMonitorList = routineMonitors.map(item =>
+      item.id === id ? { ...item, ...updatedRoutineMonitor } : item
+    );
     setRoutineMonitors(updatedRoutineMonitorList);
   };
 
-  const deleteRoutineMonitor = (id) => {
-    const updatedRoutineMonitors = routineMonitors.filter((routineMonitor) => routineMonitor.id !== id);
-    setRoutineMonitors(updatedRoutineMonitors);
+  const deleteRoutineMonitor = async (id: number) => {
+    try {
+      await fetch(`http://localhost:3000/routineMonitors/${id}`, {
+        method: 'DELETE',
+      });
+
+      const updatedRoutineMonitors = routineMonitors.filter(routineMonitor => routineMonitor.id !== id);
+      setRoutineMonitors(updatedRoutineMonitors);
+      toast.success('Routine Monitor deleted successfully');
+    } catch (error) {
+      console.error('Error:', error.message);
+      toast.error('Failed to delete Routine Monitor');
+    }
   };
 
-  const getRoutineMonitorById = (id) => {
+  const getRoutineMonitorById = (id: number) => {
     // Find and return the routine monitor with the given ID
-    return routineMonitors.find((routineMonitor) => routineMonitor.id === id);
+    return routineMonitors.find(routineMonitor => routineMonitor.id === id);
   };
 
   const value = {
