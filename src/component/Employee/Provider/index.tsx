@@ -53,10 +53,8 @@ export const EmployeeProvider: React.FC = ({ children }) => {
       }
 
       setEmployees([...employees, employeeWithId]);
-      toast.success("Employee added successfully");
     } catch (error) {
       console.error("Error:", error.message);
-      toast.error("Failed to add employee");
     }
   };
 
@@ -80,10 +78,8 @@ export const EmployeeProvider: React.FC = ({ children }) => {
         )
       );
 
-      toast.success("Employee updated successfully");
     } catch (error) {
       console.error("Error:", error.message);
-      toast.error("Failed to update employee");
     }
   };
 

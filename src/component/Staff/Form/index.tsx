@@ -7,7 +7,7 @@ import { FaImage } from "react-icons/fa6";
 
 const EditStaff = () => {
   const { id } = useParams<{ id: string }>();
-  const { staff, addStaff, editStaff } = useContext(StaffContext);
+  const { staff, addStaff, editStaff, } = useContext(StaffContext);
   const { translate, language } = useTranslation();
   const navigate = useNavigate();
 

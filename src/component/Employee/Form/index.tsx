@@ -8,7 +8,7 @@ const EditEmployeeForm = ({ employee, onSubmit, onClose }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const formRef = useRef(null);
-  const { translate,language  } = useTranslation();
+  const { translate, language } = useTranslation();
 
   const [formData, setFormData] = useState({
     payDate: "",
@@ -20,6 +20,25 @@ const EditEmployeeForm = ({ employee, onSubmit, onClose }) => {
     note: "",
     image: "",
   });
+
+  const [staffList, setStaffList] = useState([]); // State to store staff data
+
+  useEffect(() => {
+    // Fetch staff data from the endpoint
+    fetch('http://localhost:3000/staffs')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch staff data');
+        }
+        return response.json();
+      })
+      .then(data => {
+        setStaffList(data);
+      })
+      .catch(error => {
+        console.error('Error fetching staff data:', error);
+      });
+  }, []);
 
   useEffect(() => {
     if (employee) {
@@ -159,9 +178,16 @@ const EditEmployeeForm = ({ employee, onSubmit, onClose }) => {
                 name="employeeName"
                 value={formData.employeeName}
                 onChange={handleChange}
-                required
+                autoComplete="off" // Disable browser autocomplete
+                list="staffNames" // Connect with the datalist
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
+              {/* Datalist for autocomplete */}
+              <datalist id="staffNames">
+                {staffList.map((staff, index) => (
+                  <option key={index} value={staff.name} />
+                ))}
+              </datalist>
             </div>
             <div className="mb-4">
               <label

@@ -61,11 +61,31 @@ export const RoutineMonitorProvider: React.FC = ({ children }) => {
     }
   };
 
-  const editRoutineMonitor = (id: number, updatedRoutineMonitor: Partial<RoutineMonitor>) => {
-    const updatedRoutineMonitorList = routineMonitors.map(item =>
-      item.id === id ? { ...item, ...updatedRoutineMonitor } : item
-    );
-    setRoutineMonitors(updatedRoutineMonitorList);
+  const editRoutineMonitor = async (id: number, updatedRoutineMonitor: Omit<RoutineMonitor, "id">) => {
+    try {
+      const response = await fetch(`http://localhost:3000/RoutineMonitors/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedRoutineMonitor),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to update cow Feed record");
+      }
+  
+      setRoutineMonitors((prevRoutineMonitors) =>
+        prevRoutineMonitors.map((RoutineMonitor) =>
+          RoutineMonitor.id === id ? { ...RoutineMonitor, ...updatedRoutineMonitor } : RoutineMonitor
+        )
+      );
+  
+      toast.success(" RoutineMonitor updated successfully");
+    } catch (error) {
+      console.error("Error:", error.message);
+      toast.error("Failed to update  Routine Monitor");
+    }
   };
 
   const deleteRoutineMonitor = async (id: number) => {

@@ -21,9 +21,9 @@ const MilkTable: React.FC = () => {
   const [itemsPerPage, setItemsPerPage] = useState(5); // Number of milk entries per page
   const [isDeleting, setIsDeleting] = useState(false);
   const [milkToDelete, setMilkToDelete] = useState<number | null>(null);
-  const [user, setUser] = useState<{ name: string; email: string; }>({
+  const [user, setUser] = useState<{ name: string;  }>({
     name: "",
-    email: "",
+    
     
   });
   const [currentDate, setCurrentDate] = useState<string>("");
@@ -45,25 +45,23 @@ const MilkTable: React.FC = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/users"); // Adjust the API endpoint accordingly
-        if (response.ok) {
-          const userData = await response.json();
-          if (userData.length > 0) {
-            const { username, email } = userData[0]; // Assuming you only have one user for now
-            setUser({ name: username, email: email });
-          }
+        const storedUser = localStorage.getItem('loggedInUser');
+        if (storedUser) {
+          const userData = JSON.parse(storedUser);
+          const { username } = userData;
+          setUser({ name: username });
+          console.log("Username fetched successfully:", username);
         } else {
-          console.error("Failed to fetch user data");
+          console.error("No user data found in local storage");
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Error fetching user data from local storage:", error);
       }
     };
-
+  
     fetchUserData();
-
-
-  }, []);  
+  }, []);
+  
   
   
   const sortedMilks = sortBy

@@ -25,18 +25,16 @@ const EditMilk = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/users"); // Adjust the API endpoint accordingly
-        if (response.ok) {
-          const userData = await response.json();
-          if (userData.length > 0) {
-            const { username, email } = userData[0]; // Assuming you only have one user for now
-            setUser({ name: username, email: email });
-          }
+        const storedUser = localStorage.getItem('loggedInUser');
+        if (storedUser) {
+          const userData = JSON.parse(storedUser);
+          const { username, email } = userData;
+          setUser({ name: username, email: email });
         } else {
-          console.error("Failed to fetch user data");
+          console.error("No user data found in local storage");
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Error fetching user data from local storage:", error);
       }
     };
 
@@ -53,7 +51,7 @@ const EditMilk = () => {
     fate: "", // New field
     price: "", // New field
     total: "",
-    AddedBy: user.name,
+    AddedBy: "",
     date: currentDate,
   });
   const [loading, setLoading] = useState(false);

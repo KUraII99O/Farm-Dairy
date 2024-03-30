@@ -2,10 +2,9 @@ import React, { useState, useContext, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ManageCowContext } from "../Provider";
 import { IoInformationCircle } from "react-icons/io5";
-import ProfileImageUploader from "../../FileUpload";
 import { FaBriefcaseMedical, FaImage } from "react-icons/fa";
+import { useTranslation } from "../../Translator/Provider";
 
-// Modified Checkbox component to handle checked state and onChange event
 const Checkbox = ({
   label,
   checked,
@@ -31,10 +30,19 @@ const Checkbox = ({
 const EditCowForm = () => {
   const { id } = useParams<{ id: string }>();
   const { addCow, editCow, getCowById } = useContext(ManageCowContext);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null); // State to store selected image path
+  const [selectedImage] = useState<string | null>(null); // State to store selected image path
   const navigate = useNavigate();
+  const { translate, language } = useTranslation();
+  const [user, setUser] = useState<{ name: string;  }>({
+    name: "",
+    
+    
+  });
+
+  const [stallList, setStallList] = useState([]); // State to store staff data
 
   const isEditMode = !!id;
+  const isArabic = language === "ar"; // Assuming 'ar' represents Arabic language
 
   const [formData, setFormData] = useState({
     image: "",
@@ -43,10 +51,10 @@ const EditCowForm = () => {
     buyingPrice: "",
     pregnantStatus: "",
     milkPerDay: "",
-    animalStatus: "",
+    animalStatus: false,
     gender: "",
     informations: {
-      stallNo: "",
+      stallNumber: "",
       dateOfBirth: "",
       animalAgeDays: "",
       weight: "",
@@ -57,7 +65,7 @@ const EditCowForm = () => {
       buyFrom: "",
       prevVaccineDone: "",
       note: "",
-      createdBy: "",
+      CreatedBy: "",
     },
     vaccinations: {
       BDV: false,
@@ -71,8 +79,12 @@ const EditCowForm = () => {
 
   // Define setSelectedImages state setter function
 
-  const handleImageChange = (imagePath: string) => {
-    setSelectedImage(imagePath);
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setFormData({
+      ...formData,
+      image: URL.createObjectURL(file), // Store file path for preview
+    });
   };
 
   useEffect(() => {
@@ -93,24 +105,63 @@ const EditCowForm = () => {
     }
   }, [id, isEditMode, getCowById]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const storedUser = localStorage.getItem('loggedInUser');
+        if (storedUser) {
+          const userData = JSON.parse(storedUser);
+          const { username } = userData;
+          setUser({ name: username });
+          console.log("Username fetched successfully:", username);
+        } else {
+          console.error("No user data found in local storage");
+        }
+      } catch (error) {
+        console.error("Error fetching user data from local storage:", error);
+      }
+    };
+  
+    fetchUserData();
+  }, []);
 
-    if (name in formData.informations) {
-      setFormData({
-        ...formData,
-        informations: {
-          ...formData.informations,
-          [name]: value,
-        },
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
+  useEffect(() => {
+  const fetchStallData = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/stalls');
+      if (!response.ok) {
+        throw new Error('Failed to fetch stall data');
+      }
+      const data = await response.json();
+      setStallList(data);
+    } catch (error) {
+      console.error('Error fetching stall data:', error);
     }
   };
+
+  fetchStallData();
+}, []);
+
+
+const handleChange = (e) => {
+  const { name, value } = e.target;
+
+  if (name === 'stallNo') { // Check if the field is stallNo
+    setFormData({
+      ...formData,
+      informations: {
+        ...formData.informations,
+        stallNumber: value, // Update stallNumber directly
+        CreatedBy: user.name // Include the username in CreatedBy field
+      },
+    });
+  } else { // For other fields, update formData directly
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  }
+};
 
   const handleCheckboxChange = (name: string, isChecked: boolean) => {
     setFormData({
@@ -145,221 +196,274 @@ const EditCowForm = () => {
   };
   return (
     <form onSubmit={handleSubmit}>
-      <div className="grid grid-cols-3 gap-4">
-        <div className="col-span-3 mb-4">
-          <h2 className="text-xl font-bold  mb-4 flex items-center">
-            <IoInformationCircle className="mr-2" />
-            <span>Animal Basic Information </span>
+      
+      <div className="grid grid-cols-3 gap-4  ">
+        <div className="col-span-3 mb-4 ">
+          <h2 className="text-xl font-bold  mb-4 flex items-center ">
+            <IoInformationCircle className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
+            <span> {translate("Aaimalbasicinformation")}</span>
           </h2>
-          <h2 className="text-xl font-bold mb-4">Date of Birth * :</h2>
+          <h2 className="text-sm mb-4   ">{translate("dateofbirth")}* :</h2>
           <input
+            style={{ height: "2.5rem" }}
             type="date"
             name="dateOfBirth"
             value={formData.informations.dateOfBirth}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
             required
           />
         </div>
 
         <div className="col-span-1">
-          <h2 className="text-xl font-bold mb-4">Weight (KG) * :</h2>
+          <h2 className="text-sm mb-4">{translate("weight")} * :</h2>
           <input
+            style={{ height: "2.5rem" }}
             type="number"
             name="weight"
             value={formData.informations.weight}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
             required
           />
         </div>
 
         <div className="col-span-1">
-          <h2 className="text-xl font-bold mb-4">Height (INCH) * :</h2>
+          <h2 className="text-sm mb-4">{translate("height")} * :</h2>
           <input
+            style={{ height: "2.5rem" }}
             type="number"
             name="height"
             value={formData.informations.height}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
             required
           />
         </div>
 
         <div className="col-span-1">
-          <h2 className="text-xl font-bold mb-4">Gender :</h2>
+          <h2 className="text-sm mb-4">{translate("gender")} :</h2>
           <select
+            style={{ height: "2.5rem" }}
             name="gender"
             value={formData.gender}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
           >
-            <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
+            <option value="">{translate("selectgender")}</option>
+            <option value="Male">{translate("male")}</option>
+            <option value="Female">{translate("female")}</option>
           </select>
         </div>
 
         <div className="col-span-1">
-          <h2 className="text-xl font-bold mb-4">Animal Type * :</h2>
+          <h2 className="text-sm mb-4">{translate("animalType")} * :</h2>
           <input
+            style={{ height: "2.5rem" }}
             type="text"
             name="animalType"
             value={formData.animalType}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
             required
           />
         </div>
 
         <div className="col-span-1">
-          <h2 className="text-xl font-bold mb-4">Pregnant Status :</h2>
+          <h2 className="text-sm mb-4">{translate("pregnantStatus")}:</h2>
           <select
+            style={{ height: "2.5rem" }}
             name="pregnantStatus"
             value={formData.pregnantStatus}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
           >
-            <option value="">Select Status</option>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
+            <option value="">{translate("selectstatus")}</option>
+            <option value="Pregnant">{translate("pregnant")}</option>
+            <option value="Not Pregnant">{translate("notpregnant")} </option>
           </select>
         </div>
 
         <div className="col-span-1">
-          <h2 className="text-xl font-bold mb-4">Milk Per Day (LTR) :</h2>
+          <h2 className="text-sm mb-4">{translate("milkPerDay")}:</h2>
           <input
+            style={{ height: "2.5rem" }}
             type="number"
             name="milkPerDay"
             value={formData.milkPerDay}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
           />
         </div>
 
         <div className="col-span-1">
-          <h2 className="text-xl font-bold mb-4">Buy From :</h2>
+          <h2 className="text-sm mb-4">{translate("buyfrom")} :</h2>
           <input
+            style={{ height: "2.5rem" }}
             type="text"
             name="buyFrom"
             value={formData.informations.buyFrom}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
           />
         </div>
 
         <div className="col-span-1">
-          <h2 className="text-xl font-bold mb-4">Buying Price * :</h2>
+          <h2 className="text-sm mb-4">{translate("buyingPrice")} * :</h2>
           <div className="relative">
             <span className="absolute inset-y-0 left-0 flex items-center pl-2 text-gray-700">
               $
             </span>
             <input
+              style={{ height: "2.5rem" }}
               type="text"
               name="buyingPrice"
               value={formData.buyingPrice} // Use formData.buyingPrice directly
               onChange={handleChange}
-              className="pl-8 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="pl-8 w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
               required
             />
           </div>
         </div>
 
         <div className="col-span-1">
-          <h2 className="text-xl font-bold mb-4">Buy Date * :</h2>
+          <h2 className="text-sm  mb-4">{translate("buyDate")} * :</h2>
           <input
+            style={{ height: "2.5rem" }}
             type="date"
             name="buyDate"
             value={formData.buyDate}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
             required
           />
         </div>
 
         <div className="col-span-1">
-          <h2 className="text-xl font-bold mb-4">Stall No * :</h2>
-          <input
-            type="text"
-            name="stallNo"
-            value={formData.informations.stallNo}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
-            required
-          />
-        </div>
+      <h2 className="text-sm mb-4">{translate("stallnumber")} * :</h2>
+      <select
+  style={{ height: "2.5rem" }}
+  name="stallNo"
+  value={formData.informations.stallNumber}
+  onChange={handleChange}
+  className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+  required
+>
+  <option value="">Select Stall Number</option>
+  {stallList.map(Stall => (
+    <option key={Stall.stallNumber} value={Stall.stallNumber}>{Stall.stallNumber}</option>
+  ))}
+</select>
+    </div>
 
         <div className="col-span-1">
-          <h2 className="text-xl font-bold mb-4">Previous Vaccine Done :</h2>
+          <h2 className="text-sm mb-4">{translate("prevVaccineDone")} :</h2>
           <input
+            style={{ height: "2.5rem" }}
             name="prevVaccineDone"
             value={formData.informations.prevVaccineDone}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
           ></input>
         </div>
 
         <div className="col-span-1">
-          <h2 className="text-xl font-bold mb-4">animalAge(365) :</h2>
+          <h2 className="text-sm mb-4">{translate("animalage")} :</h2>
           <input
+            style={{ height: "2.5rem" }}
             name="animalAgeDays"
             value={formData.informations.animalAgeDays}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+          ></input>
+        </div>
+
+        <div className="col-span-1">
+          <h2 className="text-sm mb-4">{translate("color")} :</h2>
+          <input
+            style={{ height: "2.5rem" }}
+            name="color"
+            value={formData.informations.color}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+          ></input>
+        </div>
+
+        <div className="col-span-1">
+          <h2 className="text-sm mb-4">
+            {translate("nextpregnancyapproxtime")} :
+          </h2>
+          <input
+            style={{ height: "2.5rem" }}
+            type="date"
+            name="nextPregnancyApproxTime"
+            value={formData.informations.nextPregnancyApproxTime}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+          ></input>
+        </div>
+        <div className="col-span-1">
+          <h2 className="text-sm mb-4">{translate("numofpregnant")} :</h2>
+          <input
+            style={{ height: "2.5rem" }}
+            name="numOfPregnant"
+            value={formData.informations.numOfPregnant}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
           ></input>
         </div>
 
         <div className="col-span-3">
-          <h2 className="text-xl font-bold mb-4">Note :</h2>
+          <h2 className="text-sm mb-4">{translate("note")} :</h2>
           <textarea
             name="note"
             value={formData.informations.note}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
           />
         </div>
         <div className="col-span-3">
           <h2 className="text-xl font-bold mt-8 flex items-center">
-            <FaBriefcaseMedical className="mr-2" />
-            <span>Select Previouse Vaccine Done</span>
+            <FaBriefcaseMedical className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
+            <span>{translate("selectpreviousevaccinedone")}</span>
           </h2>
-          <div className="flex flex-wrap mt-4">
-            <div className="flex flex-col mr-8">
+          <div className="flex flex-wrap mt-4 border p-6">
+            <div className={`flex flex-col mr-8 ${language === "ar" ? "ml-64" : ""}`} >
               <Checkbox
-                label="BDV - (60 Days)"
+                label={`BVD - (60 ${translate("days")})`}
                 checked={formData.vaccinations.BDV}
                 onChange={(isChecked) => handleCheckboxChange("BDV", isChecked)}
               />
               <Checkbox
-                label="BVD - (90 Days)"
+                label={`BVD - (90 ${translate("days")})`}
                 checked={formData.vaccinations.BVD}
                 onChange={(isChecked) => handleCheckboxChange("BVD", isChecked)}
               />
             </div>
-            <div className="flex flex-col mr-8">
+            <div className="flex flex-col ml-64	">
               <Checkbox
-                label="PI3 - (120 Days)"
+                label={`PI3 - (120 ${translate("days")})`}
                 checked={formData.vaccinations.PI3}
                 onChange={(isChecked) => handleCheckboxChange("PI3", isChecked)}
               />
               <Checkbox
-                label="BRSV - (365 Days)"
+                label={`BRSV - (365 ${translate("days")})`}
                 checked={formData.vaccinations.BRSV}
                 onChange={(isChecked) =>
                   handleCheckboxChange("BRSV", isChecked)
                 }
               />
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col ml-64		">
               <Checkbox
-                label="Vitamin A - (60 Days)"
+                label={`VitaminA - (60 ${translate("days")})`}
                 checked={formData.vaccinations.VitaminA}
                 onChange={(isChecked) =>
                   handleCheckboxChange("VitaminA", isChecked)
                 }
               />
               <Checkbox
-                label="Anthrax - (120 Days)"
+                label={`Anthrax - (120 ${translate("days")})`}
                 checked={formData.vaccinations.Anthrax}
                 onChange={(isChecked) =>
                   handleCheckboxChange("Anthrax", isChecked)
@@ -368,13 +472,49 @@ const EditCowForm = () => {
             </div>
           </div>
         </div>
-        <h2 className="text-xl font-bold mt-8 flex items-center">
-          <FaImage className="mr-2" />
-          <span>Animal Images</span>
-        </h2>
 
-        <div className="col-span-3">
-          <ProfileImageUploader onImageChange={handleImageChange} />
+        <div>
+          <label
+            className={`text-xl font-bold mt-8 flex items-center ${
+              language === "ar" ? "mr-2" : "mb-0"
+            }`}
+          >
+            <FaImage className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
+            {translate("Animalmages")}:
+          </label>
+          <div className="relative">
+            <label
+              htmlFor="uploadInput"
+              className={`cursor-pointer border my-6 border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white hover:bg-gray-100 text-center ${
+                isArabic ? "" : ""
+              }`}
+              style={{
+                width: "300px", // Adjust width as needed
+                height: "300px", // Adjust height as needed
+                display: "inline-block",
+                lineHeight: "200px", // Adjust line height to center content vertically
+              }}
+            >
+              {formData.image ? (
+                <img
+                  src={formData.image}
+                  alt="Uploaded"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                translate("selectImage")
+              )}
+            </label>
+            <input
+              type="file"
+              name="image"
+              onChange={handleFileChange}
+              className="hidden"
+              id="uploadInput"
+              accept="image/jpg"
+              capture="environment"
+            />
+          </div>
         </div>
 
         <div className="col-span-3">
@@ -382,7 +522,7 @@ const EditCowForm = () => {
             type="submit"
             className="bg-secondary hover:bg-primary text-white font-bold py-2 px-4 rounded mt-4"
           >
-            {isEditMode ? "Update Cow" : "Add Cow"}
+            {isEditMode ? translate("Update Cow") : translate("Add Cow")}
           </button>
         </div>
       </div>

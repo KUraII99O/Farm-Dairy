@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
+import { useTranslation } from "../../Translator/Provider";
 
 interface Props {
   isOpen: boolean;
@@ -18,53 +19,95 @@ interface Props {
   };
 }
 
-const VaccineMonitorDetailsDrawer: React.FC<Props> = ({ isOpen, onClose, vaccineMonitor }) => {
+const VaccineMonitorDetailsDrawer = ({ isOpen, onClose, vaccineMonitor   }) => {
+  const { translate } = useTranslation();
+  const ref = useRef(null);
 
-  const handleOverlayClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (event.target === event.currentTarget) {
-      onClose(); // Close the modal only if the overlay itself is clicked
+  const handleClickOutside = (event) => {
+    if (ref.current && !ref.current.contains(event.target)) {
+      onClose();
     }
   };
 
-  if (!isOpen || !vaccineMonitor) return null;
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <>
-      <div className={`fixed inset-0 bg-black opacity-25 z-40 ${isOpen ? "block" : "hidden"}`} onClick={handleOverlayClick}></div>
-      <div className={`fixed inset-y-0 right-0 flex flex-col justify-center w-2/3 max-w-md z-50 ${isOpen ? "" : "hidden"}`}>
-        <div className={`vaccine-monitor-drawer bg-white h-full shadow-lg transform transition-transform ease-in-out duration-300 ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
-          <div className="flex justify-between items-center p-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold">Vaccine Monitor Details</h2>
-            <button onClick={onClose} className="text-gray-500 hover:text-gray-700 cursor-pointer">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-          <div className="p-4">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr>
-                  <th className="border border-gray-400 px-3 py-2">Vaccine Name</th>
-                  <th className="border border-gray-400 px-3 py-2">Remarks</th>
-                  <th className="border border-gray-400 px-3 py-2">Given Time</th>
-                </tr>
-              </thead>
-              <tbody>
-                {vaccineMonitor.informations.map((info, index) => (
-                  <tr key={index}>
-                    <td className="border border-gray-400 px-3 py-2">{info.VaccineName}</td>
-                    <td className="border border-gray-400 px-3 py-2">{info.Remarks}</td>
-                    <td className="border border-gray-400 px-3 py-2">{info.GivenTime}</td>
+      {isOpen && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-70 z-40" >
+          <div className="fixed inset-0  z-50 flex justify-end ">
+
+            <div ref={ref}  className="w-full max-w-md bg-white shadow-lg p-6">
+
+            <h1 className=" inline-block text-xl font-bold mb-4">
+
+                
+                {translate("itemdetails")}
+              </h1>
+              <button
+                className="absolute top-0 right-0 m-2 text-gray-600 hover:text-gray-900 focus:outline-none"
+                onClick={onClose}
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+              <table className="w-full border-collapse mt-4">
+                <thead>
+                  <tr>
+                    <th className="border border-gray-400 px-3 py-2">
+                      {translate("vaccinename")}
+                    </th>
+                    <th className="border border-gray-400 px-3 py-2">
+                      {translate("remark")}
+                    </th>
+                    <th className="border border-gray-400 px-3 py-2">
+                      {translate("giventime")}
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {vaccineMonitor.informations.map((info, index) => (
+                    <tr key={index}>
+                      <td className="border border-gray-400 px-3 py-2">
+                        {info.VaccineName}
+                      </td>
+                      <td className="border border-gray-400 px-3 py-2">
+                        {info.Remarks} 
+                      </td>
+                      <td className="border border-gray-400 px-3 py-2">
+                        {info.GivenTime}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <button
+                onClick={onClose}
+                className="mt-4 bg-secondary hover:primary text-white py-2 px-4 rounded"
+              >
+                {translate("close")}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </>
   );
 };
 
 export default VaccineMonitorDetailsDrawer;
+

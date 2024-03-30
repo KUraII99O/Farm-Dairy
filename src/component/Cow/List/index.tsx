@@ -9,9 +9,11 @@ import { FaEye } from "react-icons/fa";
 import { ManageCowContext } from "../Provider"; // Corrected import
 import ItemDetailDrawer from "../ItemDatils";
 import { toast, ToastContainer } from "react-toastify";
+import { useTranslation } from "../../Translator/Provider";
 
 const AnimalList: React.FC = () => {
-  const { cows, deleteCow, setCows } = useContext(ManageCowContext); // Corrected context variable
+  const { cows, deleteCow, setCows, ToggleStatus } =
+    useContext(ManageCowContext); // Corrected context variable
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
@@ -20,7 +22,9 @@ const AnimalList: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [cowToDelete, setCowToDelete] = useState<number | null>(null);
   const [selectedCow, setSelectedCow] = useState(null);
-
+  const { translate, language } = useTranslation();
+  const isArabic = language === "ar";
+  const formClass = isArabic ? "rtl" : "ltr";
   const handleSort = (fieldName: string) => {
     if (sortBy === fieldName) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -37,7 +41,27 @@ const AnimalList: React.FC = () => {
     return <FaSort />;
   };
 
-  // Sorting function for array of objects
+  const translatePregnantStatus = (status) => {
+    switch (status) {
+      case "Pregnant":
+        return translate("pregnant"); // Assuming 'Pregnant' is the translated term for the status
+      case "Not Pregnant":
+        return translate("notpregnant"); // Assuming 'Not Pregnant' is the translated term for the status
+      default:
+        return status;
+    }
+  };
+  const translategender = (status) => {
+    switch (status) {
+      case "Male":
+        return translate("male"); // Assuming 'Pregnant' is the translated term for the status
+      case "Female":
+        return translate("female"); // Assuming 'Not Pregnant' is the translated term for the status
+      default:
+        return status;
+    }
+  };
+
   const dynamicSort = (property: string) => {
     let sortOrderValue = sortOrder === "asc" ? 1 : -1;
     return function (a: any, b: any) {
@@ -85,23 +109,7 @@ const AnimalList: React.FC = () => {
       handleDelete(id);
     }
   };
-  const handleToggleStatus = (id: number) => {
-    const cowIndex = currentCows.findIndex((cow) => cow.id === id);
-    if (cowIndex !== -1) {
-      const updatedCows = [...currentCows];
-      updatedCows[cowIndex] = {
-        ...updatedCows[cowIndex],
-        status: !updatedCows[cowIndex].status,
-      };
-      setCows(updatedCows); // Update the state of cows
-      const statusMessage = updatedCows[cowIndex].status
-        ? "enabled"
-        : "disabled";
-      toast.success(`Toggle status ${statusMessage} successfully`);
-    } else {
-      toast.error("Cow not found");
-    }
-  };
+
   const handleDelete = async (id: number) => {
     setIsDeleting(true);
     try {
@@ -131,23 +139,23 @@ const AnimalList: React.FC = () => {
         <div className="flex items-center">
           <input
             type="text"
-            placeholder="Search..."
+            placeholder={translate("searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="p-2 rounded border border-gray-300 "
+            className="p-2 rounded border border-gray-300 ml-2"
           />
 
           <Link
             to="/Add-cow"
             className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary ml-2"
           >
-            Add New
+            {translate("addNew")}
           </Link>
         </div>
       </div>
       <h1 className="text-xl font-bold mb-4">
         <BiListUl className="inline-block mr-2" />
-        Cow List
+        {translate("cowlist")}
       </h1>
       <table className="min-w-full bg-white border-collapse">
         {/* Table header */}
@@ -158,7 +166,7 @@ const AnimalList: React.FC = () => {
               onClick={() => handleSort("id")}
             >
               <div className="flex items-center">
-                #ID
+                {translate("id")}
                 {sortIcon("id")}
               </div>
             </th>
@@ -167,7 +175,7 @@ const AnimalList: React.FC = () => {
               onClick={() => handleSort("image")}
             >
               <div className="flex items-center">
-                Image
+                {translate("image")}
                 {sortIcon("image")}
               </div>
             </th>
@@ -176,7 +184,7 @@ const AnimalList: React.FC = () => {
               onClick={() => handleSort("gender")}
             >
               <div className="flex items-center">
-                Gender
+                {translate("gender")}
                 {sortIcon("gender")}
               </div>
             </th>
@@ -185,7 +193,7 @@ const AnimalList: React.FC = () => {
               onClick={() => handleSort("animalType")}
             >
               <div className="flex items-center">
-                Animal Type
+                {translate("animalType")}
                 {sortIcon("animalType")}
               </div>
             </th>
@@ -194,7 +202,7 @@ const AnimalList: React.FC = () => {
               onClick={() => handleSort("buyDate")}
             >
               <div className="flex items-center">
-                Buy Date
+                {translate("buyDate")}
                 {sortIcon("buyDate")}
               </div>
             </th>
@@ -203,7 +211,7 @@ const AnimalList: React.FC = () => {
               onClick={() => handleSort("buyingPrice")}
             >
               <div className="flex items-center">
-                Buying Price
+                {translate("buyingPrice")}
                 {sortIcon("buyingPrice")}
               </div>
             </th>
@@ -212,7 +220,7 @@ const AnimalList: React.FC = () => {
               onClick={() => handleSort("pregnantStatus")}
             >
               <div className="flex items-center">
-                Pregnant Status
+                {translate("pregnantStatus")}
                 {sortIcon("pregnantStatus")}
               </div>
             </th>
@@ -221,7 +229,7 @@ const AnimalList: React.FC = () => {
               onClick={() => handleSort("milkPerDay")}
             >
               <div className="flex items-center">
-                Milk Per Day (LTR)
+                {translate("milkPerDay")}
                 {sortIcon("milkPerDay")}
               </div>
             </th>
@@ -230,11 +238,13 @@ const AnimalList: React.FC = () => {
               onClick={() => handleSort("animalStatus")}
             >
               <div className="flex items-center">
-                Animal Status
+                {translate("animalStatus")}
                 {sortIcon("animalStatus")}
               </div>
             </th>
-            <th className="border border-gray-300 px-4 py-2">Action</th>{" "}
+            <th className="border border-gray-300 px-4 py-2">
+              {translate("action")}
+            </th>{" "}
           </tr>
         </thead>
 
@@ -245,12 +255,12 @@ const AnimalList: React.FC = () => {
               <td className="border border-gray-300 px-4 py-2">{cow.id}</td>
               <td className="border border-gray-300 px-4 py-2">
                 <img
-                  src={cow.image} // Set the source of the image
-                  alt="Cow Image" // Provide alternative text for accessibility
+                  src={cow.image}
+                  alt="Cow Image"
                   className="w-12 h-12 rounded-full object-cover" // Adjust styling as needed
                 />
               </td>{" "}
-              <td className="border border-gray-300 px-4 py-2">{cow.gender}</td>
+              <td className="border border-gray-300 px-4 py-2">{translategender(cow.gender)}</td>
               <td className="border border-gray-300 px-4 py-2">
                 {cow.animalType}
               </td>
@@ -261,24 +271,42 @@ const AnimalList: React.FC = () => {
                 $ {cow.buyingPrice}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                {cow.pregnantStatus}
+                {translatePregnantStatus(cow.pregnantStatus)}
               </td>
               <td className="border border-gray-300 px-4 py-2">
                 {cow.milkPerDay}
               </td>
-              <td className="border border-gray-300 px-4 py-2">
-                <label className="inline-flex items-center cursor-pointer">
+              <td className="border border-gray-300 px-4 py-2 ">
+                <label
+                  className={`inline-flex items-center cursor-pointer ${
+                    formClass === "rtl" ? "flex-row-reverse" : ""
+                  }`}
+                >
                   <input
                     type="checkbox"
-                    className={`sr-only peer`}
-                    checked={cow.status} // Make sure 'cow.status' is properly defined and always boolean
-                    onChange={() => handleToggleStatus(cow.id)}
+                    className="sr-only peer"
+                    checked={cow.animalStatus}
+                    onChange={() => ToggleStatus(cow.id)}
                   />
                   <div
-                    className={`relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600`}
+                    className={`relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 ${
+                      formClass === "ltr"
+                        ? "peer-checked:after:-translate-x-full"
+                        : "peer-checked:before:translate-x-full"
+                    } peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 ${
+                      formClass === "rtl"
+                        ? "peer-checked:after:-translate-x-full"
+                        : "peer-checked:after:translate-x-full"
+                    } after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-transform duration-200 ease-in-out dark:border-gray-600 peer-checked:bg-green-600`}
                   ></div>
-                  <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
-                    {cow.status ? "Active" : "Inactive"}
+                  <span
+                    className={`ms-3 text-sm font-medium text-gray-900 dark:text-gray-300 ${
+                      formClass === "rtl" ? "me-3" : "ms-3"
+                    }`}
+                  >
+                    {cow.animalStatus
+                      ? translate("sold")
+                      : translate("available")}
                   </span>
                 </label>
               </td>

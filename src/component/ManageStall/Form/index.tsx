@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "../../Translator/Provider";
+
 const EditStallForm = ({ stall, onSubmit, onClose }) => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -8,8 +10,9 @@ const EditStallForm = ({ stall, onSubmit, onClose }) => {
   const [formData, setFormData] = useState({
     stallNumber: "",
     details: "",
-    status: "available",
+    status: "false",
   });
+  const { translate } = useTranslation();
 
   useEffect(() => {
     if (stall) {
@@ -77,7 +80,12 @@ const EditStallForm = ({ stall, onSubmit, onClose }) => {
           <form onSubmit={handleSubmit}>
             <h2 className="text-xl font-bold mb-4">{stall ? "" : ""}</h2>
             <div className="mb-4">
-              <label htmlFor="stallNumber" className="block text-sm font-medium text-gray-700">Stall Number * :</label>
+              <label
+                htmlFor="stallNumber"
+                className="block text-sm font-medium text-gray-700"
+              >
+                {translate("stallnumber")}:
+              </label>
               <input
                 type="text"
                 name="stallNumber"
@@ -88,7 +96,12 @@ const EditStallForm = ({ stall, onSubmit, onClose }) => {
               />
             </div>
             <div className="mb-4">
-              <label htmlFor="details" className="block text-sm font-medium text-gray-700">Details :</label>
+              <label
+                htmlFor="details"
+                className="block text-sm font-medium text-gray-700"
+              >
+                {translate("details")}:
+              </label>
               <textarea
                 name="details"
                 value={formData.details}
@@ -101,7 +114,7 @@ const EditStallForm = ({ stall, onSubmit, onClose }) => {
                 type="submit"
                 className="bg-secondary hover:bg-primary text-white font-bold py-2 px-4 rounded"
               >
-                {stall ? "Update Stall" : "Add Stall"}
+                {stall ? translate("updatestall") : translate("addstall")}
               </button>
             </div>
           </form>

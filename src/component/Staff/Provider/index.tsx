@@ -82,9 +82,7 @@ export const StaffProvider: React.FC = ({ children }) => {
         throw new Error("Failed to update staff");
       }
   
-      // No need to parse response JSON if there's no data returned
-      // Assume the update was successful if response is OK
-      // Update the client-side state with the updated staff data
+      
       setStaff((prevStaff) =>
         prevStaff.map((staffMember) =>
           staffMember.id === id ? { ...staffMember, ...updatedStaff } : staffMember

@@ -7,9 +7,10 @@ import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import { BiListUl } from "react-icons/bi";
 import { BsPencil } from "react-icons/bs";
 import EditStallForm from "../Form";
+import { useTranslation } from "../../Translator/Provider";
 
 const StallList: React.FC = () => {
-  const { stalls, deleteStall, addStall, editStall } =
+  const { stalls, deletestall, addStall, editStall,toggleStatus } =
     useContext(ManageStallContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
@@ -18,20 +19,27 @@ const StallList: React.FC = () => {
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
   const [selectedStall, setSelectedStall] = useState(null);
+  const { translate, language } = useTranslation();
 
   const handleDeleteConfirmation = (id: number) => {
     if (window.confirm("Are you sure you want to delete this stall?")) {
       handleDelete(id);
     }
   };
+  const isArabic = language === "ar";
+  const formClass = isArabic ? "rtl" : "ltr";
 
   const handleDelete = async (id: number) => {
     try {
-      await deleteStall(id);
+      await deletestall(id);
       toast.success("Stall deleted successfully!");
     } catch (error) {
       toast.error("An error occurred while deleting stall.");
     }
+  };
+
+  const handleToggleStatus = (id: number) => {
+    toggleStatus(id);
   };
 
   const handleSort = (fieldName: string) => {
@@ -103,22 +111,22 @@ const StallList: React.FC = () => {
         <div className="flex items-center">
           <input
             type="text"
-            placeholder="Search..."
+            placeholder={translate("searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="p-2 rounded border border-gray-300 "
+            className="p-2 rounded border border-gray-300 ml-2"
           />
           <button
             onClick={() => handleEditDrawerOpen(null)}
             className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary ml-2"
           >
-            Add New
+            {translate("addNew")}
           </button>
         </div>
       </div>
       <h1 className="text-xl font-bold mb-4">
-        <BiListUl className="inline-block mr-2" />
-        Stall List
+        <BiListUl className="inline-block mr-2 ml-2  " style={{ fontSize: '1.5em' }} />
+        {translate("stalllist")}
       </h1>
       <table className="min-w-full bg-white border-collapse">
         <thead>
@@ -128,7 +136,7 @@ const StallList: React.FC = () => {
               onClick={() => handleSort("id")}
             >
               <div className="flex items-center">
-                #ID
+              {translate("id")}
                 {sortIcon("id")}
               </div>
             </th>
@@ -137,7 +145,7 @@ const StallList: React.FC = () => {
               onClick={() => handleSort("stallNumber")}
             >
               <div className="flex items-center">
-                Stall Number
+              {translate("stallnumber")}
                 {sortIcon("stallNumber")}
               </div>
             </th>
@@ -146,12 +154,12 @@ const StallList: React.FC = () => {
               onClick={() => handleSort("status")}
             >
               <div className="flex items-center">
-                Status
+              {translate("status")}
                 {sortIcon("status")}
               </div>
             </th>
-            <th className="border border-gray-300 px-4 py-2">Details</th>
-            <th className="border border-gray-300 px-4 py-2">Action</th>
+            <th className="border border-gray-300 px-4 py-2">{translate("details")}</th>
+            <th className="border border-gray-300 px-4 py-2">{translate("action")}</th>
           </tr>
         </thead>
         <tbody>
@@ -165,8 +173,39 @@ const StallList: React.FC = () => {
                 <td className="border border-gray-300 px-4 py-2">
                   {stall.stallNumber}
                 </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {stall.status}
+                <td className="border border-gray-300 px-4 py-2 ">
+                  <label
+                    className={`inline-flex items-center cursor-pointer ${
+                      formClass === "rtl" ? "flex-row-reverse" : ""
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={stall.status}
+                      onChange={() => handleToggleStatus(stall.id)}
+                    />
+                    <div
+                      className={`relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 ${
+                        formClass === "ltr"
+                          ? "peer-checked:after:-translate-x-full"
+                          : "peer-checked:before:translate-x-full"
+                      } peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 ${
+                        formClass === "rtl"
+                        ? "peer-checked:after:-translate-x-full"
+                        : "peer-checked:after:translate-x-full"
+                      } after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-transform duration-200 ease-in-out dark:border-gray-600 peer-checked:bg-green-600`}
+                    ></div>
+                    <span
+                      className={`ms-3 text-sm font-medium text-gray-900 dark:text-gray-300 ${
+                        formClass === "rtl" ? "me-3" : "ms-3"
+                      }`}
+                    >
+                      {stall.status
+                        ? translate("available")
+                        : translate("booked")}
+                    </span>
+                  </label>
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   {stall.details}
@@ -177,7 +216,7 @@ const StallList: React.FC = () => {
                       onClick={() => handleEditDrawerOpen(stall)}
                       className="text-blue-500 hover:underline flex items-center mr-4 focus:outline-none"
                     >
-                      <BsPencil className="w-5 h-5 mr-1" />
+                      <BsPencil className="w-5 h-5  ml-2" />
                     </button>
                     <button
                       onClick={() => handleDeleteConfirmation(stall.id)}

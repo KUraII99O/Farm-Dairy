@@ -1,106 +1,142 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
+import { toast } from "react-toastify";
+import { useTranslation } from "../../Translator/Provider";
 
-export const ManageCowContext = createContext();
+export const ManageCowContext = createContext<any>(null);
+
+interface Cow {
+  id: number;
+  image: File; // Add image property
+  gender: string;
+  animalType: string;
+  buyDate: Date;
+  buyingPrice: number;
+  pregnantStatus: boolean;
+  milkPerDay: string;
+  animalStatus: boolean;
+  stallNo: string;
+  dateOfBirth: Date;
+  animalAgeDays: string;
+  weight: string;
+  height: string;
+  color: string;
+  numOfPregnant: string;
+  nextPregnancyApproxTime: string;
+  buyFrom: string;
+  prevVaccineDone: string;
+  note: string;
+  CreatedBy: string;
+}
 
 export const ManageCowProvider = ({ children }) => {
-  const [cows, setCows] = useState([
-    {
-      id: 1,
-      image: "cow1.jpg",
-      gender: "Female",
-      animalType: "Dairy",
-      buyDate: "2024-01-01",
-      buyingPrice: "50",
-      pregnantStatus: "Yes",
-      milkPerDay: "10",
-      animalStatus: "Active",
-      informations: {
-        stallNo: "C3",
-        dateOfBirth: "2023-07-10",
-        animalAgeDays: 230,
-        weight: 300,
-        height: 55,
-        color: "Black",
-        numOfPregnant: 1,
-        nextPregnancyApproxTime: "2024-08-20",
-        buyFrom: "Farm PQR",
-        prevVaccineDone: "Yes",
-        note: "This cow is currently resting due to health issues",
-        createdBy: "Michael Smith",
-      },
-    },
-    {
-      id: 2,
-      image: "cow2.jpg",
-      gender: "Male",
-      animalType: "Beef",
-      buyDate: "2024-01-02",
-      buyingPrice: "60",
-      pregnantStatus: "No",
-      milkPerDay: "0",
-      animalStatus: "Active",
-      informations: {
-        stallNo: "A1",
-        dateOfBirth: "2023-05-15",
-        animalAgeDays: 300,
-        weight: 350,
-        height: 60,
-        color: "Brown",
-        numOfPregnant: 0,
-        nextPregnancyApproxTime: null,
-        buyFrom: "Farm XYZ",
-        prevVaccineDone: "Yes",
-        note: "This cow is ready for sale",
-        createdBy: "Jessica Johnson",
-      },
-    },
-    {
-      id: 3,
-      image: "cow3.jpg",
-      gender: "Female",
-      animalType: "Dairy",
-      buyDate: "2024-01-03",
-      buyingPrice: "55",
-      pregnantStatus: "No",
-      milkPerDay: "8",
-      animalStatus: "Inactive",
-      informations: {
-        stallNo: "B2",
-        dateOfBirth: "2023-08-20",
-        animalAgeDays: 200,
-        weight: 280,
-        height: 52,
-        color: "White",
-        numOfPregnant: 0,
-        nextPregnancyApproxTime: null,
-        buyFrom: "Farm LMN",
-        prevVaccineDone: "No",
-        note: "This cow needs medical attention",
-        createdBy: "John Doe",
-      },
-    },
-    // Add more cows as needed
-  ]);
+  const [cows, setCows] = useState<Cow[]>([]);
+  const { translate } = useTranslation();
 
-  const addCow = (newCow) => {
-    const maxId = Math.max(...cows.map((cow) => cow.id), 0);
-    const newCowWithId = { ...newCow, id: maxId + 1 };
-    setCows([...cows, newCowWithId]);
+  useEffect(() => {
+    const fetchCows = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/cows');
+        if (!response.ok) {
+          throw new Error('Failed to fetch Cow data');
+        }
+        const data = await response.json();
+        setCows(data);
+      } catch (error) {
+        console.error('Error fetching Cow data:', error.message);
+      }
+    };
+
+    fetchCows();
+  }, []);
+
+  const addCow = async (newCow: Omit<Cow, 'id'>) => {
+    try {
+      const id = cows.length + 1;
+      const cowWithId: Cow = { id, ...newCow };
+
+      const response = await fetch('http://localhost:3000/cows', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(cowWithId),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add cow');
+      }
+
+      setCows([...cows, cowWithId]);
+    } catch (error) {
+      console.error('Error:', error.message);
+    }
   };
 
-  const editCow = (id, updatedCow) => {
-    const updatedCowList = cows.map((item) =>
-      item.id === id ? { ...item, ...updatedCow } : item
+  const editCow = async (id: number, updatedCow: Partial<Cow>) => {
+    try {
+      const response = await fetch(`http://localhost:3000/cows/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedCow),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to edit cow');
+      }
+
+      const updatedCows = cows.map((cow) =>
+        cow.id === id ? { ...cow, ...updatedCow } : cow
+      );
+
+      setCows(updatedCows);
+    } catch (error) {
+      console.error('Error:', error.message);
+    }
+  };
+
+  const deleteCow = async (id: number) => {
+    try {
+      const response = await fetch(`http://localhost:3000/cows/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete cow');
+      }
+
+      const updatedCows = cows.filter((cow) => cow.id !== id);
+      setCows(updatedCows);
+    } catch (error) {
+      console.error('Error:', error.message);
+    }
+  };
+const ToggleStatus = async (id: number) => {
+  try {
+    const response = await fetch(`http://localhost:3000/cows/${id}/toggle-status`, {
+      method: "PUT",
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to toggle cow status");
+    }
+
+    const updatedCows = cows.map((cow) =>
+      cow.id === id ? { ...cow, animalStatus: !cow.animalStatus } : cow
     );
-    setCows(updatedCowList);
-  };
 
-  const deleteCow = (id) => {
-    const updatedCows = cows.filter((cow) => cow.id !== id);
     setCows(updatedCows);
-  };
 
-  const getCowById = (id) => {
+    toast.info(translate("Cow status updated successfully"), { autoClose: 1000, hideProgressBar: true });
+  } catch (error) {
+    console.error("Error:", error.message);
+    toast.error("Failed to toggle cow status", { autoClose: 2000, hideProgressBar: true });
+  }
+};
+
+
+  const getCowById = (id: number) => {
     // Find and return the cow with the given ID
     return cows.find((cow) => cow.id === id);
   };
@@ -112,6 +148,7 @@ export const ManageCowProvider = ({ children }) => {
     editCow,
     deleteCow,
     getCowById,
+    ToggleStatus
   };
 
   return (

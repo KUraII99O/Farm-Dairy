@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext,useEffect } from "react";
 import { Link } from "react-router-dom";
 import { BsPencil } from "react-icons/bs";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -7,8 +7,8 @@ import Pagination from "../../Pagination";
 import { BiListUl } from "react-icons/bi";
 import { FaEye } from "react-icons/fa";
 import { VaccineMonitorContext } from "../Provider";
-import RoutineMonitorDetailsDrawer from "../ItemDetails";
 import VaccineMonitorDetailsDrawer from "../ItemDetails";
+import { useTranslation } from "../../Translator/Provider";
 
 const VaccineMonitorTable: React.FC = () => {
   const { vaccineMonitors, deleteVaccineMonitor } = useContext(
@@ -22,6 +22,42 @@ const VaccineMonitorTable: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedVaccineMonitor, setSelectedVaccineMonitor] = useState(null);
   const [isDetailsDrawerOpen, setIsDetailsDrawerOpen] = useState(false);
+  const [user, setUser] = useState<{ name: string; email: string; }>({
+    name: "",
+    email: "",
+    
+  });
+  const [currentDate, setCurrentDate] = useState<string>("");
+  const { translate} = useTranslation();
+
+  useEffect(() => {
+    const date = new Date();
+    const formattedDate = date.toLocaleDateString(); // Adjust the date format as needed
+    setCurrentDate(formattedDate);
+  }, []);
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/users"); // Adjust the API endpoint accordingly
+        if (response.ok) {
+          const userData = await response.json();
+          if (userData.length > 0) {
+            const { username, email } = userData[0]; // Assuming you only have one user for now
+            setUser({ name: username, email: email });
+          }
+        } else {
+          console.error("Failed to fetch user data");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+
+
+  }, []); 
+
 
   const handleSort = (fieldName: string) => {
     if (sortBy === fieldName) {
@@ -128,23 +164,23 @@ const VaccineMonitorTable: React.FC = () => {
         <div className="flex items-center">
           <input
             type="text"
-            placeholder="Search..."
+            placeholder={translate("searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="p-2 rounded border border-gray-300 "
+            className="p-2 rounded border border-gray-300 ml-2 "
           />
 
           <Link
             to="/Add-vaccine-monitor"
             className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary ml-2"
           >
-            Add New
+            {translate("addNew")}
           </Link>
         </div>
       </div>
       <h1 className="text-xl font-bold mb-4">
         <BiListUl className="inline-block mr-2" />
-        Vaccine Monitor List
+        {translate("vaccinemonitorlist")}
       </h1>
       <table className="min-w-full bg-white border-collapse">
         <thead>
@@ -154,7 +190,7 @@ const VaccineMonitorTable: React.FC = () => {
               onClick={() => handleSort("date")}
             >
               <div className="flex items-center">
-                Date
+              {translate("date")}
                 {sortIcon("date")}
               </div>
             </th>
@@ -163,7 +199,7 @@ const VaccineMonitorTable: React.FC = () => {
               onClick={() => handleSort("stallNo")}
             >
               <div className="flex items-center">
-                Stall No
+              {translate("stallNo")}
                 {sortIcon("stallNo")}
               </div>
             </th>
@@ -172,7 +208,7 @@ const VaccineMonitorTable: React.FC = () => {
               onClick={() => handleSort("CowNumber")}
             >
               <div className="flex items-center">
-                Cow Number
+              {translate("cownumber")}
                 {sortIcon("CowNumber")}
               </div>
             </th>
@@ -181,7 +217,7 @@ const VaccineMonitorTable: React.FC = () => {
               onClick={() => handleSort("note")}
             >
               <div className="flex items-center">
-                Note
+              {translate("note")}
                 {sortIcon("note")}
               </div>
             </th>
@@ -190,18 +226,18 @@ const VaccineMonitorTable: React.FC = () => {
               onClick={() => handleSort("reportedBy")}
             >
               <div className="flex items-center">
-                Reported By
+              {translate("reportedby")}
                 {sortIcon("reportedBy")}
               </div>
             </th>
-            <th className="border border-gray-300 px-4 py-2">Action</th>{" "}
+            <th className="border border-gray-300 px-4 py-2">{translate("action")}</th>{" "}
           </tr>
         </thead>
         <tbody>
           {currentVaccineMonitors.map((vaccineMonitor) => (
             <tr key={vaccineMonitor.id}>
               <td className="border border-gray-300 px-4 py-2">
-                {vaccineMonitor.date}
+                {currentDate}
               </td>
               <td className="border border-gray-300 px-4 py-2">
                 {vaccineMonitor.stallNo}
@@ -213,7 +249,7 @@ const VaccineMonitorTable: React.FC = () => {
                 {vaccineMonitor.note}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                {vaccineMonitor.reportedBy}
+                {user.name}
               </td>
               <td className="border border-gray-300 px-2 py-2">
                 <div className="flex items-center">

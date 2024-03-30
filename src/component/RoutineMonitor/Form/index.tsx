@@ -132,12 +132,14 @@ const EditRoutineMonitorForm = () => {
           <span>{translate("cowmonitor")}</span>
         </h2>
         <h2 className="text-xl font-bold mt-2 mb-4 flex items-center">
-          <IoInformationCircle className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
+          <IoInformationCircle
+            className={`mr-2 ${language === "ar" ? "ml-2" : ""}`}
+          />
           <span>{translate("basicinformation")}:</span>
         </h2>
         <div className="flex flex-wrap -mx-2">
-        <div className="flex flex-col space-y-1 px-2 w-1/2">
-        <label className="text-sm font-medium text-gray-700">
+          <div className="flex flex-col space-y-1 px-2 w-1/2">
+            <label className="text-sm font-medium text-gray-700">
               {translate("stallNo")}
             </label>
             <input
@@ -172,7 +174,7 @@ const EditRoutineMonitorForm = () => {
         </h2>
 
         <div className="flex flex-wrap -mx-2">
-        <div className="flex flex-col space-y-1 px-2 w-1/2">
+          <div className="flex flex-col space-y-1 px-2 w-1/2">
             <label className="text-sm font-medium text-gray-700 ">
               {translate("updatedweight")}:
             </label>
@@ -203,7 +205,7 @@ const EditRoutineMonitorForm = () => {
         </div>
 
         <div className="flex flex-wrap -mx-2">
-        <div className="flex flex-col space-y-1 px-2 w-1/2">
+          <div className="flex flex-col space-y-1 px-2 w-1/2">
             <label className="text-sm font-medium text-gray-700 ">
               {translate("milkperday")}:
             </label>
@@ -253,29 +255,39 @@ const EditRoutineMonitorForm = () => {
         </h2>
 
         <div className="flex flex-col space-y-4 ">
-  <label className="text-xl font-medium text-secondary text-center ">
-    {translate("healthstatus")}:
-  </label>
-  <div className={`relative w-full ${language ? 'flex-row-reverse' : 'flex-row'}`}>
-    <input
-      type="range"
-      min="0"
-      max="100"
-      step="1"
-      name="healthStatus"
-      value={formData.healthStatus}
-      onChange={handleHealthStatusChange}
-      className="appearance-none h-3 w-full bg-green-200 rounded-full outline-none focus:outline-none"
-      style={{
-        direction: language ? 'rtl' : 'ltr',
-        background: `linear-gradient(to ${language ? 'left' : 'right'}, #32CD32 ${formData.healthStatus}%, #D3D3D3 0%)`,
-      }}
-    />
-    <span className={`absolute top-0 ${language ? 'left-0' : 'right-0'} -mt-6 text-secondary font-bold`}>
-      {formData.healthStatus}%
-    </span>
-  </div>
-</div>
+          <label className="text-xl font-medium text-secondary text-center ">
+            {translate("healthstatus")}:
+          </label>
+          <div
+            className={`relative w-full ${
+              language ? "flex-row-reverse" : "flex-row"
+            }`}
+          >
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              name="healthStatus"
+              value={formData.healthStatus}
+              onChange={handleHealthStatusChange}
+              className="appearance-none h-3 w-full bg-green-200 rounded-full outline-none focus:outline-none"
+              style={{
+                direction: language ? "rtl" : "ltr",
+                background: `linear-gradient(to ${
+                  language ? "left" : "right"
+                }, #32CD32 ${formData.healthStatus}%, #D3D3D3 0%)`,
+              }}
+            />
+            <span
+              className={`absolute top-0 ${
+                language ? "left-0" : "right-0"
+              } -mt-6 text-secondary font-bold`}
+            >
+              {formData.healthStatus}%
+            </span>
+          </div>
+        </div>
 
         <table className="border-collapse w-full">
           <thead>
