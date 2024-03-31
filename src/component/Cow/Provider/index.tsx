@@ -14,7 +14,7 @@ interface Cow {
   pregnantStatus: boolean;
   milkPerDay: string;
   animalStatus: boolean;
-  stallNo: string;
+  stallNumber: string;
   dateOfBirth: Date;
   animalAgeDays: string;
   weight: string;

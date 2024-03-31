@@ -10,7 +10,7 @@ import EditStallForm from "../Form";
 import { useTranslation } from "../../Translator/Provider";
 
 const StallList: React.FC = () => {
-  const { stalls, deletestall, addStall, editStall,toggleStatus } =
+  const { stalls, deletestall, addStall, editStall, toggleStatus } =
     useContext(ManageStallContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
@@ -38,8 +38,13 @@ const StallList: React.FC = () => {
     }
   };
 
-  const handleToggleStatus = (id: number) => {
-    toggleStatus(id);
+  const handleToggleStatus = async (id: number, newStatus: string) => {
+    try {
+      await toggleStatus(id, newStatus);
+      toast.success("Stall status updated successfully!");
+    } catch (error) {
+      toast.error("An error occurred while updating stall status.");
+    }
   };
 
   const handleSort = (fieldName: string) => {
@@ -65,7 +70,11 @@ const StallList: React.FC = () => {
 
   const handleAddNewStall = async (newStallData: any) => {
     try {
-      await addStall(newStallData);
+      // Set the status based on the user input
+      const status = newStallData.status === "true" ? true : false;
+      // Add the status to the new stall data
+      const stallDataWithStatus = { ...newStallData, status };
+      await addStall(stallDataWithStatus);
       setIsEditDrawerOpen(false); // Close the drawer after adding
       toast.success("New stall added successfully!");
     } catch (error) {
@@ -73,7 +82,7 @@ const StallList: React.FC = () => {
     }
   };
 
-  const handleUpdateStall = async (updatedStallData) => {
+  const handleUpdateStall = async (updatedStallData: any) => {
     try {
       await editStall(selectedStall.id, updatedStallData);
       setIsEditDrawerOpen(false); // Close the drawer after updating
@@ -125,7 +134,10 @@ const StallList: React.FC = () => {
         </div>
       </div>
       <h1 className="text-xl font-bold mb-4">
-        <BiListUl className="inline-block mr-2 ml-2  " style={{ fontSize: '1.5em' }} />
+        <BiListUl
+          className="inline-block mr-2 ml-2  "
+          style={{ fontSize: "1.5em" }}
+        />
         {translate("stalllist")}
       </h1>
       <table className="min-w-full bg-white border-collapse">
@@ -136,7 +148,7 @@ const StallList: React.FC = () => {
               onClick={() => handleSort("id")}
             >
               <div className="flex items-center">
-              {translate("id")}
+                {translate("id")}
                 {sortIcon("id")}
               </div>
             </th>
@@ -145,7 +157,7 @@ const StallList: React.FC = () => {
               onClick={() => handleSort("stallNumber")}
             >
               <div className="flex items-center">
-              {translate("stallnumber")}
+                {translate("stallnumber")}
                 {sortIcon("stallNumber")}
               </div>
             </th>
@@ -154,12 +166,16 @@ const StallList: React.FC = () => {
               onClick={() => handleSort("status")}
             >
               <div className="flex items-center">
-              {translate("status")}
+                {translate("status")}
                 {sortIcon("status")}
               </div>
             </th>
-            <th className="border border-gray-300 px-4 py-2">{translate("details")}</th>
-            <th className="border border-gray-300 px-4 py-2">{translate("action")}</th>
+            <th className="border border-gray-300 px-4 py-2">
+              {translate("details")}
+            </th>
+            <th className="border border-gray-300 px-4 py-2">
+              {translate("action")}
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -173,7 +189,7 @@ const StallList: React.FC = () => {
                 <td className="border border-gray-300 px-4 py-2">
                   {stall.stallNumber}
                 </td>
-                <td className="border border-gray-300 px-4 py-2 ">
+                <td className="border border-gray-300 px-4 py-2">
                   <label
                     className={`inline-flex items-center cursor-pointer ${
                       formClass === "rtl" ? "flex-row-reverse" : ""
@@ -183,21 +199,34 @@ const StallList: React.FC = () => {
                       type="checkbox"
                       className="sr-only peer"
                       checked={stall.status}
-                      onChange={() => handleToggleStatus(stall.id)}
+                      onChange={() =>
+                        handleToggleStatus(
+                          stall.id,
+                          stall.status ? "false" : "true"
+                        )
+                      }
                     />
                     <div
-                      className={`relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 ${
+                      className={`relative w-11 h-6 rounded-full peer ${
+                        stall.status ? "bg-green-600" : "bg-red-600"
+                      } ${
                         formClass === "ltr"
                           ? "peer-checked:after:-translate-x-full"
                           : "peer-checked:before:translate-x-full"
-                      } peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 ${
+                      } ${
                         formClass === "rtl"
-                        ? "peer-checked:after:-translate-x-full"
-                        : "peer-checked:after:translate-x-full"
+                          ? "peer-checked:after:-translate-x-full"
+                          : "peer-checked:after:translate-x-full"
+                      } after:border-white after:content-[''] after:absolute after:top-0.5 ${
+                        formClass === "rtl"
+                          ? "peer-checked:after:-translate-x-full"
+                          : "peer-checked:after:translate-x-full"
                       } after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-transform duration-200 ease-in-out dark:border-gray-600 peer-checked:bg-green-600`}
                     ></div>
                     <span
-                      className={`ms-3 text-sm font-medium text-gray-900 dark:text-gray-300 ${
+                      className={`ms-3 text-sm font-medium ${
+                        stall.status ? "text-gray-900" : "text-red-600"
+                      } dark:text-gray-300 ${
                         formClass === "rtl" ? "me-3" : "ms-3"
                       }`}
                     >

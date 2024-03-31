@@ -242,7 +242,7 @@ export const TranslationProvider: React.FC = ({ children }) => {
       animalStatus: "   Animal Status",
       cowlist: "Cow List",
       dateofbirth : "Date of Birth",
-      animalage : "Cow List",
+      animalage : "Cow Age",
       weight : "Weight",
       color : "Color ",
       numofpregnant  : "Number of Pregnant",
@@ -263,6 +263,7 @@ export const TranslationProvider: React.FC = ({ children }) => {
       male : "    Male",
       female : "   Female ",
       selectstatus : "  Select Status ",
+      motherid  : "  Mother ID ",
      
     },
     fr: {
@@ -525,6 +526,7 @@ export const TranslationProvider: React.FC = ({ children }) => {
       male : "    Mâle",
       female : "   Femelle ",
       selectstatus : "   Sélectionner le statut  ",
+      motherid : "   ID de la mère  ",
 
     },
     ar: {
@@ -785,6 +787,7 @@ export const TranslationProvider: React.FC = ({ children }) => {
       female : "   أنثى ",
       selectstatus : "  اختر الحالة  ",
       sold  : "   تم البيع  ",
+      motherid  : "   رقم الأم ",
       
     },
   };

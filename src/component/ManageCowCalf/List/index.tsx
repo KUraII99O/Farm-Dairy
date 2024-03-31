@@ -9,9 +9,10 @@ import { FaEye } from "react-icons/fa";
 import { ManageCowCalfContext } from "../Provider"; // Corrected import
 import { toast, ToastContainer } from "react-toastify";
 import ItemDetailDrawer from "../ItemDetails/";
+import { useTranslation } from "../../Translator/Provider";
 
 const CalfList: React.FC = () => {
-  const { cowCalves, deleteCalf, setCowCalves } =
+  const { cowCalves, deleteCowCalf, setCowCalves,toggleStatus } =
     useContext(ManageCowCalfContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
@@ -21,6 +22,7 @@ const CalfList: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [calfToDelete, setCalfToDelete] = useState<number | null>(null);
   const [selectedCalf, setSelectedCalf] = useState(null);
+  const { translate, language } = useTranslation();
 
   const handleSort = (fieldName: string) => {
     if (sortBy === fieldName) {
@@ -38,24 +40,18 @@ const CalfList: React.FC = () => {
     return <FaSort />;
   };
 
-  const dynamicSort = (property: string) => {
-    let sortOrderValue = sortOrder === "asc" ? 1 : -1;
-    return function (a: any, b: any) {
-      if (a[property] < b[property]) {
-        return -1 * sortOrderValue;
-      } else if (a[property] > b[property]) {
-        return 1 * sortOrderValue;
-      } else {
-        return 0;
-      }
-    };
-  };
+  const isArabic = language === "ar";
+  const formClass = isArabic ? "rtl" : "ltr";
 
   const filteredCalves = cowCalves.filter((calf) =>
     Object.values(calf).some((field) =>
       field.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
+
+  const handleToggleStatus = (id: number) => {
+    toggleStatus(id);
+  };
 
   const sortedCalves = sortBy
     ? filteredCalves.slice().sort((a, b) => {
@@ -87,7 +83,7 @@ const CalfList: React.FC = () => {
   const handleDelete = async (id: number) => {
     setIsDeleting(true);
     try {
-      await deleteCalf(id);
+      await deleteCowCalf(id);
       setIsDeleting(false);
       toast.success("Calf deleted successfully!");
     } catch (error) {
@@ -105,23 +101,7 @@ const CalfList: React.FC = () => {
     setSelectedCalf(null);
   };
 
-  const handleToggleStatus = (id: number) => {
-    const calfIndex = currentCalves.findIndex((calf) => calf.id === id);
-    if (calfIndex !== -1) {
-      const updatedCalves = [...currentCalves];
-      updatedCalves[calfIndex] = {
-        ...updatedCalves[calfIndex],
-        status: !updatedCalves[calfIndex].status,
-      };
-      setCowCalves(updatedCalves);
-      const statusMessage = updatedCalves[calfIndex].status
-        ? "enabled"
-        : "disabled";
-      toast.success(`Toggle status ${statusMessage} successfully`);
-    } else {
-      toast.error("Calf not found");
-    }
-  };
+ 
 
   return (
     <div className="overflow-x-auto">
@@ -242,21 +222,47 @@ const CalfList: React.FC = () => {
                 $ {calf.buyingPrice}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                <label className="inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className={`sr-only peer`}
-                    checked={calf.status}
-                    onChange={() => handleToggleStatus(calf.id)}
-                  />
-                  <div
-                    className={`relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600`}
-                  ></div>
-                  <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
-                    {calf.status ? "Active" : "Inactive"}
-                  </span>
-                </label>
-              </td>{" "}
+                  <label
+                    className={`inline-flex items-center cursor-pointer ${
+                      formClass === "rtl" ? "flex-row-reverse" : ""
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={calf.status}
+                      onChange={() => handleToggleStatus(calf.id)}
+                    />
+                    <div
+                      className={`relative w-11 h-6 rounded-full peer ${
+                        calf.status ? "bg-green-600" : "bg-red-600"
+                      } ${
+                        formClass === "ltr"
+                          ? "peer-checked:after:-translate-x-full"
+                          : "peer-checked:before:translate-x-full"
+                      } ${
+                        formClass === "rtl"
+                          ? "peer-checked:after:-translate-x-full"
+                          : "peer-checked:after:translate-x-full"
+                      } after:border-white after:content-[''] after:absolute after:top-0.5 ${
+                        formClass === "rtl"
+                          ? "peer-checked:after:-translate-x-full"
+                          : "peer-checked:after:translate-x-full"
+                      } after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-transform duration-200 ease-in-out dark:border-gray-600 peer-checked:bg-green-600`}
+                    ></div>
+                    <span
+                      className={`ms-3 text-sm font-medium ${
+                        calf.status ? "text-gray-900" : "text-red-600"
+                      } dark:text-gray-300 ${
+                        formClass === "rtl" ? "me-3" : "ms-3"
+                      }`}
+                    >
+                      {calf.status
+                        ? translate("available")
+                        : translate("sold")}
+                    </span>
+                  </label>
+                </td>
               <td className="border border-gray-300 px-2 py-2">
                 <div className="flex items-center">
                   <button

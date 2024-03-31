@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { MdEdit } from "react-icons/md";
 import { FaUserPlus } from "react-icons/fa";
 import { useTranslation } from "../../Translator/Provider";
+import Autocomplete from "../../autocomplete";
 
 const EditEmployeeForm = ({ employee, onSubmit, onClose }) => {
   const { id } = useParams();
@@ -25,18 +26,18 @@ const EditEmployeeForm = ({ employee, onSubmit, onClose }) => {
 
   useEffect(() => {
     // Fetch staff data from the endpoint
-    fetch('http://localhost:3000/staffs')
-      .then(response => {
+    fetch("http://localhost:3000/staffs")
+      .then((response) => {
         if (!response.ok) {
-          throw new Error('Failed to fetch staff data');
+          throw new Error("Failed to fetch staff data");
         }
         return response.json();
       })
-      .then(data => {
+      .then((data) => {
         setStaffList(data);
       })
-      .catch(error => {
-        console.error('Error fetching staff data:', error);
+      .catch((error) => {
+        console.error("Error fetching staff data:", error);
       });
   }, []);
 
@@ -112,7 +113,8 @@ const EditEmployeeForm = ({ employee, onSubmit, onClose }) => {
                 </>
               ) : (
                 <>
-                  <FaUserPlus className="mr-2 ml-2" /> {translate("addemployee")}
+                  <FaUserPlus className="mr-2 ml-2" />{" "}
+                  {translate("addemployee")}
                 </>
               )}
             </h2>
@@ -173,21 +175,12 @@ const EditEmployeeForm = ({ employee, onSubmit, onClose }) => {
               >
                 {translate("selectemloyee")} * :
               </label>
-              <input
-                type="text"
-                name="employeeName"
-                value={formData.employeeName}
-                onChange={handleChange}
-                autoComplete="off" // Disable browser autocomplete
-                list="staffNames" // Connect with the datalist
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              <Autocomplete
+                options={staffList.map((staff) => staff.name)}
+                onSelect={(value) =>
+                  handleChange({ target: { name: "employeeName", value } })
+                }
               />
-              {/* Datalist for autocomplete */}
-              <datalist id="staffNames">
-                {staffList.map((staff, index) => (
-                  <option key={index} value={staff.name} />
-                ))}
-              </datalist>
             </div>
             <div className="mb-4">
               <label

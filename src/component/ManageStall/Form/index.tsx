@@ -1,3 +1,5 @@
+// EditStallForm component
+
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "../../Translator/Provider";
@@ -34,7 +36,7 @@ const EditStallForm = ({ stall, onSubmit, onClose }) => {
   };
 
   const handleCloseDrawer = () => {
-    onClose(); // Call the onClose function passed from the parent component
+    onClose();
     navigate("/manage-stall");
   };
 
@@ -65,20 +67,12 @@ const EditStallForm = ({ stall, onSubmit, onClose }) => {
             className="absolute top-0 right-0 m-2 text-gray-600 hover:text-gray-900 focus:outline-none"
             onClick={handleCloseDrawer}
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
+            Close
           </button>
           <form onSubmit={handleSubmit}>
-            <h2 className="text-xl font-bold mb-4">{stall ? "" : ""}</h2>
+            <h2 className="text-xl font-bold mb-4">
+              {stall ? "Edit Stall" : "Add New Stall"}
+            </h2>
             <div className="mb-4">
               <label
                 htmlFor="stallNumber"
@@ -109,6 +103,25 @@ const EditStallForm = ({ stall, onSubmit, onClose }) => {
                 className="w-full h-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
+            {!stall && ( // Display status input only when adding new stall
+              <div className="mb-4">
+                <label
+                  htmlFor="status"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  {translate("status")}:
+                </label>
+                <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                >
+                  <option value="true">{translate("available")}</option>
+                  <option value="false">{translate("booked")}</option>
+                </select>
+              </div>
+            )}
             <div className="flex justify-end">
               <button
                 type="submit"
