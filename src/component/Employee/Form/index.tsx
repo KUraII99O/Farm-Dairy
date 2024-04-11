@@ -133,7 +133,7 @@ const EditEmployeeForm = ({ employee, onSubmit, onClose }) => {
                 value={formData.payDate}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none  focus:border-primary"
               />
             </div>
             <div className="mb-4">
@@ -149,7 +149,7 @@ const EditEmployeeForm = ({ employee, onSubmit, onClose }) => {
                 value={formData.month}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none  focus:border-primary"
               />
             </div>
             <div className="mb-4">
@@ -165,7 +165,7 @@ const EditEmployeeForm = ({ employee, onSubmit, onClose }) => {
                 value={formData.year}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none  focus:border-primary"
               />
             </div>
             <div className="mb-4">
@@ -194,7 +194,7 @@ const EditEmployeeForm = ({ employee, onSubmit, onClose }) => {
                 name="monthlySalary"
                 value={formData.monthlySalary}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none  focus:border-primary"
               />
             </div>
             <div className="mb-4">
@@ -209,7 +209,7 @@ const EditEmployeeForm = ({ employee, onSubmit, onClose }) => {
                 name="additionMoney"
                 value={formData.additionMoney}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none  focus:border-primary"
               />
             </div>
             <div className="mb-4">
@@ -224,7 +224,7 @@ const EditEmployeeForm = ({ employee, onSubmit, onClose }) => {
                 name="note"
                 value={formData.note}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none  focus:border-primary"
               />
             </div>
             <button

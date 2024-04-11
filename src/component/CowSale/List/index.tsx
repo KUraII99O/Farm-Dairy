@@ -9,6 +9,7 @@ import { FaEye } from "react-icons/fa";
 import { useSaleList } from "../provider"; // Corrected import
 import { toast, ToastContainer } from "react-toastify";
 import ItemDetailDrawer from "../ItemDetails";
+import { LiaFileInvoiceSolid } from "react-icons/lia";
 
 const SaleList: React.FC = () => {
   const { sales, deleteSale } = useSaleList(); // Corrected usage of useSaleList hook
@@ -250,6 +251,13 @@ const SaleList: React.FC = () => {
               <td className="border border-gray-300 px-4 py-2">{sale.note}</td>
               <td className="border border-gray-300 px-2 py-2">
                 <div className="flex items-center">
+                <Link
+                    to={`/Cow-Sale-invoice/${sale.id}`}
+                    className="text-blue-500 hover:underline flex items-center mr-4"
+                  >
+                    <LiaFileInvoiceSolid className="w-5 h-5 mr-1" />
+                  </Link>
+
                   <button
                     onClick={() => handleViewDetails(sale)}
                     className="text-secondary hover:text-primary focus:outline-none flex  mr-4"

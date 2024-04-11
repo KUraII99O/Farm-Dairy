@@ -161,6 +161,7 @@ const StallList: React.FC = () => {
                 {sortIcon("stallNumber")}
               </div>
             </th>
+
             <th
               className="border border-gray-300 px-4 py-2 cursor-pointer"
               onClick={() => handleSort("status")}
@@ -189,6 +190,7 @@ const StallList: React.FC = () => {
                 <td className="border border-gray-300 px-4 py-2">
                   {stall.stallNumber}
                 </td>
+
                 <td className="border border-gray-300 px-4 py-2">
                   <label
                     className={`inline-flex items-center cursor-pointer ${

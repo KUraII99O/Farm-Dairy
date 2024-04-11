@@ -5,7 +5,7 @@ import { useTranslation } from "../../Translator/Provider";
 export const ManageCowContext = createContext<any>(null);
 
 interface Cow {
-  id: number;
+  id: string;
   image: File; // Add image property
   gender: string;
   animalType: string;
@@ -112,6 +112,8 @@ export const ManageCowProvider = ({ children }) => {
       console.error('Error:', error.message);
     }
   };
+
+  
 const ToggleStatus = async (id: number) => {
   try {
     const response = await fetch(`http://localhost:3000/cows/${id}/toggle-status`, {

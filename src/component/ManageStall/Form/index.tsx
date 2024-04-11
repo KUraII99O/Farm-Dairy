@@ -12,7 +12,7 @@ const EditStallForm = ({ stall, onSubmit, onClose }) => {
   const [formData, setFormData] = useState({
     stallNumber: "",
     details: "",
-    status: "false",
+    status: "true", // Ensure default status is set to "true" for available
   });
   const { translate } = useTranslation();
 
@@ -26,7 +26,7 @@ const EditStallForm = ({ stall, onSubmit, onClose }) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: name === "status" ? value === "true" : value,
     });
   };
 
@@ -103,7 +103,8 @@ const EditStallForm = ({ stall, onSubmit, onClose }) => {
                 className="w-full h-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
-            {!stall && ( // Display status input only when adding new stall
+            {
+              // Display status input only when adding new stall
               <div className="mb-4">
                 <label
                   htmlFor="status"
@@ -121,7 +122,8 @@ const EditStallForm = ({ stall, onSubmit, onClose }) => {
                   <option value="false">{translate("booked")}</option>
                 </select>
               </div>
-            )}
+            }
+          
             <div className="flex justify-end">
               <button
                 type="submit"

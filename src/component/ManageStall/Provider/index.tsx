@@ -100,11 +100,9 @@ export const ManageStallProvider = ({ children }) => {
           stall.id === id ? { ...stall, status: !stall.status } : stall
         )
       );
-      toast.info("status toggle successfully", { autoClose: 2000, hideProgressBar: true });
 
     } catch (error) {
       console.error("Error:", error.message);
-      toast.error("Failed to toggle stall status", { autoClose: 2000, hideProgressBar: true });
 
     }
   };

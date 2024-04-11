@@ -40,7 +40,7 @@ const AutocompleteInput = ({ options, onSelect }) => {
         onClick={handleInputClick}
         onBlur={handleInputBlur}
         placeholder="Type here to search..."
-        className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500"
+        className="block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary"
       />
       {showOptions && (
         <ul className="absolute z-10 mt-1 w-full bg-white rounded-md shadow-lg">

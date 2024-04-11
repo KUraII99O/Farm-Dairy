@@ -1,45 +1,50 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { MilkSaleContext } from "../Provider";
 import { useTranslation } from "../../Translator/Provider";
 import { FaPrint, FaSave } from 'react-icons/fa'; // Importing icons
 
 import ReactToPrint from 'react-to-print';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { SaleListContext } from "../provider";
 
-const CowSaleInvoice: React.FC = () => {
+const MilkSaleInvoice: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { milkSales } = useContext(MilkSaleContext);
+  const { CowSales } = useContext(SaleListContext);
 
   const isEditMode = !!id;
   const { translate, language } = useTranslation();
 
   const [formData, setFormData] = useState({
-    accountNo: "",
-    supplier: "",
-    name: "",
-    contact: "",
-    email: "",
-    address: "",
-    litre: "",
-    price: "",
-    total: "",
-    due: "",
-    paid: "",
-    invoice: "",
+    id: "",
+  customerName: "",
+  customerPhone:"" ,
+  customerEmail: "",
+  address: "",
+  totalPrice:"" ,
+  totalPaid: "",
+  due: "",
+  note:"" ,
+  collectedFrom: "",
+  image: "",
+  stallNo: "",
+  cowNumber: "",
+  gender:"" ,
+  weight:"" ,
+  height:"" ,
+
   });
 
   useEffect(() => {
     if (isEditMode) {
-      const selectedMilkSale = milkSales.find(
-        (milkSale) => milkSale.id === parseInt(id)
+      const selectedMilkSale = CowSales.find(
+        (CowSales) => CowSales.id === parseInt(id)
       );
       if (selectedMilkSale) {
         setFormData(selectedMilkSale);
       }
     }
-  }, [id, isEditMode, milkSales]);
+  }, [id, isEditMode, CowSales]);
 
   const componentRef: any = useRef();
 
@@ -85,13 +90,13 @@ const CowSaleInvoice: React.FC = () => {
           <div>
             <h3 className="text-lg font-semibold mb-2">{translate("to")}:</h3>
             <p>
-              {translate("name")}: {formData.name}
+              {translate("name")}: {formData.customerName}
             </p>
             <p>
-              {translate("contact")}: {formData.contact}
+              {translate("contact")}: {formData.customerPhone}
             </p>
             <p>
-              {translate("email")}: {formData.email}
+              {translate("email")}: {formData.customerEmail}
             </p>
             <p>
               {translate("address")}: {formData.address}
@@ -101,7 +106,7 @@ const CowSaleInvoice: React.FC = () => {
 
         <div className="mb-4">
           <p className="text-lg font-semibold">
-            {translate("invoicenumber")}: {formData.invoice}
+            {translate("invoicenumber")}: {formData.id}
           </p>
         </div>
 
@@ -112,7 +117,7 @@ const CowSaleInvoice: React.FC = () => {
                 <td className="py-2 px-4 font-semibold">
                   {translate("accountnumber")}:
                 </td>
-                <td className="py-2 px-4">{formData.accountNo}</td>
+                <td className="py-2 px-4">{formData.stallNo}</td>
                 <td className="py-2 px-4 font-semibold">
                   {translate("suppliers")}:
                 </td>
@@ -123,21 +128,21 @@ const CowSaleInvoice: React.FC = () => {
                 <td className="py-2 px-4 font-semibold">
                   {translate("liter")}:
                 </td>
-                <td className="py-2 px-4">{formData.litre}</td>
+                <td className="py-2 px-4">{formData.gender}</td>
                 <td className="py-2 px-4 font-semibold">
                   {translate("price")}/{translate("liter")}:
                 </td>
-                <td className="py-2 px-4">{formData.price}</td>
+                <td className="py-2 px-4">{formData.weight}</td>
               </tr>
               <tr className="border-b">
                 <td className="py-2 px-4 font-semibold">
                   {translate("total")}:
                 </td>
-                <td className="py-2 px-4">{formData.total}</td>
+                <td className="py-2 px-4">{formData.height}</td>
                 <td className="py-2 px-4 font-semibold">
                   {translate("paid")}:
                 </td>
-                <td className="py-2 px-4">{formData.paid}</td>
+                <td className="py-2 px-4">{formData.note}</td>
               </tr>
               <tr>
                 <td className="py-2 px-4 font-semibold">{translate("due")}:</td>
@@ -168,4 +173,4 @@ const CowSaleInvoice: React.FC = () => {
   );
 };
 
-export default CowSaleInvoice;
+export default MilkSaleInvoice;

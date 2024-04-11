@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 export const ManagePregnancyContext = createContext<any>(null);
 
 interface Pregnancy {
-  id: number;
+  id: string;
   stallNumber: string;
   pregnancyType: string;
   semenType: string;
@@ -12,16 +12,17 @@ interface Pregnancy {
   pregnancyStartDate: string;
   pregnancyStatus: string;
   semenCost: string;
+  otherCost: string;
   note: string;
 }
 
 export const ManagePregnancyProvider = ({ children }) => {
   const [pregnancies, setPregnancies] = useState<Pregnancy[]>([]);
 
-  useEffect(() => {
-    const fetchPregnancies = async () => {
+ const fetchPregnancies = async (animalId) => {
+      
       try {
-        const response = await fetch('http://localhost:3000/pregnancies');
+        const response = await fetch('http://localhost:3000/pregnancies?animalId='+animalId);
         if (!response.ok) {
           throw new Error('Failed to fetch Pregnancy data');
         }
@@ -31,38 +32,45 @@ export const ManagePregnancyProvider = ({ children }) => {
         console.error('Error fetching Pregnancy data:', error.message);
       }
     };
-
-    fetchPregnancies();
-  }, []);
-
-  const addPregnancy = async (newPregnancy: Omit<Pregnancy, 'id'>) => {
+  const addPregnancy = async (newPregnancy: Pregnancy) => {
     try {
-      // Generate a unique ID for the new pregnancy record
-      newPregnancy.id = pregnancies.length + 1;
-  
+      newPregnancy.id= (pregnancies.length+1).toString ();
       const response = await fetch('http://localhost:3000/pregnancies', {
+        
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          
         },
+        
         body: JSON.stringify(newPregnancy),
       });
+       pregnancies.push(newPregnancy);
+
   
       if (!response.ok) {
         throw new Error('Failed to add pregnancy record');
       }
   
-      // Get the updated list of pregnancies from the server
-      const updatedPregnancies = await response.json();
+      // Get the newly added pregnancy from the response
+      const addedPregnancy = await response.json();
   
-      // Update the state with the updated list of pregnancies
-      setPregnancies(updatedPregnancies);
+      // Update the local state with the newly added pregnancy
+      setPregnancies([...pregnancies, addedPregnancy]);
+  
+      // Optionally, you can show a success message
+      toast.success('Pregnancy record added successfully!');
     } catch (error) {
       console.error('Error:', error.message);
+      // Optionally, you can show an error message
+      toast.error('An error occurred while adding new pregnancy record.');
     }
   };
 
+  
+ 
   const editPregnancy = async (id: number, updatedPregnancy: Omit<Pregnancy, "id">) => {
+    console.log(updatedPregnancy);
     try {
       const response = await fetch(`http://localhost:3000/pregnancies/${id}`, {
         method: "PUT",
@@ -87,6 +95,7 @@ export const ManagePregnancyProvider = ({ children }) => {
   };
 
   const deletePregnancy = async (id: number) => {
+    console.log(id);
     try {
       const response = await fetch(`http://localhost:3000/pregnancies/${id}`, {
         method: 'DELETE',
@@ -113,7 +122,8 @@ export const ManagePregnancyProvider = ({ children }) => {
     addPregnancy,
     editPregnancy,
     deletePregnancy,
-    getPregnancyById
+    getPregnancyById,
+    fetchPregnancies
   };
 
   return (
