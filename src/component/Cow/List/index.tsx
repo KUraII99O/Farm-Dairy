@@ -126,12 +126,13 @@ const AnimalList: React.FC = () => {
 
   const handleViewDetails = (cow) => {
     setSelectedCow(cow);
+    console.log(cow.image);
   };
 
   const handleDrawerClose = () => {
     setSelectedCow(null);
-  };
 
+  };
   return (
     <div className="overflow-x-auto">
       <div className="flex justify-between items-center mb-4">
@@ -247,7 +248,6 @@ const AnimalList: React.FC = () => {
             </th>{" "}
           </tr>
         </thead>
-
         <tbody>
           {currentCows.map((cow) => (
             <tr key={cow.id}>
@@ -257,7 +257,7 @@ const AnimalList: React.FC = () => {
                 <img
                   src={cow.image}
                   alt="Cow Image"
-                  className="w-12 h-12 rounded-full object-cover" // Adjust styling as needed
+                  className="w-12 h-12 rounded-full object-cover" 
                 />
               </td>{" "}
               <td className="border border-gray-300 px-4 py-2">{translategender(cow.gender)}</td>

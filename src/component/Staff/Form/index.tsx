@@ -3,13 +3,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { StaffContext } from "../Provider";
 import { FaUserPlus } from "react-icons/fa";
 import { useTranslation } from "../../Translator/Provider";
-import { FaImage } from "react-icons/fa6";
+import ImageUpload from "../../ImageUpload";
 
 const EditStaff = () => {
   const { id } = useParams<{ id: string }>();
-  const { staff, addStaff, editStaff, } = useContext(StaffContext);
+  const { staff, addStaff, editStaff } = useContext(StaffContext);
   const { translate, language } = useTranslation();
   const navigate = useNavigate();
+  const [imagePath, setImagePath] = useState("");
 
   const isEditMode = !!id;
 
@@ -48,13 +49,23 @@ const EditStaff = () => {
     });
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setFormData({
-      ...formData,
-      image: URL.createObjectURL(file), // Store file path for preview
-    });
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    // Perform upload logic here, then update imagePath state with the uploaded image path
+    // Example: You might use FormData to upload the image to your backend
+    const formData = new FormData();
+    formData.append("image", file);
+    // Perform the upload request and update imagePath state with the response from the server
+    // Example: You might use Axios or Fetch to make the POST request
+    fetch("/upload", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => response.text()) // Assuming the server returns the image path as text
+      .then((path) => setImagePath(path))
+      .catch((error) => console.error("Error uploading image:", error));
   };
+
   const isArabic = language === "ar"; // Assuming 'ar' represents Arabic language
 
   const handleSubmit = async (e) => {
@@ -324,53 +335,11 @@ const EditStaff = () => {
           </form>
         </div>
 
-        <div
-          className={`flex flex-col space-y-4 ${isArabic ? "mr-16" : "ml-8"}`}
-        >
-          <label
-            className={`text-xl font-bold text-gray-700 mb-4 flex items-center ${
-              language === "ar" ? "mr-2" : "mb-0"
-            }`}
-          >
-            <FaImage className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
-            {translate("photo")}:
-          </label>
-          <div className="relative">
-            <input
-              type="file"
-              name="image"
-              onChange={handleFileChange}
-              className="hidden"
-              id="uploadInput"
-              accept="image/jpg"
-              capture="environment"
-                          />
-            <label
-              htmlFor="uploadInput"
-              className={`cursor-pointer border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white hover:bg-gray-100 text-center ${
-                isArabic ? "mr-16" : "ml-8"
-              }`}
-              style={{
-                width: "400px", // Adjust width as needed
-                height: "400px", // Adjust height as needed
-                display: "inline-block",
-                lineHeight: "200px", // Adjust line height to center content vertically
-              }}
-            >
-              {formData.image ? (
-                <img
-                  src={formData.image}
-                  alt="Uploaded"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                translate("selectImage")
-              )}
-            </label>
-          </div>
+        <ImageUpload setImagePath={setImagePath} />
+
         </div>
       </div>
-    </div>
+    
   );
 };
 export default EditStaff;
