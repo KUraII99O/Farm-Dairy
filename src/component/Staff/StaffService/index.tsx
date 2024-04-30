@@ -8,6 +8,7 @@ interface Staff {
   joiningDate: string;
   grossSalary: string;
   status: boolean;
+  image: string;
 }
 
 const StaffService = {

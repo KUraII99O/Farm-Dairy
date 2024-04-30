@@ -21,7 +21,6 @@ const StaffList = ({
       <Table.HeadCell onClick={() => handleSort("image")}>
         <div className="flex items-center">
           {translate("image")}
-          {sortIcon("image")}
         </div>
       </Table.HeadCell>
       <Table.HeadCell onClick={() => handleSort("name")}>
