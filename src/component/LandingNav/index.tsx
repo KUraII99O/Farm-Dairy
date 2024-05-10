@@ -6,6 +6,7 @@ import {
   NavbarCollapse,
   NavbarLink,
   NavbarToggle,
+  Dropdown ,
 } from "flowbite-react";
 import { Link } from "react-router-dom";
 
@@ -36,8 +37,12 @@ const LandingNav = () => {
         <NavbarLink href="#" active>
           Home
         </NavbarLink>
-        <NavbarLink href="#">About</NavbarLink>
-        <NavbarLink href="#">Services</NavbarLink>
+        <Dropdown label="Solutions" inline>
+      <Dropdown.Item>Web</Dropdown.Item>
+      <Dropdown.Item>Mobile </Dropdown.Item>
+      <Dropdown.Item>Desktop</Dropdown.Item>
+    </Dropdown>
+            <NavbarLink href="#">Services</NavbarLink>
         <NavbarLink href="#">Pricing</NavbarLink>
         <NavbarLink href="#">Contact</NavbarLink>
       </NavbarCollapse>
