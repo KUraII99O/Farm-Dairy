@@ -77,6 +77,7 @@ import { UserTypeProvider } from "./component/UserType/Provider";
 import {  ManagePregnancyProvider } from "./component/CowPregnancy/Provider";
 import CowSaleInvoicePage from "./Pages/CowSaleInvoicePage";
 import { ManageStaffProvider } from "./component/Staff/Provider";
+import LandingPage from "./Pages/LandingPage";
 
 const App: React.FC = () => {
   return (
@@ -109,6 +110,12 @@ const App: React.FC = () => {
                                                         <Routes>
                                                           <Route
                                                             path="/"
+                                                            element={
+                                                              <LandingPage />
+                                                            }
+                                                          />
+                                                          <Route
+                                                            path="/Login"
                                                             element={
                                                               <LogInPage />
                                                             }

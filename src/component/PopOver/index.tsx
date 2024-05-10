@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from "react";
-import {  Popover } from "flowbite-react";
 
 interface ProfilePopoverProps {
   user: {
@@ -44,47 +43,44 @@ const ProfilePopover: React.FC<ProfilePopoverProps> = ({
   }, [isProfileOpen, toggleProfile]);
 
   return (
-    
     <div
       ref={popoverRef}
       className={`absolute ${isProfileOpen ? "block" : "hidden"} ${
         isRTL ? "right-0" : "left-0"
-      } top-full mt-2 w-32 sm:w-48 bg-white rounded-lg shadow-lg`}
+      } top-full mt-2 w-48 bg-white rounded-lg shadow-lg z-50`}
       style={{
         [isRTL ? "right" : "left"]: isRTL ? "-100%" : "-100%",
         [isRTL ? "left" : "right"]: isRTL ? "-100%" : "-100%",
       }}
     >
-      <div className="flex items-center p-3">
-        <img
-          src={user.image}
-          alt="Profile"
-          className="h-8 w-8 rounded-full"
-        />
-        <div className="ml-2">
-          <p className="text-gray-800 font-medium text-sm">{user.username}</p>
-          <p className="text-gray-600 text-xs overflow-hidden overflow-ellipsis">
-            {user.email}
-          </p>
+      <div className="p-4">
+        <div className="flex items-center mb-2">
+          <img
+            src={user.image}
+            alt="Profile"
+            className="h-10 w-10 rounded-full mr-3"
+          />
+          <div>
+            <p className="text-gray-800 font-medium">{user.username}</p>
+            <p className="text-gray-600 text-xs">{user.email}</p>
+          </div>
         </div>
-      </div>
-      <a
-        href="Profile"
-        className="block px-3 py-2 text-gray-800 hover:bg-gray-200 text-sm"
-      >
-        Profile
-      </a>
-      <a
-        href="#"
-        className="block px-3 py-2 text-gray-800 hover:bg-gray-200 text-sm"
-      >
-        Settings
-      </a>
-
-      <div className="block px-3 py-2 text-gray-800 hover:bg-primary text-sm w-full bg-secondary  ">
-        <button onClick={handleSignOut} className="inline-block w-full h-full">
-          Logout
-        </button>
+        <hr className="my-2 border-gray-300" />
+        <a
+          href="Profile"
+          className="block px-4 py-2 text-gray-800 hover:bg-gray-100 text-sm"
+        >
+          Profile
+        </a>
+        <a
+          href="#"
+          className="block px-4 py-2 text-gray-800 hover:bg-gray-100 text-sm"
+        >
+          Settings
+        </a>
+        <div className="block px-4 py-2 text-gray-800 hover:bg-red-200 text-sm">
+          <button onClick={handleSignOut}>Logout</button>
+        </div>
       </div>
     </div>
   );

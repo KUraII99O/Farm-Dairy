@@ -28,7 +28,7 @@ export const ManageStaffProvider: React.FC = ({ children }) => {
     }
   };
 
-  const editStaff = async (id: number, updatedStaff: Omit<Staff, 'id'>) => {
+  const editStaff = async (id: string, updatedStaff: Omit<Staff, 'id'>) => {
     try {
       const data = await StaffService.editStaff(id, updatedStaff);
       setStaff(prevStaff =>
@@ -39,7 +39,7 @@ export const ManageStaffProvider: React.FC = ({ children }) => {
     }
   };
 
-  const toggleStaffStatus = async (id: number) => {
+  const toggleStaffStatus = async (id: string) => {
     try {
       const data = await StaffService.toggleStaffStatus(id);
       setStaff(prevStaff =>
@@ -50,7 +50,7 @@ export const ManageStaffProvider: React.FC = ({ children }) => {
     }
   };
 
-  const deleteStaff = async (id: number) => {
+  const deleteStaff = async (id: string) => {
     try {
       await StaffService.deleteStaff(id);
       setStaff(prevStaff => prevStaff.filter(member => member.id !== id));

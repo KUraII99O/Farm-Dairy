@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid'; // Import uuidv4 function from uuid
 
 interface Staff {
   id: string;
@@ -35,10 +36,9 @@ async function fetchStaff(): Promise<Staff[]> {
 async function addStaff(newStaff: Omit<Staff, 'id'>): Promise<Staff> {
   try {
     const currentStaff = await fetchStaff();
-    const maxId = currentStaff.length > 0 ? Math.max(...currentStaff.map(staff => parseInt(staff.id))) : 0;
-    const nextId = (maxId + 1).toString();
-
-    const staffWithId: Staff = { id: nextId, ...newStaff };
+    // Generate a UUID for the new staff member
+    const id = uuidv4();
+    const staffWithId: Staff = { id, ...newStaff };
 
     const response = await fetch('http://localhost:3000/staffs', {
       method: 'POST',

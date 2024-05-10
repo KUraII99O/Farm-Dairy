@@ -1,11 +1,11 @@
 import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate hook
 
-interface PhoneVerificationProps {
-  phoneNumber: string;
+interface EmailVerificationProps {
+  email: string;
 }
 
-const PhoneVerification: React.FC<PhoneVerificationProps> = ({ phoneNumber }) => {
+const EmailVerification: React.FC<EmailVerificationProps> = ({ email }) => {
   const inputs = useRef<Array<HTMLInputElement | null>>([]);
   const navigate = useNavigate(); // Use the useNavigate hook
   const [isValid, setIsValid] = useState(false); // State to track form validity
@@ -52,10 +52,10 @@ const PhoneVerification: React.FC<PhoneVerificationProps> = ({ phoneNumber }) =>
         <div className="mx-auto flex w-full max-w-md flex-col space-y-16">
           <div className="flex flex-col items-center justify-center text-center space-y-2">
             <div className="font-semibold text-3xl">
-              <p>Phone Verification</p>
+              <p>Email Verification</p>
             </div>
             <div className="flex flex-row text-sm font-medium text-gray-400">
-              <p>We have sent a code to your Phone Number: {phoneNumber}</p>
+              <p>We have sent a code to your Email Address: {email}</p>
             </div>
           </div>
           <div>
@@ -110,4 +110,4 @@ const PhoneVerification: React.FC<PhoneVerificationProps> = ({ phoneNumber }) =>
   );
 };
 
-export default PhoneVerification;
+export default EmailVerification;

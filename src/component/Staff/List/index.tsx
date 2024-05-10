@@ -7,9 +7,12 @@ import Pagination from "../../Pagination";
 import { useTranslation } from "../../Translator/Provider";
 import StaffList from "../Table";
 import { ManageStaffContext } from "../Provider";
+import * as XLSX from "xlsx";
 
 const StaffTable: React.FC = () => {
-  const { staff, toggleStaffStatus , deleteStaff } = useContext(ManageStaffContext);
+  const { staff, toggleStaffStatus, deleteStaff, addStaff } = useContext(
+    ManageStaffContext
+  );
   const { translate, language } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
@@ -18,6 +21,7 @@ const StaffTable: React.FC = () => {
   const [itemsPerPage, setItemsPerPage] = useState(5); // Number of staff per page
   const [isDeleting, setIsDeleting] = useState(false);
   const [staffToDelete, setStaffToDelete] = useState<number | null>(null);
+  const [importedData, setImportedData] = useState<any[]>([]);
 
   // Filter staff based on search term
   const filteredStaff = staff.filter((staffMember) =>
@@ -49,13 +53,12 @@ const StaffTable: React.FC = () => {
   const indexOfFirstStaff = indexOfLastStaff - itemsPerPage;
   const currentStaff = sortedStaff.slice(indexOfFirstStaff, indexOfLastStaff);
 
-
   const handleToggleStatus = async (id: number, newStatus: string) => {
     try {
       await toggleStaffStatus(id, newStatus);
-      toast.success("Stall status updated successfully!");
+      toast.success("Staff status updated successfully!");
     } catch (error) {
-      toast.error("An error occurred while updating stall status.");
+      toast.error("An error occurred while updating staff status.");
     }
   };
 
@@ -76,7 +79,7 @@ const StaffTable: React.FC = () => {
   };
 
   const handleDeleteConfirmation = async (id: number) => {
-    if (window.confirm("Are you sure you want to delete this stall?")) {
+    if (window.confirm("Are you sure you want to delete this staff member?")) {
       await handleDelete(id);
     }
   };
@@ -84,13 +87,61 @@ const StaffTable: React.FC = () => {
   const handleDelete = async (id: number) => {
     try {
       await deleteStaff(id);
-      toast.success("Stall deleted successfully!");
+      toast.success("Staff member deleted successfully!");
     } catch (error) {
-      toast.error("An error occurred while deleting stall.");
+      toast.error("An error occurred while deleting staff member.");
     }
   };
+
   const isArabic = language === "ar";
   const formClass = isArabic ? "rtl" : "ltr";
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files && event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = e.target?.result;
+        if (data) {
+          const workbook = XLSX.read(data, { type: "binary" });
+          const sheetName = workbook.SheetNames[0];
+          const sheet = workbook.Sheets[sheetName];
+          const excelData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+          setImportedData(excelData);
+          saveImportedData(excelData);
+        }
+      };
+      reader.readAsBinaryString(file);
+    }
+  };
+
+  const saveImportedData = async (data: any[]) => {
+    try {
+      for (const row of data) {
+        await addStaff({
+          name: row[1],
+          email: row[2],
+          mobile: row[3],
+          designation: row[4],
+          joiningDate: row[5],
+          grossSalary: row[6],
+          status: row[7],
+          image: row[0]
+        });
+      }
+      toast.success("Data imported successfully!");
+    } catch (error) {
+      toast.error("An error occurred while importing data.");
+      console.error("Error adding staff:", error);
+    }
+  };
+
+  const exportToExcel = () => {
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(staff);
+    XLSX.utils.book_append_sheet(wb, ws, "Staff");
+    XLSX.writeFile(wb, "staff_data.xlsx");
+  };
 
   return (
     <div className="overflow-x-auto">
@@ -110,13 +161,25 @@ const StaffTable: React.FC = () => {
           >
             {translate("addStaff")}
           </Link>
+          <label className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary ml-2">
+            Import
+            <input
+              type="file"
+              onChange={handleFileUpload}
+              accept=".xlsx,.xls"
+              style={{ display: "none" }}
+            />
+          </label>
+          <button className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary ml-2" onClick={exportToExcel}>
+            {translate("export")}
+          </button>
         </div>
       </div>
       <h1 className="text-xl font-bold mb-4">{translate("staffTable")}</h1>{" "}
       {/* Translate table title */}
       <div className="rtl:mirror-x">
         <StaffList
-          currentStaff={currentStaff} // Pass sortedStaff as currentStaff
+          currentStaff={currentStaff}
           handleSort={handleSort}
           sortIcon={sortIcon}
           handleToggleStatus={handleToggleStatus}

@@ -28,7 +28,7 @@ const EditStaff = () => {
     basicSalary: "",
     grossSalary: "",
     resignDate: "",
-    status: "",
+    status: "true",
   });
   const [loading, setLoading] = useState(false);
 
@@ -53,7 +53,7 @@ const EditStaff = () => {
     const { name, value } = e.target;
     if (name === "status") {
       // Convert the selected value to boolean
-      const statusValue = value === "true";
+      const statusValue = value === "true"; // Convert string value to boolean
       setFormData({
         ...formData,
         [name]: statusValue,
@@ -66,12 +66,14 @@ const EditStaff = () => {
     }
   };
 
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
       if (isEditMode) {
-        await editStaff(parseInt(id), formData);
+        await editStaff(id, formData); // Parse `id` to a number
       } else {
         await addStaff(formData);
       }
@@ -109,7 +111,7 @@ const EditStaff = () => {
             <h2 className="text-sm mb-4">{translate("emailAddress")} * :</h2>
             <input
               style={{ height: "2.5rem" }}
-              type="email"
+              type="text"
               name="email"
               value={formData.email}
               onChange={handleChange}

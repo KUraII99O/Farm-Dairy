@@ -55,7 +55,7 @@ const ImageUpload = ({ onImageUpload }) => {
   }
 
   return (
-    <div className="relative">
+    <div className="flex w-full items-center justify-center">
       <label htmlFor="uploadInput" className="cursor-pointer border my-6 border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white hover:bg-gray-100 text-center">
         {selectedImage ? (
           <img src={selectedImage} alt="Uploaded" className="w-full h-full object-cover" />

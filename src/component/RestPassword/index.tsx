@@ -3,17 +3,32 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate hook
 import MoooImage from "../../assets/images/Mooo.png"; // Import your image
 
 const ResetPassword: React.FC = () => {
-  const [identifier, setIdentifier] = useState("");
+  const [email, setEmail] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const isPhoneNumber = /^\d{8}$/.test(identifier);
-    if (isPhoneNumber) {
-      // Pass phoneNumber state as state to the PhoneVerification component
-      navigate("/phone-verification", { state: { phoneNumber: identifier } });
+    const isEmailValid = /\S+@\S+\.\S+/.test(email); // Basic email validation regex
+    if (isEmailValid) {
+      try {
+        // Send a POST request to your backend endpoint to request password reset
+        const response = await fetch("http://localhost:3000/reset-password-request", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        });
+        if (!response.ok) {
+          throw new Error("Failed to reset password");
+        }
+        // If the request is successful, redirect the user to the phone verification page
+        navigate("/phone-verification", { state: { email } });
+      } catch (error) {
+        console.error("Error:", error);
+      }
     } else {
-      console.log("Entered value is not a valid phone number.");
+      console.log("Entered value is not a valid Email.");
     }
   };
 
@@ -40,15 +55,15 @@ const ResetPassword: React.FC = () => {
 
                     <form onSubmit={handleSubmit}>
                       <p className="mb-4">
-                        Please enter your phone number to reset your password
+                        Please enter your email to reset your password
                       </p>
-                      {/* Email or Phone input */}
+                      {/* Email input */}
                       <input
-                        type="string "
+                        type="email"
                         className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
-                        placeholder=" Phone Number"
-                        value={identifier}
-                        onChange={(e) => setIdentifier(e.target.value)}
+                        placeholder="Email Address"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                       />
 
                       {/* <!--Submit button--> */}

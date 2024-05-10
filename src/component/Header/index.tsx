@@ -23,6 +23,10 @@ const NavBar: React.FC = () => {
         const loggedInUserData = localStorage.getItem("loggedInUser");
         if (loggedInUserData) {
           const userData = JSON.parse(loggedInUserData);
+          // If image is not provided, generate profile image based on username
+          if (!userData.image) {
+            userData.image = generateProfileImage(userData.username);
+          }
           setUser(userData);
         } else {
           console.error("No user data found in localStorage");
@@ -34,7 +38,7 @@ const NavBar: React.FC = () => {
 
     fetchUserData();
   }, []);
-  
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
@@ -54,6 +58,22 @@ const NavBar: React.FC = () => {
     localStorage.removeItem("loggedInUser");
     // You can redirect to the login page or perform any additional actions here
     window.location.href = "/LogIn"; // Redirect to the login page
+  };
+
+  // Function to generate profile image based on first letter of username
+  const generateProfileImage = (username: string): string => {
+    // Convert username to hash code
+    let hash = 0;
+    for (let i = 0; i < username.length; i++) {
+      hash = username.charCodeAt(i) + ((hash << 5) - hash);
+    }
+  
+    // Generate color based on hash code
+    const color = Math.floor(Math.abs(Math.sin(hash) * 16777215) % 16777215).toString(16);
+  
+    // Construct URL for profile image with consistent color
+    const initials = username.substring(0, 1).toUpperCase();
+    return `https://ui-avatars.com/api/?background=${color}&color=fff&name=${encodeURIComponent(initials)}`;
   };
 
   return (
