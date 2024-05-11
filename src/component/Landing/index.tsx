@@ -3,6 +3,8 @@ import LandingNav from '../LandingNav';
 import LandingIntro from '../LandingIntro';
 import WhyChooseGescow from '../whatweoffer';
 import WhyGesCow from '../Pricing';
+import ContactUs from '../ContactUs';
+import LandingFooter from '../LandingFooter';
 
 const Landing = () => {
   return (
@@ -11,6 +13,8 @@ const Landing = () => {
       <LandingIntro />
       <WhyChooseGescow />
       <WhyGesCow />
+      <ContactUs />
+      <LandingFooter />
 
       
       
