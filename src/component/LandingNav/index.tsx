@@ -13,7 +13,7 @@ import { Link } from "react-router-dom";
 const LandingNav = () => {
   return (
     <div>
-      
+
 
       <Navbar fluid rounded>
         <NavbarBrand href="https://flowbite-react.com">
@@ -35,25 +35,25 @@ const LandingNav = () => {
           <Button className="bg-primary mr-24">Get started</Button>
 
           <div className="flex items-center ">
-        <select
-          className="mr-2"
-        >
-          <option value="en">🇺🇸</option> {/* USA flag emoji */}
-          <option value="fr">🇫🇷</option> {/* France flag emoji */}
-          <option value="ar">🇹🇳</option> {/* Tunisia flag emoji */}
-        </select>
-      </div>
+            <select
+              className="mr-2"
+            >
+              <option value="en">🇺🇸</option> {/* USA flag emoji */}
+              <option value="fr">🇫🇷</option> {/* France flag emoji */}
+              <option value="ar">🇹🇳</option> {/* Tunisia flag emoji */}
+            </select>
+          </div>
 
           <NavbarToggle />
         </div>
         <NavbarCollapse>
-          <NavbarLink href="#" active>
+          <NavbarLink href="/" active>
             Home
           </NavbarLink>
           <Dropdown label="Solutions" inline>
-            <Dropdown.Item>Web</Dropdown.Item>
-            <Dropdown.Item>Mobile </Dropdown.Item>
-            <Dropdown.Item>Desktop</Dropdown.Item>
+            <Dropdown.Item><a href="link_to_web_solution">Web</a></Dropdown.Item>
+            <Dropdown.Item><a href="/solutions/mobile">Mobile</a></Dropdown.Item>
+            <Dropdown.Item><a href="/Solutions/Desktop">Desktop</a></Dropdown.Item>
           </Dropdown>
           <NavbarLink href="#">Services</NavbarLink>
           <NavbarLink href="#">Pricing</NavbarLink>

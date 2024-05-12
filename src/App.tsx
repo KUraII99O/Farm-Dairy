@@ -78,6 +78,9 @@ import {  ManagePregnancyProvider } from "./component/CowPregnancy/Provider";
 import CowSaleInvoicePage from "./Pages/CowSaleInvoicePage";
 import { ManageStaffProvider } from "./component/Staff/Provider";
 import LandingPage from "./Pages/LandingPage";
+import DesktopPage from "./Pages/DesktopPage";
+import DesktopOptionsPage from "./Pages/DesktopOptionsPage";
+import MobilePage from "./Pages/MobilePage";
 
 const App: React.FC = () => {
   return (
@@ -108,6 +111,24 @@ const App: React.FC = () => {
                                                   <ManagePregnancyProvider>
                                                       <Router>
                                                         <Routes>
+                                                          <Route
+                                                            path="/solutions/mobile"
+                                                            element={
+                                                              <MobilePage />
+                                                            }
+                                                          />
+                                                          <Route
+                                                            path="/solutions/desktop/desktop-options"
+                                                            element={
+                                                              <DesktopOptionsPage />
+                                                            }
+                                                          />
+                                                          <Route
+                                                            path="/solutions/desktop"
+                                                            element={
+                                                              <DesktopPage />
+                                                            }
+                                                          />
                                                           <Route
                                                             path="/"
                                                             element={

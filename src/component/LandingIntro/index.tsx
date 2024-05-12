@@ -34,10 +34,12 @@ const LandingIntro = () => {
           talented team has crafted a comprehensive solution to streamline cow
           management, pregnancy tracking, and staff organization.
         </h1>
+        <a href="SignUp">
         <Button className="bg-primary px-8 py-2 max-w-max">
           Get started 
           <HiOutlineArrowRight className="ml-2 h-5 w-5 " />
         </Button>
+        </a>
       </div>
       <div className="p-10 ">
         <lottie-player
