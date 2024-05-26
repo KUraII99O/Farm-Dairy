@@ -81,6 +81,8 @@ import LandingPage from "./Pages/LandingPage";
 import DesktopPage from "./Pages/DesktopPage";
 import DesktopOptionsPage from "./Pages/DesktopOptionsPage";
 import MobilePage from "./Pages/MobilePage";
+import InvoicePage from "./Pages/InvoicePage";
+import DetailsPage from "./Pages/DetailsPage";
 
 const App: React.FC = () => {
   return (
@@ -411,6 +413,23 @@ const App: React.FC = () => {
                                                               </RequireAuthentication>
                                                             }
                                                           />
+                                                          <Route
+                                                            path="/Invoice"
+                                                            element={
+                                                              <RequireAuthentication>
+                                                                <InvoicePage />
+                                                              </RequireAuthentication>
+                                                            }
+                                                          />
+                                                          <Route
+                                                            path="/details/:id"
+                                                            element={
+                                                              <RequireAuthentication>
+                                                                <DetailsPage />
+                                                              </RequireAuthentication>
+                                                            }
+                                                          />
+
                                                           <Route
                                                             path="/settings"
                                                             element={

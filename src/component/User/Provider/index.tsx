@@ -1,33 +1,33 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, { createContext, useState, useContext, useEffect, ReactNode, useMemo } from "react";
 import { toast } from "react-toastify";
 import { useTranslation } from "../../Translator/Provider";
+import { UserService } from "../UserService";
 
-// Define an interface for users
-interface User {
-  id: number;
-  username: string;
-  password: string;
-  type: string;
+interface UserContextType {
+  users: User[];
+  addUser: (newUser: Omit<User, "id">) => Promise<void>;
+  editUser: (id: number, updatedUser: User) => Promise<void>;
+  deleteUser: (id: number) => Promise<void>;
+  toggleStatus: (id: number) => Promise<void>;
 }
 
-export const UserContext = createContext<any>(null);
+export const UserContext = createContext<UserContextType | undefined>(undefined);
 
-export const UserProvider: React.FC = ({ children }) => {
+export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const { translate } = useTranslation();
-
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:3000/users");
-        if (!response.ok) {
-          throw new Error("Failed to fetch user data");
-        }
-        const data = await response.json();
+        const data = await UserService.fetchUsers();
         setUsers(data);
       } catch (error) {
-        console.error("Error fetching user data:", error.message);
+        setError(error.message);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -36,115 +36,58 @@ export const UserProvider: React.FC = ({ children }) => {
 
   const addUser = async (newUser: Omit<User, "id">) => {
     try {
-      // Generate a unique ID for the new user
-      const id = users.length + 1;
-
-      // Create the new user object with the generated ID
-      const userWithId: User = { id, ...newUser };
-
-      const response = await fetch("http://localhost:3000/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userWithId),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to add user");
-      }
-
-      // Update the client-side state with the new user
+      const userWithId = await UserService.addUser(newUser);
       setUsers([...users, userWithId]);
-
-      toast.success("User added successfully");
+      toast.success(translate("User added successfully"));
     } catch (error) {
-      console.error("Error:", error.message);
-      toast.error("Failed to add user");
+      toast.error(translate("Failed to add user"));
     }
   };
 
   const editUser = async (id: number, updatedUser: User) => {
     try {
-      const response = await fetch(`http://localhost:3000/users/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedUser),
-      });
-  
-      if (!response.ok) {
-        throw new Error("Failed to update user");
-      }
-  
-      // No need to parse response JSON if there's no data returned
-      // Assume the update was successful if response is OK
-      // Update the client-side state with the updated user data
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
-          user.id === id ? { ...user, ...updatedUser } : user
-        )
+      await UserService.editUser(id, updatedUser);
+      setUsers(prevUsers =>
+        prevUsers.map(user => (user.id === id ? { ...user, ...updatedUser } : user))
       );
-  
-      toast.success("User updated successfully");
+      toast.success(translate("User updated successfully"));
     } catch (error) {
-      console.error("Error:", error.message);
-      toast.error("Failed to update user");
+      toast.error(translate("Failed to update user"));
     }
   };
 
   const deleteUser = async (id: number) => {
     try {
-      const response = await fetch(`http://localhost:3000/users/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete user");
-      }
-
-      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
-
-      toast.success("User deleted successfully");
+      await UserService.deleteUser(id);
+      setUsers(prevUsers => prevUsers.filter(user => user.id !== id));
+      toast.success(translate("User deleted successfully"));
     } catch (error) {
-      console.error("Error:", error.message);
-      toast.error("Failed to delete user");
+      toast.error(translate("Failed to delete user"));
     }
   };
 
   const toggleStatus = async (id: number) => {
     try {
-      const response = await fetch(`http://localhost:3000/Users/${id}/toggle-status`, {
-        method: "PUT",
-      });
-  
-      if (!response.ok) {
-        throw new Error("Failed to toggle User status");
-      }
-  
-      const data = await response.json();
-  
-      setUsers((prevUser) =>
-        prevUser.map((User) =>
-          User.id === id ? { ...User, status: !User.status } : User
-        )
+      const updatedUser = await UserService.toggleUserStatus(id);
+      setUsers(prevUsers =>
+        prevUsers.map(user => (user.id === id ? updatedUser : user))
       );
-  
-      toast.info(translate("Userstatusupdatedsuccessfully"), { autoClose: 1000, hideProgressBar: true });
+      toast.info(translate("User status updated successfully"), { autoClose: 1000, hideProgressBar: true });
     } catch (error) {
-      console.error("Error:", error.message);
-      toast.error("Failed to toggle User status", { autoClose: 2000, hideProgressBar: true });
+      toast.error(translate("Failed to toggle user status"), { autoClose: 2000, hideProgressBar: true });
     }
   };
 
-  const value = {
+  const value = useMemo(() => ({
     users,
     addUser,
     editUser,
     deleteUser,
     toggleStatus,
-  };
+  }), [users]);
+
+  if (loading) return <div>{translate("Loading...")}</div>;
+  if (error) return <div>{translate("Error:")} {error}</div>;
 
   return (
     <UserContext.Provider value={value}>
@@ -153,7 +96,7 @@ export const UserProvider: React.FC = ({ children }) => {
   );
 };
 
-export const useUser = () => {
+export const useUser = (): UserContextType => {
   const context = useContext(UserContext);
   if (!context) {
     throw new Error("useUser must be used within a UserProvider");

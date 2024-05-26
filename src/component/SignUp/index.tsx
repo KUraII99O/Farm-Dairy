@@ -3,8 +3,9 @@ import MoooImage from "../../assets/images/Mooo.png";
 import { FaRegEyeSlash, FaRegEye } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "../Translator/Provider";
+import { useLocation } from 'react-router-dom';
 
-const SignUpForm: React.FC = () => {
+const SignUpForm: React.FC<{ planId?: number }> = ({ planId }) => {
   const { translate, setLanguage, language } = useTranslation();
 
   const [mobile, setMobile] = useState("");
@@ -16,7 +17,8 @@ const SignUpForm: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const navigate = useNavigate(); // Use the useNavigate hook
-
+  const location = useLocation();
+  const { plan } = location.state || {};
   const handleChangeLanguage = (newLanguage: string) => {
     console.log("Changing language to:", newLanguage);
     setLanguage(newLanguage);
@@ -48,14 +50,6 @@ const SignUpForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      // Create a user object with the form data
-      const newUser = {
-        mobile: mobile,
-        username: username,
-        email: email,
-        password: password,
-        role: "user", // Set the role to "user" by default
-      };
 
       try {
         const response = await fetch("http://localhost:3000/register", {
@@ -63,7 +57,7 @@ const SignUpForm: React.FC = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(newUser),
+          body: JSON.stringify({ mobile, username, email, password, planId: plan?.id, }),
         });
 
         if (!response.ok) {
@@ -74,7 +68,6 @@ const SignUpForm: React.FC = () => {
         const data = await response.json();
         console.log(data.message); // Print success message
 
-        // Show success pop-up
 
         // Navigate to the dashboard after 3 seconds
         setTimeout(() => {

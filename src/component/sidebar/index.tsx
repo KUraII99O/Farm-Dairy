@@ -160,6 +160,7 @@ const Sidebar: React.FC = () => {
         item.name
       );
     } else {
+      
       return true; // Default to showing all items if user type is not recognized
     }
   });

@@ -1,8 +1,10 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, { createContext, useState, useContext, useEffect, useMemo, ReactNode } from "react";
 import { toast } from "react-toastify";
+import EmployeeService from "../EmployeeService";
 
- interface Employee {
-  id: number;
+// Define the Employee interface
+export interface Employee {
+  id: string;
   image: string;
   name: string;
   payDate: string; // Assuming payDate is a string representing a date
@@ -13,22 +15,32 @@ import { toast } from "react-toastify";
   total: number;
 }
 
-export const EmployeeContext = createContext<any>(null);
+// Define the context type
+interface EmployeeContextType {
+  employees: Employee[];
+  addEmployee: (newEmployee: Omit<Employee, "id">) => Promise<void>;
+  editEmployee: (id: string, updatedEmployee: Employee) => Promise<void>;
+  deleteEmployee: (id: string) => Promise<void>;
+  toggleEmployeeStatus: (id: string) => Promise<Employee>;
+}
 
-export const EmployeeProvider: React.FC = ({ children }) => {
+export const EmployeeContext = createContext<EmployeeContextType | undefined>(undefined);
+
+export const EmployeeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await fetch("http://localhost:3000/employees");
-        if (!response.ok) {
-          throw new Error("Failed to fetch employee data");
-        }
-        const data = await response.json();
+        const data = await EmployeeService.fetchEmployees();
         setEmployees(data);
       } catch (error) {
         console.error("Error fetching employee data:", error.message);
+        setError(error.message);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -37,66 +49,36 @@ export const EmployeeProvider: React.FC = ({ children }) => {
 
   const addEmployee = async (newEmployee: Omit<Employee, "id">) => {
     try {
-      const id = employees.length + 1;
-      const employeeWithId: Employee = { id, ...newEmployee };
-
-      const response = await fetch("http://localhost:3000/employees", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(employeeWithId),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to add employee");
-      }
-
-      setEmployees([...employees, employeeWithId]);
+      const employee = await EmployeeService.addEmployee(newEmployee);
+      setEmployees([...employees, employee]);
+      toast.success("Employee added successfully");
     } catch (error) {
       console.error("Error:", error.message);
+      toast.error("Failed to add employee");
     }
   };
 
-  const editEmployee = async (id: number, updatedEmployee: Employee) => {
+  const editEmployee = async (id: string, updatedEmployee: Employee) => {
     try {
-      const response = await fetch(`http://localhost:3000/employees/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedEmployee),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update employee");
-      }
-
+      await EmployeeService.editEmployee(id, updatedEmployee);
       setEmployees((prevEmployees) =>
         prevEmployees.map((employee) =>
           employee.id === id ? { ...employee, ...updatedEmployee } : employee
         )
       );
-
+      toast.success("Employee updated successfully");
     } catch (error) {
       console.error("Error:", error.message);
+      toast.error("Failed to update employee");
     }
   };
 
-  const deleteEmployee = async (id: number) => {
+  const deleteEmployee = async (id: string) => {
     try {
-      const response = await fetch(`http://localhost:3000/employees/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete employee");
-      }
-
+      await EmployeeService.deleteEmployee(id);
       setEmployees((prevEmployees) =>
         prevEmployees.filter((employee) => employee.id !== id)
       );
-
       toast.success("Employee deleted successfully");
     } catch (error) {
       console.error("Error:", error.message);
@@ -104,12 +86,31 @@ export const EmployeeProvider: React.FC = ({ children }) => {
     }
   };
 
-  const value = {
+  const toggleEmployeeStatus = async (id: string) => {
+    try {
+      const updatedEmployee = await EmployeeService.toggleEmployeeStatus(id);
+      setEmployees((prevEmployees) =>
+        prevEmployees.map((employee) =>
+          employee.id === id ? { ...employee, status: !employee.status } : employee
+        )
+      );
+      toast.success("Employee status updated successfully");
+    } catch (error) {
+      console.error("Error:", error.message);
+      toast.error("Failed to toggle employee status");
+    }
+  };
+
+  const value = useMemo(() => ({
     employees,
     addEmployee,
     editEmployee,
     deleteEmployee,
-  };
+    toggleEmployeeStatus,
+  }), [employees]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <EmployeeContext.Provider value={value}>

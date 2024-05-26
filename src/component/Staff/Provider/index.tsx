@@ -9,19 +9,29 @@ export const ManageStaffProvider: React.FC = ({ children }) => {
   useEffect(() => {
     const fetchStaffData = async () => {
       try {
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (!loggedInUser) {
+          throw new Error("User not logged in or user data not found");
+        }
+        const user = JSON.parse(loggedInUser);
+        console.log("User ID:", user.id); // Log user ID
+  
         const data = await StaffService.fetchStaff();
+        console.log("Staff data:", data); // Log staff data
         setStaff(data || []);
       } catch (error) {
         console.error("Error fetching staff:", error);
       }
     };
-
+  
     fetchStaffData();
   }, []);
 
   const addStaff = async (newStaff: Omit<Staff, 'id'>) => {
+    console.log("Adding staff:", newStaff);
     try {
       const data = await StaffService.addStaff(newStaff);
+      console.log("Staff added successfully:", data);
       setStaff(prevStaff => [...prevStaff, data]);
     } catch (error) {
       console.error("Error adding staff:", error);

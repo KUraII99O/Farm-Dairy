@@ -78,6 +78,12 @@ const ProfilePopover: React.FC<ProfilePopoverProps> = ({
         >
           Settings
         </a>
+        <a
+          href="Invoice"
+          className="block px-4 py-2 text-gray-800 hover:bg-gray-100 text-sm"
+        >
+          Subscription
+        </a>
         <div className="block px-4 py-2 text-gray-800 hover:bg-red-200 text-sm">
           <button onClick={handleSignOut}>Logout</button>
         </div>

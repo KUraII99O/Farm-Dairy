@@ -94,7 +94,7 @@ const EditUser = () => {
                 value={formData.name}
                 onChange={handleChange}
                 className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                required
+                
               />
             </div>
 
@@ -113,7 +113,7 @@ const EditUser = () => {
                 value={formData.email}
                 onChange={handleChange}
                 className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                required
+                
               />
             </div>
 
@@ -132,7 +132,7 @@ const EditUser = () => {
                 value={formData.mobile}
                 onChange={handleChange}
                 className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                required
+                
               />
             </div>
             <div className="flex flex-col space-y-1">
@@ -150,7 +150,7 @@ const EditUser = () => {
                 value={formData.nid}
                 onChange={handleChange}
                 className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                required
+                
               />
             </div>
             <div className="flex flex-col space-y-1">
@@ -167,7 +167,7 @@ const EditUser = () => {
                 value={formData.designation}
                 onChange={handleChange}
                 className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                required
+                
               >
                 <option value="">{translate("select")}</option>
                 <option value="Manager">Accountant</option>
@@ -211,7 +211,7 @@ const EditUser = () => {
                 onChange={handleChange}
                 className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                 rows={3}
-                required
+                
               />
             </div>
 
@@ -230,7 +230,7 @@ const EditUser = () => {
                 onChange={handleChange}
                 className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                 rows={3}
-                required
+                
               />
             </div>
             <div className="flex flex-col space-y-1">
@@ -248,7 +248,7 @@ const EditUser = () => {
                 onChange={handleChange}
                 className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                 style={{ width: "800px" }}
-                required
+                
               />
             </div>
 
@@ -267,7 +267,7 @@ const EditUser = () => {
                 onChange={handleChange}
                 className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                 style={{ width: "800px" }}
-                required
+                
               />
             </div>
             <div className="flex flex-col space-y-1">
@@ -285,7 +285,7 @@ const EditUser = () => {
                 value={formData.joiningDate || ""}
                 onChange={handleChange}
                 className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                required
+                
               />
             </div>
 

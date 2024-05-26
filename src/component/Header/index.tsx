@@ -54,24 +54,19 @@ const NavBar: React.FC = () => {
   }, [profileRef]);
 
   const handleSignOut = () => {
-    // Remove the logged-in user from local storage
     localStorage.removeItem("loggedInUser");
-    // You can redirect to the login page or perform any additional actions here
-    window.location.href = "/LogIn"; // Redirect to the login page
+    window.location.href = "/LogIn";
   };
 
-  // Function to generate profile image based on first letter of username
   const generateProfileImage = (username: string): string => {
-    // Convert username to hash code
+    if (!username || username.trim().length === 0) {
+      return "default_profile_image_url";
+    }
     let hash = 0;
     for (let i = 0; i < username.length; i++) {
       hash = username.charCodeAt(i) + ((hash << 5) - hash);
     }
-  
-    // Generate color based on hash code
     const color = Math.floor(Math.abs(Math.sin(hash) * 16777215) % 16777215).toString(16);
-  
-    // Construct URL for profile image with consistent color
     const initials = username.substring(0, 1).toUpperCase();
     return `https://ui-avatars.com/api/?background=${color}&color=fff&name=${encodeURIComponent(initials)}`;
   };
@@ -104,14 +99,15 @@ const NavBar: React.FC = () => {
               <span className="sr-only">{"View notifications"}</span>
               <BellIcon className="h-6 w-6" aria-hidden="true" />
             </button>
-            {/* Include ProfilePopover component */}
-            <ProfilePopover
-              user={user}
-              isProfileOpen={isProfileOpen}
-              toggleProfile={toggleProfile}
-              handleSignOut={handleSignOut}
-              isRTL={isRTL}
-            />
+            {isProfileOpen && (
+              <ProfilePopover
+                user={user}
+                isProfileOpen={isProfileOpen}
+                toggleProfile={toggleProfile}
+                handleSignOut={handleSignOut}
+                isRTL={isRTL}
+              />
+            )}
           </div>
         </div>
       </div>

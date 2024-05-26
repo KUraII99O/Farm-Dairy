@@ -1,7 +1,8 @@
-import { v4 as uuidv4 } from 'uuid'; // Import uuidv4 function from uuid
+import { v4 as uuidv4 } from 'uuid';
 
 interface Staff {
   id: string;
+  userId: string;
   name: string;
   email: string;
   mobile: string;
@@ -21,24 +22,42 @@ const StaffService = {
 };
 
 async function fetchStaff(): Promise<Staff[]> {
+  const loggedInUser = localStorage.getItem('loggedInUser');
+  if (!loggedInUser) {
+    throw new Error("User not logged in");
+  }
+
+  const user = JSON.parse(loggedInUser);
+  if (!user || !user.id) {
+    throw new Error("User ID not found");
+  }
+
   try {
     const response = await fetch('http://localhost:3000/staffs');
     if (!response.ok) {
-      throw new Error('Failed to fetch Staff data');
+      throw new Error('Failed to fetch staff data');
     }
-    return await response.json();
+    const staffData: Staff[] = await response.json();
+    return staffData.filter(staff => staff.userId === user.id);
   } catch (error) {
-    console.error('Error fetching Staff data:', error.message);
+    console.error('Error fetching staff data:', error.message);
     return [];
   }
 }
 
-async function addStaff(newStaff: Omit<Staff, 'id'>): Promise<Staff> {
+async function addStaff(newStaff: Omit<Staff, 'id' | 'userId'>): Promise<Staff> {
+  const loggedInUser = localStorage.getItem('loggedInUser');
+  if (!loggedInUser) {
+    throw new Error("User not logged in or user data not found");
+  }
+
+  const user = JSON.parse(loggedInUser);
+  if (!user || !user.id) {
+    throw new Error("User ID not found in user data");
+  }
+
   try {
-    const currentStaff = await fetchStaff();
-    // Generate a UUID for the new staff member
-    const id = uuidv4();
-    const staffWithId: Staff = { id, ...newStaff };
+    const staffWithId: Staff = { id: uuidv4(), userId: user.id, ...newStaff };
 
     const response = await fetch('http://localhost:3000/staffs', {
       method: 'POST',
@@ -59,14 +78,24 @@ async function addStaff(newStaff: Omit<Staff, 'id'>): Promise<Staff> {
   }
 }
 
-async function editStaff(id: string, updatedStaff: Omit<Staff, 'id'>): Promise<void> {
+async function editStaff(id: string, updatedStaff: Omit<Staff, 'id' | 'userId'>): Promise<void> {
+  const loggedInUser = localStorage.getItem('loggedInUser');
+  if (!loggedInUser) {
+    throw new Error("User not logged in");
+  }
+
+  const user = JSON.parse(loggedInUser);
+  if (!user || !user.id) {
+    throw new Error("User ID not found");
+  }
+
   try {
     const response = await fetch(`http://localhost:3000/staffs/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(updatedStaff),
+      body: JSON.stringify({ ...updatedStaff, userId: user.id }),
     });
     if (!response.ok) {
       throw new Error('Failed to update staff');
@@ -78,6 +107,16 @@ async function editStaff(id: string, updatedStaff: Omit<Staff, 'id'>): Promise<v
 }
 
 async function toggleStaffStatus(id: string): Promise<Staff> {
+  const loggedInUser = localStorage.getItem('loggedInUser');
+  if (!loggedInUser) {
+    throw new Error("User not logged in");
+  }
+
+  const user = JSON.parse(loggedInUser);
+  if (!user || !user.id) {
+    throw new Error("User ID not found");
+  }
+
   try {
     const response = await fetch(`http://localhost:3000/staffs/${id}/toggle-status`, {
       method: 'PUT',
@@ -93,8 +132,18 @@ async function toggleStaffStatus(id: string): Promise<Staff> {
 }
 
 async function deleteStaff(id: string): Promise<void> {
+  const loggedInUser = localStorage.getItem('loggedInUser');
+  if (!loggedInUser) {
+    throw new Error("User not logged in");
+  }
+
+  const user = JSON.parse(loggedInUser);
+  if (!user || !user.id) {
+    throw new Error("User ID not found");
+  }
+
   try {
-      const response = await fetch(`http://localhost:3000/staffs/${id}`, {
+    const response = await fetch(`http://localhost:3000/staffs/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) {

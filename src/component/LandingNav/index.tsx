@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Button,
   Navbar,
@@ -9,12 +9,18 @@ import {
   Dropdown,
 } from "flowbite-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "../Translator/Provider";
 
-const LandingNav = () => {
+const LandingNav: React.FC = () => {
+  const { translate, setLanguage, language } = useTranslation();
+
+  const handleChangeLanguage = (newLanguage: string) => {
+    console.log("Changing language to:", newLanguage);
+    setLanguage(newLanguage);
+  };
+
   return (
     <div>
-
-
       <Navbar fluid rounded>
         <NavbarBrand href="https://flowbite-react.com">
           <Link
@@ -27,37 +33,46 @@ const LandingNav = () => {
               alt="Your Company"
             />
             <h3 className="text-lg sm:text-xl font-bold ml-2 text-primary">
-              GesCow
+              {translate("Ges Cow")} {/* Translate the company name */}
             </h3>
           </Link>
         </NavbarBrand>
         <div className="flex md:order-2">
-          <Button className="bg-primary mr-24">Get started</Button>
-
+          <Button className="bg-primary mr-24">
+            {translate("getstarted")}
+          </Button>{" "}
+          {/* Translate the button text */}
           <div className="flex items-center ">
             <select
+              value={language}
+              onChange={(e) => handleChangeLanguage(e.target.value)}
               className="mr-2"
             >
-              <option value="en">🇺🇸</option> {/* USA flag emoji */}
-              <option value="fr">🇫🇷</option> {/* France flag emoji */}
-              <option value="ar">🇹🇳</option> {/* Tunisia flag emoji */}
+              <option value="en">{translate("🇺🇸")}</option>{" "}
+              {/* Translate the country flag emojis */}
+              <option value="fr">{translate("🇫🇷")}</option>
+              <option value="ar">{translate("🇹🇳")}</option>
             </select>
           </div>
-
           <NavbarToggle />
         </div>
         <NavbarCollapse>
-          <NavbarLink href="/" active>
-            Home
-          </NavbarLink>
-          <Dropdown label="Solutions" inline>
-            <Dropdown.Item><a href="link_to_web_solution">Web</a></Dropdown.Item>
-            <Dropdown.Item><a href="/solutions/mobile">Mobile</a></Dropdown.Item>
-            <Dropdown.Item><a href="/Solutions/Desktop">Desktop</a></Dropdown.Item>
+          <NavbarLink href="/">{translate("home")}</NavbarLink>{" "}
+          {/* Translate navbar links */}
+          <Dropdown label={translate("solutions")} inline>
+            <Dropdown.Item>
+              <a href="link_to_web_solution">{translate("web")}</a>
+            </Dropdown.Item>
+            <Dropdown.Item>
+              <Link to="/solutions/mobile">{translate("mobilee")}</Link>
+            </Dropdown.Item>
+            <Dropdown.Item>
+              <Link to="/solutions/desktop">{translate("desktop")}</Link>
+            </Dropdown.Item>
           </Dropdown>
-          <NavbarLink href="#">Services</NavbarLink>
-          <NavbarLink href="#">Pricing</NavbarLink>
-          <NavbarLink href="#">Contact</NavbarLink>
+          <NavbarLink href="#">{translate("services")}</NavbarLink>
+          <NavbarLink href="#">{translate("pricing")}</NavbarLink>
+          <NavbarLink href="#">{translate("contact")}</NavbarLink>
         </NavbarCollapse>
       </Navbar>
     </div>
