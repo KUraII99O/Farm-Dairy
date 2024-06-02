@@ -1,110 +1,60 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { toast } from "react-toastify";
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { MilkSales, MilkSaleService } from "../MilkSaleService";
 
-interface MilkSales {
-  id: number;
-  Date: string;
-  AccountNo: string;
-  StallNo: string;
-  AnimalID: string;
-  Liter: number;
-  Fate: string;
-  Price: number;
-  Total: number;
-  CollectedFrom: string;
-  AddedBy: string;
-  invoice: string;
-}
+export const ManageMilkSaleContext = createContext<any>(null);
 
-export const MilkSaleContext = createContext<any>(null);
-
-export const MilkSaleProvider = ({ children }) => {
+export const ManageMilkSaleProvider: React.FC = ({ children }) => {
   const [milkSales, setMilkSales] = useState<MilkSales[]>([]);
 
   useEffect(() => {
-    const fetchMilkSale = async () => {
+    const fetchMilkSaleRecordsData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/milksale");
-        if (!response.ok) {
-          throw new Error("Failed to fetch MilkSales data");
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (!loggedInUser) {
+          throw new Error("User not logged in or user data not found");
         }
-        const data = await response.json();
-        setMilkSales(data);
+        const user = JSON.parse(loggedInUser);
+        console.log("User ID:", user.id); // Log user ID
+  
+        const data = await MilkSaleService.fetchMilkSaleRecords();
+        console.log("Milk sale records data:", data); // Log milk sale records data
+        setMilkSales(data || []);
       } catch (error) {
-        console.error("Error fetching MilkSales data:", error.message);
+        console.error("Error fetching milk sale records:", error);
       }
     };
-
-    fetchMilkSale();
+  
+    fetchMilkSaleRecordsData();
   }, []);
 
-  const addMilkSales = async (newMilkSales: Omit<MilkSales, "id">) => {
+  const addMilkSaleRecord = async (newMilkSaleRecord: Omit<MilkSales, 'id'>) => {
+    console.log("Adding milk sale record:", newMilkSaleRecord);
     try {
-      const id = milkSales.length + 1;
-      const MilkSalesWithId: MilkSales = { id, ...newMilkSales };
-
-      const response = await fetch("http://localhost:3000/milksale", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(MilkSalesWithId),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to add MilkSales");
-      }
-
-      setMilkSales([...milkSales, MilkSalesWithId]);
-      toast.success("MilkSales added successfully");
+      const data = await MilkSaleService.addMilkSaleRecord(newMilkSaleRecord);
+      console.log("Milk sale record added successfully:", data);
+      setMilkSales(prevMilkSales => [...prevMilkSales, data]);
     } catch (error) {
-      console.error("Error:", error.message);
-      toast.error("Failed to add MilkSales");
+      console.error("Error adding milk sale record:", error);
     }
   };
 
-  const editMilkSale = async (id: number, updatedMilkSales: Omit<MilkSales, "id">) => {
+  const editMilkSaleRecord = async (id: number, updatedMilkSaleRecord: Omit<MilkSales, 'id'>) => {
     try {
-      const response = await fetch(`http://localhost:3000/milksale/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedMilkSales),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update milk record");
-      }
-
+      const data = await MilkSaleService.editMilkSaleRecord(id, updatedMilkSaleRecord);
       setMilkSales(prevMilkSales =>
-        prevMilkSales.map(milkSale =>
-          milkSale.id === id ? { ...milkSale, ...updatedMilkSales } : milkSale
-        )
+        prevMilkSales.map(record => (record.id === id ? { ...record, ...updatedMilkSaleRecord } : record))
       );
-
-      toast.success("Milk record updated successfully");
     } catch (error) {
-      console.error("Error:", error.message);
-      toast.error("Failed to update milk record");
+      console.error("Error editing milk sale record:", error);
     }
   };
 
-  const deleteMilkSale = async (id: number) => {
+  const deleteMilkSaleRecord = async (id: number) => {
     try {
-      const response = await fetch(`http://localhost:3000/milksale/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete milk record");
-      }
-
-      setMilkSales(prevMilkSales => prevMilkSales.filter(milkSale => milkSale.id !== id));
-      toast.success("Milk record deleted successfully");
+      await MilkSaleService.deleteMilkSaleRecord(id);
+      setMilkSales(prevMilkSales => prevMilkSales.filter(record => record.id !== id));
     } catch (error) {
-      console.error("Error:", error.message);
-      toast.error("Failed to delete milk record");
+      console.error("Error deleting milk sale record:", error);
     }
   };
 
@@ -123,20 +73,24 @@ export const MilkSaleProvider = ({ children }) => {
 
   const value = {
     milkSales,
-    addMilkSales,
-    editMilkSale,
-    deleteMilkSale,
+    addMilkSaleRecord,
+    editMilkSaleRecord,
+    deleteMilkSaleRecord,
     getInvoiceById,
     generateRandomInvoice
   };
 
-  return <MilkSaleContext.Provider value={value}>{children}</MilkSaleContext.Provider>;
+  return (
+    <ManageMilkSaleContext.Provider value={value}>
+      {children}
+    </ManageMilkSaleContext.Provider>
+  );
 };
 
-export const useMilkSale = () => {
-  const context = useContext(MilkSaleContext);
+export const useManageMilkSale = () => {
+  const context = useContext(ManageMilkSaleContext);
   if (!context) {
-    throw new Error('useMilkSale must be used within a MilkSaleProvider');
+    throw new Error("useManageMilkSale must be used within a ManageMilkSaleProvider");
   }
   return context;
 };

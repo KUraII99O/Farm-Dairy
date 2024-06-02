@@ -1,136 +1,81 @@
-import React, { createContext, useState, useContext,useEffect } from 'react';
-import { toast } from "react-toastify";
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { MilkRecord, MilkService } from "../MilkService";
 
+export const ManageMilkContext = createContext<any>(null);
 
-
-interface MilkRecord {
-  id: number;
-  Date: string;
-  AccountNo: string;
-  StallNo: string;
-  AnimalID: string;
-  Liter: number;
-  Fate: string;
-  Price: number;
-  Total: number;
-  CollectedFrom: string;
-  AddedBy: string;
-}
-
-
-
-
-
-export const MilkContext = createContext<any>(null);
-
-export const MilkProvider = ({ children }) => {
-  const [milks, setMilks] = useState<MilkRecord[]>([]);
+export const ManageMilkProvider: React.FC = ({ children }) => {
+  const [milkRecords, setMilkRecords] = useState<MilkRecord[]>([]);
 
   useEffect(() => {
-    const fetchMilkRecord = async () => {
+    const fetchMilkRecordsData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/milks");
-        if (!response.ok) {
-          throw new Error("Failed to fetch MilkRecord data");
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (!loggedInUser) {
+          throw new Error("User not logged in or user data not found");
         }
-        const data = await response.json();
-        setMilks(data);
+        const user = JSON.parse(loggedInUser);
+        console.log("User ID:", user.id); // Log user ID
+  
+        const data = await MilkService.fetchMilkRecords();
+        console.log("Milk records data:", data); // Log milk records data
+        setMilkRecords(data || []);
       } catch (error) {
-        console.error("Error fetching MilkRecord data:", error.message);
+        console.error("Error fetching milk records:", error);
       }
     };
-
-    fetchMilkRecord();
+  
+    fetchMilkRecordsData();
   }, []);
 
-  const addMilkRecord = async (newMilkRecord: Omit<MilkRecord, "id">) => {
+  const addMilkRecord = async (newMilkRecord: Omit<MilkRecord, 'id'>) => {
+    console.log("Adding milk record:", newMilkRecord);
     try {
-      const id = milks.length + 1;
-      const MilkRecordWithId: MilkRecord = { id, ...newMilkRecord };
-  
-      const response = await fetch("http://localhost:3000/Milks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(MilkRecordWithId),
-      });
-  
-      if (!response.ok) {
-        throw new Error("Failed to add MilkRecord");
-      }
-  
-      setMilks([...milks, MilkRecordWithId]); // Corrected variable name here
-      toast.success("MilkRecord added successfully");
+      const data = await MilkService.addMilkRecord(newMilkRecord);
+      console.log("Milk record added successfully:", data);
+      setMilkRecords(prevMilkRecords => [...prevMilkRecords, data]);
     } catch (error) {
-      console.error("Error:", error.message);
-      toast.error("Failed to add MilkRecord");
+      console.error("Error adding milk record:", error);
     }
   };
 
-  const editMilkRecord = async (id: number, updatedMilkRecord: Omit<MilkRecord, "id">) => {
+  const editMilkRecord = async (id: string, updatedMilkRecord: Omit<MilkRecord, 'id'>) => {
     try {
-      const response = await fetch(`http://localhost:3000/milks/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedMilkRecord),
-      });
-  
-      if (!response.ok) {
-        throw new Error("Failed to update milk record");
-      }
-  
-      setMilks((prevMilks) =>
-        prevMilks.map((milkRecord) =>
-          milkRecord.id === id ? { ...milkRecord, ...updatedMilkRecord } : milkRecord
-        )
+      const data = await MilkService.editMilkRecord(id, updatedMilkRecord);
+      setMilkRecords(prevMilkRecords =>
+        prevMilkRecords.map(record => (record.id === id ? { ...record, ...updatedMilkRecord } : record))
       );
-  
-      toast.success("Milk record updated successfully");
     } catch (error) {
-      console.error("Error:", error.message);
-      toast.error("Failed to update milk record");
+      console.error("Error editing milk record:", error);
     }
   };
-  
 
-  const deleteMilkRecord = async (id: number) => {
+  const deleteMilkRecord = async (id: string) => {
     try {
-      const response = await fetch(`http://localhost:3000/milks/${id}`, {
-        method: "DELETE",
-      });
-  
-      if (!response.ok) {
-        throw new Error("Failed to delete milk record");
-      }
-  
-      setMilks((prevMilks) =>
-        prevMilks.filter((milkRecord) => milkRecord.id !== id)
-      );
-  
-      toast.success("Milk record deleted successfully");
+      await MilkService.deleteMilkRecord(id);
+      setMilkRecords(prevMilkRecords => prevMilkRecords.filter(record => record.id !== id));
     } catch (error) {
-      console.error("Error:", error.message);
-      toast.error("Failed to delete milk record");
+      console.error("Error deleting milk record:", error);
     }
   };
 
   const value = {
-    milks,
+    milkRecords,
     addMilkRecord,
     editMilkRecord,
-    deleteMilkRecord,
+    deleteMilkRecord
   };
 
-  return <MilkContext.Provider value={value}>{children}</MilkContext.Provider>;
+  return (
+    <ManageMilkContext.Provider value={value}>
+      {children}
+    </ManageMilkContext.Provider>
+  );
 };
 
-export const useMilk = () => {
-  const context = useContext(MilkContext);
+export const useManageMilk = () => {
+  const context = useContext(ManageMilkContext);
   if (!context) {
-    throw new Error('useMilk must be used within a MilkProvider');
+    throw new Error("useManageMilk must be used within a ManageMilkProvider");
   }
   return context;
 };

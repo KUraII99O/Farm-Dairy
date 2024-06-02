@@ -9,9 +9,9 @@ import DashboardPage from "./Pages/DashboardPage";
 import SettingPage from "./Pages/SettingPage";
 import ProfileSettingPage from "./Pages/ProfileSettingPage";
 import Layout from "./component/Layout";
-import { UserProvider } from "./component/User/Provider";
-import { EmployeeProvider } from "./component/Employee/Provider";
-import { MilkProvider } from "./component/Milk/Provider";
+import { ManageUserContext, ManageUserProvider } from "./component/User/Provider";
+import { EmployeeProvider, ManageEmployeeProvider } from "./component/Employee/Provider";
+import { ManageMilkProvider, MilkProvider } from "./component/Milk/Provider";
 import EditStaffPage from "./Pages/EditStaffPage";
 import StaffListPage from "./Pages/StaffListPage";
 import UserListPage from "./Pages/UserListPage";
@@ -21,7 +21,7 @@ import EditEmployeePage from "./Pages/EditEmployeePage";
 import MilkListPage from "./Pages/MilkListPage";
 import EditMilkPage from "./Pages/EditMilkPage";
 import MilkSaleListPage from "./Pages/MilkSaleListPage";
-import { MilkSaleProvider } from "./component/MilkSale/Provider";
+import { ManageMilkSaleProvider, MilkSaleProvider } from "./component/MilkSale/Provider";
 import EditMilkSalePage from "./Pages/EditMilkSalePage";
 import MilkSaleInvoicePage from "./Pages/MilkSaleInvoicePage";
 import { CowFeedProvider } from "./component/CowFeed/Provider";
@@ -76,7 +76,7 @@ import UserTypeListPage from "./Pages/UserTypeListPage";
 import { UserTypeProvider } from "./component/UserType/Provider";
 import {  ManagePregnancyProvider } from "./component/CowPregnancy/Provider";
 import CowSaleInvoicePage from "./Pages/CowSaleInvoicePage";
-import { ManageStaffProvider } from "./component/Staff/Provider";
+import {  ManageStaffProvider } from "./component/Staff/Provider";
 import LandingPage from "./Pages/LandingPage";
 import DesktopPage from "./Pages/DesktopPage";
 import DesktopOptionsPage from "./Pages/DesktopOptionsPage";
@@ -86,11 +86,11 @@ import DetailsPage from "./Pages/DetailsPage";
 
 const App: React.FC = () => {
   return (
-    <UserProvider>
+    <ManageUserProvider>
       <ManageStaffProvider>
-        <EmployeeProvider>
-          <MilkProvider>
-            <MilkSaleProvider>
+        <ManageEmployeeProvider>
+          <ManageMilkProvider>
+            <ManageMilkSaleProvider>
               <CowFeedProvider>
                 <RoutineMonitorProvider>
                   <VaccineMonitorProvider>
@@ -623,11 +623,11 @@ const App: React.FC = () => {
                   </VaccineMonitorProvider>
                 </RoutineMonitorProvider>
               </CowFeedProvider>
-            </MilkSaleProvider>
-          </MilkProvider>
-        </EmployeeProvider>
+            </ManageMilkSaleProvider>
+          </ManageMilkProvider>
+        </ManageEmployeeProvider>
       </ManageStaffProvider>
-    </UserProvider>
+    </ManageUserProvider>
   );
 };
 

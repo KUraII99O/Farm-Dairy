@@ -1,17 +1,16 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { UserContext } from "../Provider";
-import { FaUserPlus } from "react-icons/fa";
+import { FaUserPlus, FaImage } from "react-icons/fa";
 import { useTranslation } from "../../Translator/Provider";
-import { FaImage } from "react-icons/fa6";
 import ImageUpload from "../../ImageUpload";
+import { ManageUserContext } from "../Provider";
 
 const EditUser = () => {
   const { id } = useParams<{ id: string }>();
-  const { users, addUser, editUser } = useContext(UserContext);
-  const navigate = useNavigate();
+  const { users, addUser, editUser } = useContext(ManageUserContext);
   const { translate, language } = useTranslation();
-  const [imagePath, setImagePath] = useState("");
+  const navigate = useNavigate();
+  const [selectedImage, setSelectedImage] = useState<string | null>(null); // State to store selected image path
 
   const isEditMode = !!id;
 
@@ -23,304 +22,262 @@ const EditUser = () => {
     joiningDate: "",
     permanentAddress: "",
     nid: "",
-    image: "",
+    image: "", // This will hold the image data
     userType: "",
     presentAddress: "",
     basicSalary: "",
     grossSalary: "",
     resignDate: "",
+    status: "true",
   });
+
   const [loading, setLoading] = useState(false);
-  const [successPopup, setSuccessPopup] = useState(false);
 
   useEffect(() => {
-    if (isEditMode) {
-      const selectedUser = users.find((user) => user.id === parseInt(id));
+    if (isEditMode && id && users.length > 0) {
+      const selectedUser = users.find((item) => item.id === id); // Ensure id is of the same type as item.id
       if (selectedUser) {
         setFormData(selectedUser);
       }
     }
   }, [id, isEditMode, users]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const handleImageUpload = (imageData: string) => {
+    // Update the formData with the image data received from the ImageUpload component
     setFormData({
       ...formData,
-      [name]: value,
+      image: imageData,
     });
   };
-  
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "status") {
+      // Convert the selected value to boolean
+      const statusValue = value === "true"; // Convert string value to boolean
+      setFormData({
+        ...formData,
+        [name]: statusValue,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    if (isEditMode) {
-      await editUser(parseInt(id), formData);
-    } else {
-      await addUser(formData);
+
+    try {
+      if (isEditMode) {
+        await editUser(id, formData); // Parse `id` to a number
+      } else {
+        await addUser(formData);
+      }
+      navigate("/User");
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      // Handle error
     }
-    setLoading(false);
-    setSuccessPopup(true);
-    setTimeout(() => {
-      setSuccessPopup(false);
-      navigate("/user");
-    }, 2000);
   };
 
   return (
     <div>
-      <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-8">
-        <div className="flex flex-col space-y-4">
-          <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
-            <h2
-              className={`text-xl font-bold text-gray-700 mb-4 flex items-center ${
-                language === "ar" ? "space-x-2" : ""
-              }`}
-            >
-              <FaUserPlus
-                className={`mr-2 ${language === "ar" ? "ml-2" : ""}`}
-              />
-              <span>{translate("profileInformation")}</span>
+      <form onSubmit={handleSubmit}>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="col-span-3 mb-4">
+            <h2 className="text-xl font-bold mb-4 flex items-center">
+              <FaUserPlus className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
+              <span>{translate("basicInformation")}</span>
             </h2>
-            <div className="flex flex-col space-y-1">
-              <label className="text-sm font-medium text-gray-700">
-                {translate("fullName")}:
-              </label>
-              <input
-                style={{ width: "800px" }}
-                type="text"
-                placeholder={translate("name")}
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                
-              />
-            </div>
+            <h2 className="text-sm mb-4">{translate("fullName")}* :</h2>
+            <input
+              style={{ height: "2.5rem" }}
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
 
-            <div className="flex flex-col space-y-1">
-              <label
-                htmlFor="emailAddress"
-                className="text-sm font-medium text-gray-700"
-              >
-                {translate("emailAddress")}:
-              </label>
-              <input
-                style={{ width: "800px" }}
-                type="email"
-                id="emailAddress"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                
-              />
-            </div>
+          <div className="col-span-1">
+            <h2 className="text-sm mb-4">{translate("emailAddress")} * :</h2>
+            <input
+              style={{ height: "2.5rem" }}
+              type="text"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+            />
+          </div>
 
-            <div className="flex flex-col space-y-1">
-              <label
-                htmlFor="phoneNumber"
-                className="text-sm font-medium text-gray-700"
-              >
-                {translate("phoneNumber")}:
-              </label>
-              <input
-                style={{ width: "800px" }}
-                type="tel"
-                id="phoneNumber"
-                name="mobile"
-                value={formData.mobile}
-                onChange={handleChange}
-                className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                
-              />
-            </div>
-            <div className="flex flex-col space-y-1">
-              <label
-                htmlFor="nid"
-                className="text-sm font-medium text-gray-700"
-              >
-                {translate("nid")}:
-              </label>
-              <input
-                style={{ width: "800px" }}
-                type="text"
-                id="nid"
-                name="nid"
-                value={formData.nid}
-                onChange={handleChange}
-                className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                
-              />
-            </div>
-            <div className="flex flex-col space-y-1">
-              <label
-                htmlFor="designation"
-                className="text-sm font-medium text-gray-700"
-              >
-                {translate("designation")}:
-              </label>
-              <select
-                style={{ width: "800px" }}
-                id="designation"
-                name="designation"
-                value={formData.designation}
-                onChange={handleChange}
-                className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                
-              >
-                <option value="">{translate("select")}</option>
-                <option value="Manager">Accountant</option>
-                <option value="Supervisor">Executive</option>
-              </select>
-            </div>
+          <div className="col-span-1">
+            <h2 className="text-sm mb-4">{translate("phoneNumber")} * :</h2>
+            <input
+              style={{ height: "2.5rem" }}
+              type="text"
+              name="mobile"
+              value={formData.mobile}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+            />
+          </div>
 
-            <div className="flex flex-col space-y-1">
-              <label
-                htmlFor="userType"
-                className="text-sm font-medium text-gray-700"
-              >
-                {translate("userType")}:
-              </label>
-              <select
-                style={{ width: "800px" }}
-                id="userType"
-                name="userType"
-                value={formData.userType}
-                onChange={handleChange}
-                className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              >
-                <option value="">{translate("select")}</option>
-                <option value="Admin">Accountant</option>
-                <option value="Employee">Admin</option>
-                <option value="Employee">Marketing Executive</option>
-              </select>
-            </div>
-            <div className="flex flex-col space-y-1">
-              <label
-                htmlFor="presentAddress"
-                className="text-sm font-medium text-gray-700"
-              >
-                {translate("presentAddress")}:
-              </label>
-              <textarea
-                style={{ width: "800px" }}
-                id="presentAddress"
-                name="presentAddress"
-                value={formData.presentAddress}
-                onChange={handleChange}
-                className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                rows={3}
-                
-              />
-            </div>
+          <div className="col-span-1">
+            <h2 className="text-sm mb-4">{translate("nid")} :</h2>
+            <input
+              style={{ height: "2.5rem" }}
+              name="nid"
+              value={formData.nid}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+            />
+          </div>
 
-            <div className="flex flex-col space-y-1">
-              <label
-                htmlFor="permanentAddress"
-                className="text-sm font-medium text-gray-700"
-              >
-                {translate("permanentAddress")}:
-              </label>
-              <textarea
-                style={{ width: "800px" }}
-                id="permanentAddress"
-                name="permanentAddress"
-                value={formData.permanentAddress}
-                onChange={handleChange}
-                className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                rows={3}
-                
-              />
-            </div>
-            <div className="flex flex-col space-y-1">
-              <label
-                htmlFor="basicSalary"
-                className="text-sm font-medium text-gray-700"
-              >
-                {translate("basicSalary")}:
-              </label>
+          <div className="col-span-1">
+            <h2 className="text-sm mb-4">{translate("designation")} * :</h2>
+            <select
+              style={{ height: "2.5rem" }}
+              name="designation"
+              value={formData.designation}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+            >
+              <option value="">{translate("select")}</option>
+              <option value="Manager">Accountant</option>
+              <option value="Supervisor">Executive</option>
+            </select>
+          </div>
+
+          <div className="col-span-1">
+            <h2 className="text-sm mb-4">{translate("userType")}:</h2>
+            <select
+              style={{ height: "2.5rem" }}
+              name="userType"
+              value={formData.userType}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+            >
+              <option value="">{translate("select")}</option>
+              <option value="Admin">Admin</option>
+              <option value="Employee">Employee</option>
+              <option value="Marketing Executive">Marketing Executive</option>
+            </select>
+          </div>
+
+          <div className="col-span-1">
+            <h2 className="text-sm mb-4">{translate("presentAddress")}:</h2>
+            <input
+              style={{ height: "2.5rem" }}
+              type="text"
+              name="presentAddress"
+              value={formData.presentAddress}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+            />
+          </div>
+
+          <div className="col-span-1">
+            <h2 className="text-sm mb-4">{translate("permanentAddress")} :</h2>
+            <input
+              style={{ height: "2.5rem" }}
+              type="text"
+              name="permanentAddress"
+              value={formData.permanentAddress}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+            />
+          </div>
+
+          <div className="col-span-1">
+            <h2 className="text-sm mb-4">{translate("basicSalary")} * :</h2>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-2 text-gray-700">
+                $
+              </span>
               <input
+                style={{ height: "2.5rem" }}
                 type="number"
-                id="basicSalary"
                 name="basicSalary"
                 value={formData.basicSalary}
                 onChange={handleChange}
-                className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                style={{ width: "800px" }}
-                
+                className="pl-8 w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
+          </div>
 
-            <div className="flex flex-col space-y-1">
-              <label
-                htmlFor="grossSalary"
-                className="text-sm font-medium text-gray-700"
-              >
-                {translate("grossSalary")}:
-              </label>
-              <input
-                type="number"
-                id="grossSalary"
-                name="grossSalary"
-                value={formData.grossSalary}
-                onChange={handleChange}
-                className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                style={{ width: "800px" }}
-                
-              />
-            </div>
-            <div className="flex flex-col space-y-1">
-              <label
-                htmlFor="joiningDate"
-                className="text-sm font-medium text-gray-700"
-              >
-                {translate("joiningDate")}:
-              </label>
-              <input
-                style={{ width: "800px" }}
-                type="date"
-                id="joiningDate"
-                name="joiningDate"
-                value={formData.joiningDate || ""}
-                onChange={handleChange}
-                className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                
-              />
-            </div>
+          <div className="col-span-1">
+            <h2 className="text-sm mb-4">{translate("grossSalary")} * :</h2>
+            <input
+              style={{ height: "2.5rem" }}
+              type="number"
+              name="grossSalary"
+              value={formData.grossSalary}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+            />
+          </div>
 
-            <div className="flex flex-col space-y-1">
-              <label
-                htmlFor="resignDate"
-                className="text-sm font-medium text-gray-700"
-              >
-                {translate("resignDate")}:
-              </label>
-              <input
-                style={{ width: "800px" }}
-                type="date"
-                id="resignDate"
-                name="resignDate"
-                value={formData.resignDate || ""}
-                onChange={handleChange}
-                className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
+          <div className="col-span-1">
+            <h2 className="text-sm mb-4">{translate("joiningDate")}* :</h2>
+            <input
+              type="date"
+              style={{ height: "2.5rem" }}
+              name="joiningDate"
+              value={formData.joiningDate || ""}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+            />
+          </div>
 
-            <button
-              type="submit"
-              className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary"
-              disabled={loading}
+          <div className="col-span-1">
+            <h2 className="text-sm mb-4">{translate("resignDate")} :</h2>
+            <input
+              style={{ height: "2.5rem" }}
+              type="date"
+              name="resignDate"
+              value={formData.resignDate || ""}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
+            />
+          </div>
+
+          <div className="col-span-1">
+            <h2 className="text-sm mb-4">{translate("status")} :</h2>
+            <select
+              style={{ height: "2.5rem" }}
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
             >
-              {isEditMode ? translate("update") : translate("add")}{" "}
-              {translate("User")}
-            </button>
-          </form>
+              <option value="true">{translate("active")}</option>
+              <option value="false">{translate("inactive")}</option>
+            </select>
+          </div>
+
+          <div className="col-span-3 mb-4">
+            <label className="text-xl font-bold mt-8 flex items-center">
+              <FaImage className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
+              {translate("profileImages")}:
+            </label>
+            <ImageUpload onImageUpload={handleImageUpload} />
+          </div>
         </div>
 
-        <ImageUpload setImagePath={setImagePath} />
-
-      </div>
+        <button
+          type="submit"
+          className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary"
+          disabled={loading}
+        >
+          {isEditMode ? translate("update") : translate("add")}
+          {translate("user")}
+        </button>
+      </form>
     </div>
   );
 };

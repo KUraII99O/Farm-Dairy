@@ -33,12 +33,12 @@ async function fetchStaff(): Promise<Staff[]> {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/staffs');
+    const response = await fetch('http://localhost:3000/staffs?userId='+ user.id);
     if (!response.ok) {
       throw new Error('Failed to fetch staff data');
     }
     const staffData: Staff[] = await response.json();
-    return staffData.filter(staff => staff.userId === user.id);
+    return staffData
   } catch (error) {
     console.error('Error fetching staff data:', error.message);
     return [];

@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 
-// Define the Employee interface
-interface Employee {
+export interface Employee {
   id: string;
   image: string;
+  userId: string;
   name: string;
   payDate: string; // Assuming payDate is a string representing a date
   month: string;
@@ -17,70 +17,116 @@ const EmployeeService = {
   fetchEmployees,
   addEmployee,
   editEmployee,
-  deleteEmployee,
-  toggleEmployeeStatus,
+  deleteEmployee
 };
 
 async function fetchEmployees(): Promise<Employee[]> {
-  const response = await fetch("http://localhost:3000/employees");
-  if (!response.ok) {
-    throw new Error("Failed to fetch employee data");
+  const loggedInUser = localStorage.getItem('loggedInUser');
+  if (!loggedInUser) {
+    throw new Error("User not logged in");
   }
-  return response.json();
+
+  const user = JSON.parse(loggedInUser);
+  if (!user || !user.id) {
+    throw new Error("User ID not found");
+  }
+
+  try {
+    const response = await fetch(`http://localhost:3000/employees?userId=${user.id}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch employee data');
+    }
+    const employeeData: Employee[] = await response.json();
+    return employeeData;
+  } catch (error) {
+    console.error('Error fetching employee data:', error.message);
+    return [];
+  }
 }
 
-async function addEmployee(newEmployee: Omit<Employee, "id">): Promise<Employee> {
-  const id = uuidv4();
-  const employeeWithId: Employee = { id, ...newEmployee };
-
-  const response = await fetch("http://localhost:3000/employees", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(employeeWithId),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to add employee");
+async function addEmployee(newEmployee: Omit<Employee, 'id' | 'userId'>): Promise<Employee> {
+  const loggedInUser = localStorage.getItem('loggedInUser');
+  if (!loggedInUser) {
+    throw new Error("User not logged in or user data not found");
   }
-  return employeeWithId;
+
+  const user = JSON.parse(loggedInUser);
+  if (!user || !user.id) {
+    throw new Error("User ID not found in user data");
+  }
+
+  try {
+    const employeeWithId: Employee = { id: uuidv4(), userId: user.id, ...newEmployee };
+
+    const response = await fetch('http://localhost:3000/employees', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(employeeWithId),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to add employee');
+    }
+
+    return employeeWithId;
+  } catch (error) {
+    console.error('Error adding employee:', error.message);
+    throw error;
+  }
 }
 
-async function editEmployee(id: string, updatedEmployee: Employee): Promise<void> {
-  const response = await fetch(`http://localhost:3000/employees/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(updatedEmployee),
-  });
+async function editEmployee(id: string, updatedEmployee: Omit<Employee, 'id'>): Promise<void> {
+  const loggedInUser = localStorage.getItem('loggedInUser');
+  if (!loggedInUser) {
+    throw new Error("User not logged in");
+  }
 
-  if (!response.ok) {
-    throw new Error("Failed to update employee");
+  const user = JSON.parse(loggedInUser);
+  if (!user || !user.id) {
+    throw new Error("User ID not found");
+  }
+
+  try {
+    const response = await fetch(`http://localhost:3000/employees/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedEmployee),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to update employee');
+    }
+  } catch (error) {
+    console.error('Error updating employee:', error.message);
+    throw error;
   }
 }
 
 async function deleteEmployee(id: string): Promise<void> {
-  const response = await fetch(`http://localhost:3000/employees/${id}`, {
-    method: "DELETE",
-  });
+  const loggedInUser = localStorage.getItem('loggedInUser');
+  if (!loggedInUser) {
+    throw new Error("User not logged in");
+  }
 
-  if (!response.ok) {
-    throw new Error("Failed to delete employee");
+  const user = JSON.parse(loggedInUser);
+  if (!user || !user.id) {
+    throw new Error("User ID not found");
+  }
+
+  try {
+    const response = await fetch(`http://localhost:3000/employees/${id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      throw new Error('Failed to delete employee');
+    }
+  } catch (error) {
+    console.error('Error deleting employee:', error.message);
+    throw error;
   }
 }
 
-async function toggleEmployeeStatus(id: string): Promise<Employee> {
-  const response = await fetch(`http://localhost:3000/employees/${id}/toggle-status`, {
-    method: "PUT",
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to toggle employee status");
-  }
-
-  return response.json();
-}
-
-export default EmployeeService;
+export { EmployeeService, Employee };

@@ -1,18 +1,15 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { MilkSaleContext } from "../Provider";
+import { ManageMilkSaleContext, } from "../Provider";
 import { FaUserPlus } from "react-icons/fa";
 import { useTranslation } from "../../Translator/Provider";
 
 const EditMilkSale = () => {
   const { id } = useParams<{ id: string }>();
-  const { milkSales, addMilkSales, editMilkSales, generateRandomInvoice } =
-    useContext(MilkSaleContext);
+  const { MilkSales, addMilkSaleRecord, editMilkSaleRecord, generateRandomInvoice } =
+    useContext(ManageMilkSaleContext);
   const navigate = useNavigate();
-  const [user, setUser] = useState<{ name: string; email: string }>({
-    name: "",
-    email: "",
-  });
+  
 
   const [currentDate, setCurrentDate] = useState<string>("");
   const { translate, language } = useTranslation();
@@ -31,50 +28,45 @@ const EditMilkSale = () => {
     total: "",
     due: "",
     paid: "",
-    date: currentDate,
-    soldBy: user.name,
+    date: "",
+    soldBy: "",
     invoice: "generateRandomInvoice",
   });
 
   useEffect(() => {
     const date = new Date();
     const formattedDate = date.toLocaleDateString(); // Adjust the date format as needed
-    setCurrentDate(formattedDate);
+    setFormData(prevState => ({
+      ...prevState,
+      Date: formattedDate,
+    }));
   }, []);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/users"); // Adjust the API endpoint accordingly
-        if (response.ok) {
-          const userData = await response.json();
-          if (userData.length > 0) {
-            const { username, email } = userData[0]; // Assuming you only have one user for now
-            setUser({ name: username, email: email });
-          }
-        } else {
-          console.error("Failed to fetch user data");
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-
-    fetchUserData();
+    const storedUser = localStorage.getItem('loggedInUser');
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);
+      const { username } = userData;
+      setFormData(prevState => ({
+        ...prevState,
+        soldBy: username,
+      }));
+    }
   }, []);
 
   const [loading, setLoading] = useState(false);
   const [successPopup, setSuccessPopup] = useState(false);
+
+
   useEffect(() => {
-    if (isEditMode) {
-      const selectedMilkSale = milkSales.find(
-        (milkSale) => milkSale.id === parseInt(id)
-      );
+    if (id && MilkSales.length > 0) {
+      const selectedMilkSale = MilkSales.find(sale => sale.id === id);
       if (selectedMilkSale) {
+        // Update the formData state with the selected milk sale record
         setFormData(selectedMilkSale);
       }
     }
-  }, [id, isEditMode, milkSales]);
+  }, [id, MilkSales]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -95,9 +87,9 @@ const EditMilkSale = () => {
     const updatedFormData = { ...formData, invoice };
 
     if (isEditMode) {
-      await editMilkSales(parseInt(id), updatedFormData);
+      await editMilkSaleRecord(parseInt(id), updatedFormData);
     } else {
-      await addMilkSales(updatedFormData);
+      await addMilkSaleRecord(updatedFormData);
     }
 
     setLoading(false);
@@ -127,7 +119,7 @@ const EditMilkSale = () => {
               value={formData.accountNo}
               onChange={handleChange}
               className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
+              
             />
           </div>
 
@@ -142,7 +134,7 @@ const EditMilkSale = () => {
               value={formData.supplier}
               onChange={handleChange}
               className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
+              
             />
           </div>
         </div>
@@ -159,7 +151,7 @@ const EditMilkSale = () => {
               value={formData.name}
               onChange={handleChange}
               className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
+              
             />
           </div>
 
@@ -174,7 +166,7 @@ const EditMilkSale = () => {
               value={formData.contact}
               onChange={handleChange}
               className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
+              
             />
           </div>
         </div>
@@ -191,7 +183,7 @@ const EditMilkSale = () => {
               value={formData.address}
               onChange={handleChange}
               className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
+              
             />
           </div>
         </div>
@@ -208,7 +200,7 @@ const EditMilkSale = () => {
               value={formData.email}
               onChange={handleChange}
               className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
+              
             />
           </div>
 
@@ -223,7 +215,7 @@ const EditMilkSale = () => {
               value={formData.litre}
               onChange={handleChange}
               className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
+              
             />
           </div>
         </div>
@@ -240,7 +232,7 @@ const EditMilkSale = () => {
               value={formData.price}
               onChange={handleChange}
               className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
+              
             />
           </div>
 
@@ -255,7 +247,7 @@ const EditMilkSale = () => {
               value={formData.total}
               onChange={handleChange}
               className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
+              
             />
           </div>
         </div>
@@ -272,7 +264,7 @@ const EditMilkSale = () => {
               value={formData.paid}
               onChange={handleChange}
               className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
+              
             />
           </div>
 
@@ -287,7 +279,7 @@ const EditMilkSale = () => {
               value={formData.due}
               onChange={handleChange}
               className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
+              
             />
           </div>
         </div>

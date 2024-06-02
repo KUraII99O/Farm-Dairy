@@ -1,105 +1,93 @@
-import React, { createContext, useState, useContext, useEffect, ReactNode, useMemo } from "react";
-import { toast } from "react-toastify";
-import { useTranslation } from "../../Translator/Provider";
-import { UserService } from "../UserService";
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { User, UserService } from "../UserService";
 
-interface UserContextType {
-  users: User[];
-  addUser: (newUser: Omit<User, "id">) => Promise<void>;
-  editUser: (id: number, updatedUser: User) => Promise<void>;
-  deleteUser: (id: number) => Promise<void>;
-  toggleStatus: (id: number) => Promise<void>;
-}
+export const ManageUserContext = createContext<any>(null);
 
-export const UserContext = createContext<UserContextType | undefined>(undefined);
-
-export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const ManageUserProvider: React.FC = ({ children }) => {
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const { translate } = useTranslation();
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchUserData = async () => {
       try {
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (!loggedInUser) {
+          throw new Error("User not logged in or user data not found");
+        }
+        const user = JSON.parse(loggedInUser);
+        console.log("User ID:", user.id); // Log user ID
+  
         const data = await UserService.fetchUsers();
-        setUsers(data);
+        console.log("User data:", data); // Log user data
+        setUsers(data || []);
       } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
+        console.error("Error fetching users:", error);
       }
     };
-
-    fetchUsers();
+  
+    fetchUserData();
   }, []);
 
-  const addUser = async (newUser: Omit<User, "id">) => {
+  const addUser = async (newUser: Omit<User, 'id'>) => {
+    console.log("Adding user:", newUser);
     try {
-      const userWithId = await UserService.addUser(newUser);
-      setUsers([...users, userWithId]);
-      toast.success(translate("User added successfully"));
+      const data = await UserService.addUser(newUser);
+      console.log("User added successfully:", data);
+      setUsers(prevUsers => [...prevUsers, data]);
     } catch (error) {
-      toast.error(translate("Failed to add user"));
+      console.error("Error adding user:", error);
     }
   };
 
-  const editUser = async (id: number, updatedUser: User) => {
+  const editUser = async (id: string, updatedUser: Omit<User, 'id'>) => {
     try {
-      await UserService.editUser(id, updatedUser);
+      const data = await UserService.editUser(id, updatedUser);
       setUsers(prevUsers =>
-        prevUsers.map(user => (user.id === id ? { ...user, ...updatedUser } : user))
+        prevUsers.map(member => (member.id === id ? { ...member, ...updatedUser } : member))
       );
-      toast.success(translate("User updated successfully"));
     } catch (error) {
-      toast.error(translate("Failed to update user"));
+      console.error("Error editing user:", error);
     }
   };
 
-  const deleteUser = async (id: number) => {
+  const toggleUserStatus = async (id: string) => {
+    try {
+      const data = await UserService.toggleUserStatus(id);
+      setUsers(prevUsers =>
+        prevUsers.map(member => (member.id === id ? { ...member, status: !member.status } : member))
+      );
+    } catch (error) {
+      console.error("Error toggling user status:", error);
+    }
+  };
+
+  const deleteUser = async (id: string) => {
     try {
       await UserService.deleteUser(id);
-      setUsers(prevUsers => prevUsers.filter(user => user.id !== id));
-      toast.success(translate("User deleted successfully"));
+      setUsers(prevUsers => prevUsers.filter(member => member.id !== id));
     } catch (error) {
-      toast.error(translate("Failed to delete user"));
+      console.error("Error deleting user:", error);
     }
   };
 
-  const toggleStatus = async (id: number) => {
-    try {
-      const updatedUser = await UserService.toggleUserStatus(id);
-      setUsers(prevUsers =>
-        prevUsers.map(user => (user.id === id ? updatedUser : user))
-      );
-      toast.info(translate("User status updated successfully"), { autoClose: 1000, hideProgressBar: true });
-    } catch (error) {
-      toast.error(translate("Failed to toggle user status"), { autoClose: 2000, hideProgressBar: true });
-    }
-  };
-
-  const value = useMemo(() => ({
+  const value = {
     users,
     addUser,
     editUser,
     deleteUser,
-    toggleStatus,
-  }), [users]);
-
-  if (loading) return <div>{translate("Loading...")}</div>;
-  if (error) return <div>{translate("Error:")} {error}</div>;
+    toggleUserStatus
+  };
 
   return (
-    <UserContext.Provider value={value}>
+    <ManageUserContext.Provider value={value}>
       {children}
-    </UserContext.Provider>
+    </ManageUserContext.Provider>
   );
 };
 
-export const useUser = (): UserContextType => {
-  const context = useContext(UserContext);
+export const useManageUser = () => {
+  const context = useContext(ManageUserContext);
   if (!context) {
-    throw new Error("useUser must be used within a UserProvider");
+    throw new Error("useManageUser must be used within a ManageUserProvider");
   }
   return context;
 };

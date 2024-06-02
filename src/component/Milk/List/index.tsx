@@ -4,16 +4,15 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "../../Translator/Provider";
 
 import "react-toastify/dist/ReactToastify.css";
-import { MilkContext } from "../Provider"; // Assuming MilkContext is provided similarly to UserContext
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import Pagination from "../../Pagination";
 import { BsPencil } from "react-icons/bs";
 import { AiOutlineDelete } from "react-icons/ai";
+import MilkList from "../Table";
+import { ManageMilkContext } from "../Provider";
 
 const MilkTable: React.FC = () => {
-  const { milks, deleteMilk,
-  
-    deleteMilkRecord } = useContext(MilkContext);
+  const { milkRecords, deleteMilkRecord } = useContext(ManageMilkContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
@@ -21,15 +20,16 @@ const MilkTable: React.FC = () => {
   const [itemsPerPage, setItemsPerPage] = useState(5); // Number of milk entries per page
   const [isDeleting, setIsDeleting] = useState(false);
   const [milkToDelete, setMilkToDelete] = useState<number | null>(null);
-  const [user, setUser] = useState<{ name: string;  }>({
-    name: "",
-    
-    
+  const [user, setUser] = useState<{ username: string }>({
+    username: "",
   });
   const [currentDate, setCurrentDate] = useState<string>("");
-  const { translate} = useTranslation();
+  const { translate, language } = useTranslation();
+  const isArabic = language === "ar";
 
-  const filteredMilks = milks.filter(
+  const formClass = isArabic ? "rtl" : "ltr";
+
+  const filteredMilks = milkRecords.filter(
     (milk: { [s: string]: unknown } | ArrayLike<unknown>) =>
       Object.values(milk).some((field) =>
         field.toString().toLowerCase().includes(searchTerm.toLowerCase())
@@ -41,15 +41,29 @@ const MilkTable: React.FC = () => {
     setCurrentDate(formattedDate);
   }, []);
 
+  const [formData, setFormData] = useState({
+    AccountNo: "",
+    StallNo: "",
+    AnimalID: "",
+    Liter: "",
+    CollectedFrom: "",
+    Fate: "",
+    Price: "",
+    Total: "",
+    AddedBy: "", // Ensure this field is included
+    Date: "",
+  });
 
+  
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const storedUser = localStorage.getItem('loggedInUser');
+        const storedUser = localStorage.getItem("loggedInUser");
         if (storedUser) {
           const userData = JSON.parse(storedUser);
           const { username } = userData;
-          setUser({ name: username });
+          setUser({ username: username }); // Corrected to set 'username' field
+          setFormData(prevFormData => ({ ...prevFormData, AddedBy: username })); // Update AddedBy field in formData
           console.log("Username fetched successfully:", username);
         } else {
           console.error("No user data found in local storage");
@@ -61,9 +75,7 @@ const MilkTable: React.FC = () => {
   
     fetchUserData();
   }, []);
-  
-  
-  
+
   const sortedMilks = sortBy
     ? filteredMilks.sort((a, b) =>
         sortOrder === "asc"
@@ -111,7 +123,7 @@ const MilkTable: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     setIsDeleting(true);
     try {
       await deleteMilkRecord(id);
@@ -123,7 +135,6 @@ const MilkTable: React.FC = () => {
   };
 
   return (
-    
     <div className="overflow-x-auto">
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center"></div>
@@ -144,141 +155,15 @@ const MilkTable: React.FC = () => {
         </div>
       </div>
       <h1 className="text-xl font-bold mb-4">{translate("milktable")}</h1>
-      <table className="min-w-full bg-white border-collapse">
-        <thead>
-          <tr>
-            <th className="border border-gray-300 px-4 py-2 cursor-pointer">
-              <div className="flex items-center">{translate("date")}</div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("accountNo")}
-            >
-              <div className="flex items-center">
-              {translate("accountNo")}
-                {sortIcon("accountNo")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("stallNo")}
-            >
-              <div className="flex items-center">
-              {translate("stallNo")}
-                {sortIcon("stallNo")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("animalID")}
-            >
-              <div className="flex items-center">
-              {translate("animalID")}
-                {sortIcon("animalID")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("liter")}
-            >
-              <div className="flex items-center">
-              {translate("liter")}
-                {sortIcon("liter")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("fat")}
-            >
-              <div className="flex items-center">
-              {translate("fat")}
-                {sortIcon("fat")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("price")}
-            >
-              <div className="flex items-center">
-              {translate("price")}
-                {sortIcon("price")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("total")}
-            >
-              <div className="flex items-center">
-              {translate("total")}
-                {sortIcon("total")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("collectedFrom")}
-            >
-              <div className="flex items-center">
-              {translate("collectedFrom")}
-                {sortIcon("collectedFrom")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("addedBy")}
-            >
-              <div className="flex items-center">
-              {translate("addedBy")}
-                {sortIcon("addedBy")}
-              </div>
-            </th>
-            <th className="border border-gray-300 px-4 py-2">{translate("action")}</th>{" "}
-          </tr>
-        </thead>
-        {/* Table body */}
-        <tbody>
-          {currentMilk.map((milk) => (
-            <tr key={milk.id}>
-              {/* Render each field accordingly */}
-              <td className="border border-gray-300 px-4 py-2">{currentDate}</td>
-              <td className="border border-gray-300 px-4 py-2">
-                {milk.accountNo}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {milk.stallNo}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {milk.animalID}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">{milk.liter}</td>
-              <td className="border border-gray-300 px-4 py-2">{milk.fate}</td>
-              <td className="border border-gray-300 px-4 py-2">{milk.price}</td>
-              <td className="border border-gray-300 px-4 py-2">{milk.total}</td>
-              <td className="border border-gray-300 px-4 py-2">
-                {milk.collectedFrom}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-              {user.name}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                <div className="flex items-center">
-                  <Link
-                    to={`/Edit-Milk/${milk.id}`}
-                    className="text-blue-500 hover:underline flex items-center mr-2"
-                  >
-                    <BsPencil className="w-5 h-5 mr-1" />
-                  </Link>
-                  <button
-                    onClick={() => handleDeleteConfirmation(milk.id)}
-                    className="text-red-500 hover:text-red-700 focus:outline-none flex items-center"
-                  >
-                    <AiOutlineDelete className="w-5 h-5 mr-1" />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <MilkList
+        currentMilks={currentMilk}
+        handleSort={handleSort}
+        sortIcon={sortIcon}
+        handleDeleteConfirmation={handleDeleteConfirmation}
+        translate={translate}
+        formClass={formClass}
+        AddedByUser={formData.AddedBy} // Pass the AddedBy field as prop
+      />
       {/* Pagination */}
       <Pagination
         totalItems={sortedMilks.length}

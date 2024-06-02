@@ -1,8 +1,7 @@
 import React, { useState, useContext } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { EmployeeContext } from "../Provider";
-import { Employee,staffMember } from "../types";
+import { Employee } from "../types";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import Pagination from "../../Pagination";
 import { BsPencil } from "react-icons/bs";
@@ -10,10 +9,15 @@ import { AiOutlineDelete } from "react-icons/ai";
 import EditEmployeeForm from "../Form";
 import { toast } from "react-toastify";
 import { useTranslation } from "../../Translator/Provider";
+import { ManageEmployeeContext } from "../Provider";
+import EmployeeList from "../Table";
+import { Drawer, Button } from "flowbite-react";
 
 const EmployeeTable: React.FC = () => {
-  const { employees, deleteEmployee ,addEmployee,
-    editEmployee, } = useContext(EmployeeContext);
+  const { employees, deleteEmployee, addEmployee, editEmployee } = useContext(
+    ManageEmployeeContext
+  );
+
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
@@ -24,8 +28,10 @@ const EmployeeTable: React.FC = () => {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
     null
   );
-  const { translate,} = useTranslation();
+  const { translate, language } = useTranslation();
+  const isArabic = language === "ar";
 
+  const formClass = isArabic ? "rtl" : "ltr";
 
   const filteredEmployees = employees.filter((employee) =>
     Object.values(employee).some((field) =>
@@ -118,13 +124,6 @@ const EmployeeTable: React.FC = () => {
 
   return (
     <div>
-       {isEditDrawerOpen && (
-        <EditEmployeeForm
-          employee={selectedEmployee}
-          onSubmit={selectedEmployee ? handleUpdateEmployee : handleAddNewEmployee}
-          onClose={() => setIsEditDrawerOpen(false)}
-        />
-      )}
       <div className="overflow-x-auto">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center"></div>
@@ -136,7 +135,7 @@ const EmployeeTable: React.FC = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="p-2 rounded border border-gray-300 ml-2"
             />
-             <button
+            <button
               onClick={() => handleEditDrawerOpen(null)}
               className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary ml-2"
             >
@@ -144,144 +143,46 @@ const EmployeeTable: React.FC = () => {
             </button>
           </div>
         </div>
-        
         <h1 className="text-xl font-bold mb-4">{translate("employeeTable")}</h1>{" "}
         <div className="rtl:mirror-x">
+          <EmployeeList
+            currentEmployees={currentEmployee}
+            handleSort={handleSort}
+            sortIcon={sortIcon}
+            handleEditDrawerOpen={handleEditDrawerOpen}
 
-        <table className="min-w-full bg-white border-collapse">
-          <thead>
-            <tr>
-              <th className="border border-gray-300 px-4 py-2 cursor-pointer">
-                <div className="flex items-center">{translate("image")}</div>
-              </th>
-              <th
-                className="border border-gray-300 px-4 py-2 cursor-pointer"
-                onClick={() => handleSort("name")}
-              >
-                <div className="flex items-center">
-                {translate("emloyeeName")}
-                  {sortIcon("name")}
-                </div>
-              </th>
-              <th
-                className="border border-gray-300 px-4 py-2 cursor-pointer"
-                onClick={() => handleSort("PayDate")}
-              >
-                <div className="flex items-center">
-                {translate("payDate")}
-                  {sortIcon("PayDate")}
-                </div>
-              </th>
-              <th
-                className="border border-gray-300 px-4 py-2 cursor-pointer"
-                onClick={() => handleSort("Month")}
-              >
-                <div className="flex items-center">
-                {translate("month")}
-                  {sortIcon("Month")}
-                </div>
-              </th>
-              <th
-                className="border border-gray-300 px-4 py-2 cursor-pointer"
-                onClick={() => handleSort("Year")}
-              >
-                <div className="flex items-center">
-                {translate("year")}
-                  {sortIcon("Year")}
-                </div>
-              </th>
-              <th
-                className="border border-gray-300 px-4 py-2 cursor-pointer"
-                onClick={() => handleSort("SalaryAmount")}
-              >
-                <div className="flex items-center">
-                {translate("salaryAmount")}
-                  {sortIcon("SalaryAmount")}
-                </div>
-              </th>
-              <th
-                className="border border-gray-300 px-4 py-2 cursor-pointer"
-                onClick={() => handleSort("AdditionAmount")}
-              >
-                <div className="flex items-center">
-                {translate("AdditionAmount")}
-                  {sortIcon("AdditionAmount")}
-                </div>
-              </th>
-              <th
-                className="border border-gray-300 px-4 py-2 cursor-pointer"
-                onClick={() => handleSort("status")}
-              >
-                <div className="flex items-center">{translate("total")}</div>
-              </th>
-              <th className="border border-gray-300 px-4 py-2">{translate("action")}</th>{" "}
-            </tr>
-          </thead>
-          {/* Table body */}
-          <tbody>
-            {currentEmployee.map((employee: Employee,staffMember: { image: File | string; }) => (
-              <tr key={employee.id}>
-                <td className="border border-gray-300 px-4 py-2">
-                  <img
-                    src={staffMember.image}
-                    alt="Profile"
-                    className="h-12 w-12 rounded-full"
-                  />
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {employee.employeeName}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {employee.payDate}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {employee.month}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {employee.year}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {employee.monthlySalary}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {employee.additionMoney}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {parseInt(employee.monthlySalary) +
-                    parseInt(employee.additionMoney)}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  <div className="flex items-center">
-                    <button
-                      onClick={() => handleEditDrawerOpen(employee)}
-                      className="text-blue-500 hover:underline flex items-center mr-2 focus:outline-none"
-                    >
-                      <BsPencil className="w-5 h-5 mr-1" />
-                      
-                    </button>
-                    <button
-                      onClick={() => handleDeleteConfirmation(employee.id)}
-                      className="text-red-500 hover:text-red-700 focus:outline-none flex items-center"
-                    >
-                      <AiOutlineDelete className="w-5 h-5 mr-1" />
-                      
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {/* Pagination */}
-        <Pagination
-          totalItems={sortedEmployees.length}
-          defaultItemsPerPage={itemsPerPage}
-          onPageChange={handlePageChange}
-        />
-        {/* Toast container for notifications */}
-        <ToastContainer />
+            handleDeleteConfirmation={handleDeleteConfirmation}
+            translate={translate}
+            formClass={formClass}
+          />
+
+          <Drawer
+            open={isEditDrawerOpen}
+            onClose={handleCloseEditDrawer}
+            className="EditStallDrawer"
+            position="right" // Set the position to "right"
+          >
+            <Drawer.Header title="Drawer" />
+            <Drawer.Items>
+              <EditEmployeeForm
+                employee={selectedEmployee}
+                onSubmit={
+                  selectedEmployee ? handleUpdateEmployee : handleAddNewEmployee
+                }
+              />
+            </Drawer.Items>
+          </Drawer>
+
+          {/* Pagination */}
+          <Pagination
+            totalItems={sortedEmployees.length}
+            defaultItemsPerPage={itemsPerPage}
+            onPageChange={handlePageChange}
+          />
+          {/* Toast container for notifications */}
+          <ToastContainer />
+        </div>
       </div>
-    </div>
     </div>
   );
 };

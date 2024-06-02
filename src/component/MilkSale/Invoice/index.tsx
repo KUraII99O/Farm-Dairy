@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { MilkSaleContext } from "../Provider";
+import { ManageMilkSaleContext } from "../Provider";
 import { useTranslation } from "../../Translator/Provider";
 import { FaPrint, FaSave } from 'react-icons/fa'; // Importing icons
 
@@ -10,7 +10,7 @@ import html2canvas from 'html2canvas';
 
 const CowSaleInvoice: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { milkSales } = useContext(MilkSaleContext);
+  const { milkSales } = useContext(ManageMilkSaleContext);
 
   const isEditMode = !!id;
   const { translate, language } = useTranslation();

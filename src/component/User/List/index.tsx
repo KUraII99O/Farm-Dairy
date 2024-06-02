@@ -2,16 +2,17 @@ import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { UserContext } from "../Provider";
+import { ManageUserContext } from "../Provider";
 import { User } from "../types";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import Pagination from "../../Pagination";
 import { BsPencil } from "react-icons/bs";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useTranslation } from "../../Translator/Provider";
+import UserList from "../Table";
 
 const UserTable: React.FC = () => {
-  const { users, toggleStatus, deleteUser } = useContext(UserContext);
+  const { users, toggleStatus, deleteUser } = useContext(ManageUserContext);
   const { translate,language } = useTranslation();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -118,163 +119,17 @@ const UserTable: React.FC = () => {
       <h1 className="text-xl font-bold mb-4">{translate("UserTable")}</h1>{" "}
       {/* Translate table title */}
       <div className="rtl:mirror-x">
-        <table className="min-w-full bg-white border-collapse">
-          {/* Table header */}
-          <thead>
-            <tr>
-              <th className="border border-gray-300 px-4 py-2 cursor-pointer">
-                <div className="flex items-center">{translate("image")}</div>{" "}
-                {/* Translate table header */}
-              </th>
-              <th
-                className="border border-gray-300 px-4 py-2 cursor-pointer"
-                onClick={() => handleSort("name")}
-              >
-                <div className="flex items-center">
-                  {translate("staffName")} {/* Translate table header */}
-                  {sortIcon("name")}
-                </div>
-              </th>
-              <th
-                className="border border-gray-300 px-4 py-2 cursor-pointer"
-                onClick={() => handleSort("email")}
-              >
-                <div className="flex items-center">
-                  {translate("email")}
-                  {sortIcon("email")}
-                </div>
-              </th>
-              <th
-                className="border border-gray-300 px-4 py-2 cursor-pointer"
-                onClick={() => handleSort("mobile")}
-              >
-                <div className="flex items-center">
-                  {translate("mobile")}
-                  {sortIcon("mobile")}
-                </div>
-              </th>
-              <th
-                className="border border-gray-300 px-4 py-2 cursor-pointer"
-                onClick={() => handleSort("designation")}
-              >
-                <div className="flex items-center">
-                  {translate("designation")}
-                  {sortIcon("designation")}
-                </div>
-              </th>
-              <th
-                className="border border-gray-300 px-4 py-2 cursor-pointer"
-                onClick={() => handleSort("joiningDate")}
-              >
-                <div className="flex items-center">
-                  {translate("joiningDate")}
-                  {sortIcon("joiningDate")}
-                </div>
-              </th>
-              <th
-                className="border border-gray-300 px-4 py-2 cursor-pointer"
-                onClick={() => handleSort("salary")}
-              >
-                <div className="flex items-center">
-                  {translate("salary")}
-                  {sortIcon("GrossSalary")}
-                </div>
-              </th>
-              <th
-                className="border border-gray-300 px-4 py-2 cursor-pointer"
-                onClick={() => handleSort("status")}
-              >
-                <div className="flex items-center">{translate("status")}</div>
-              </th>
-              <th className="border border-gray-300 px-4 py-2">
-                {translate("action")}
-              </th>
-            </tr>
-          </thead>
-          {/* Table body */}
-          <tbody>
-            {currentUser.map((User) => (
-              <tr key={User.id}>
-                <td className="border border-gray-300 px-4 py-2">
-                  <img
-                    src={User.image}
-                    alt="Profile"
-                    className="h-12 w-12 rounded-full"
-                  />
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {User.name}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {User.email}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {User.mobile}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {User.designation}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {User.joiningDate}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {User.grossSalary}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  <label
-                    className={`inline-flex items-center cursor-pointer ${
-                      formClass === "rtl" ? "flex-row-reverse" : ""
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      className="sr-only peer"
-                      checked={User.status}
-                      onChange={() => handleToggleStatus(User.id)}
-                    />
-                    <div
-                      className={`relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 ${
-                        formClass === "ltr"
-                          ? "peer-checked:after:-translate-x-full"
-                          : "peer-checked:before:translate-x-full"
-                      } peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 ${
-                        formClass === "rtl"
-                          ? "peer-checked:after:-translate-x-full"
-                          : "peer-checked:after:translate-x-full"
-                      } after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-transform duration-200 ease-in-out dark:border-gray-600 peer-checked:bg-green-600`}
-                    ></div>
-                    <span
-                      className={`ms-3 text-sm font-medium text-gray-900 dark:text-gray-300 ${
-                        formClass === "rtl" ? "me-3" : "ms-3"
-                      }`}
-                    >
-                      {User.status
-                        ? translate("active")
-                        : translate("inactive")}
-                    </span>
-                  </label>
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  <div className="flex items-center">
-                    <Link
-                      to={`/edit-user/${User.id}`}
-                      className="text-blue-500 hover:underline flex items-center mr-2"
-                    >
-                      <BsPencil className="w-5 h-5 mr-1" />
-                    </Link>
-                    <button
-                      onClick={() => handleDeleteConfirmation(User.id)}
-                      className="text-red-500 hover:text-red-700 focus:outline-none flex items-center"
-                    >
-                      <AiOutlineDelete className="w-5 h-5 mr-1" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <UserList 
+          currentUser={currentUser}
+          handleSort={handleSort}
+          sortIcon={sortIcon}
+          handleToggleStatus={handleToggleStatus}
+          handleDeleteConfirmation={handleDeleteConfirmation}
+          translate={translate}
+          formClass={formClass}
+        />
       </div>
+      
       {/* Pagination */}
       <Pagination
         totalItems={sortedUsers.length}

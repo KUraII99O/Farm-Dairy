@@ -7,6 +7,7 @@ const LogIn = ({ onLogin }) => {
   const { translate, setLanguage, language } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
@@ -26,7 +27,7 @@ const LogIn = ({ onLogin }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password, planId: plan?.id }),
+        body: JSON.stringify({ email, password,username, planId: plan?.id }),
       });
 
       if (!response.ok) {
@@ -82,6 +83,13 @@ const LogIn = ({ onLogin }) => {
                         }
                       `}</style>
                       <p className="mb-4 font-bold">{translate("login_title")}</p>
+                      <input
+                        type="text"
+                        className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
+                        placeholder={translate("Username")}
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                      />
                       <input
                         type="email"
                         className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
