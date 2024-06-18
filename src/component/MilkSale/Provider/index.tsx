@@ -1,10 +1,10 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import { MilkSales, MilkSaleService } from "../MilkSaleService";
+import { MilkSaleRecord, MilkSaleService } from "../MilkSaleService";
 
 export const ManageMilkSaleContext = createContext<any>(null);
 
 export const ManageMilkSaleProvider: React.FC = ({ children }) => {
-  const [milkSales, setMilkSales] = useState<MilkSales[]>([]);
+  const [milkSaleRecords, setMilkSaleRecords] = useState<MilkSaleRecord[]>([]);
 
   useEffect(() => {
     const fetchMilkSaleRecordsData = async () => {
@@ -18,7 +18,7 @@ export const ManageMilkSaleProvider: React.FC = ({ children }) => {
   
         const data = await MilkSaleService.fetchMilkSaleRecords();
         console.log("Milk sale records data:", data); // Log milk sale records data
-        setMilkSales(data || []);
+        setMilkSaleRecords(data || []);
       } catch (error) {
         console.error("Error fetching milk sale records:", error);
       }
@@ -27,57 +27,42 @@ export const ManageMilkSaleProvider: React.FC = ({ children }) => {
     fetchMilkSaleRecordsData();
   }, []);
 
-  const addMilkSaleRecord = async (newMilkSaleRecord: Omit<MilkSales, 'id'>) => {
+  const addMilkSaleRecord = async (newMilkSaleRecord: Omit<MilkSaleRecord, 'id'>) => {
     console.log("Adding milk sale record:", newMilkSaleRecord);
     try {
       const data = await MilkSaleService.addMilkSaleRecord(newMilkSaleRecord);
       console.log("Milk sale record added successfully:", data);
-      setMilkSales(prevMilkSales => [...prevMilkSales, data]);
+      setMilkSaleRecords(prevMilkSaleRecords => [...prevMilkSaleRecords, data]);
     } catch (error) {
       console.error("Error adding milk sale record:", error);
     }
   };
 
-  const editMilkSaleRecord = async (id: number, updatedMilkSaleRecord: Omit<MilkSales, 'id'>) => {
+  const editMilkSaleRecord = async (id: string, updatedMilkSaleRecord: Omit<MilkSaleRecord, 'id'>) => {
     try {
       const data = await MilkSaleService.editMilkSaleRecord(id, updatedMilkSaleRecord);
-      setMilkSales(prevMilkSales =>
-        prevMilkSales.map(record => (record.id === id ? { ...record, ...updatedMilkSaleRecord } : record))
+      setMilkSaleRecords(prevMilkSaleRecords =>
+        prevMilkSaleRecords.map(record => (record.id === id ? { ...record, ...updatedMilkSaleRecord } : record))
       );
     } catch (error) {
       console.error("Error editing milk sale record:", error);
     }
   };
 
-  const deleteMilkSaleRecord = async (id: number) => {
+  const deleteMilkSaleRecord = async (id: string) => {
     try {
       await MilkSaleService.deleteMilkSaleRecord(id);
-      setMilkSales(prevMilkSales => prevMilkSales.filter(record => record.id !== id));
+      setMilkSaleRecords(prevMilkSaleRecords => prevMilkSaleRecords.filter(record => record.id !== id));
     } catch (error) {
       console.error("Error deleting milk sale record:", error);
     }
   };
 
-  const getInvoiceById = (id: number) => {
-    return milkSales.find(invoice => invoice.id === id);
-  };
-
-  const generateRandomInvoice = () => {
-    const characters = '0123456789';
-    let invoice = '';
-    for (let i = 0; i < 4; i++) {
-      invoice += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return invoice;
-  };
-
   const value = {
-    milkSales,
+    milkSaleRecords,
     addMilkSaleRecord,
     editMilkSaleRecord,
-    deleteMilkSaleRecord,
-    getInvoiceById,
-    generateRandomInvoice
+    deleteMilkSaleRecord
   };
 
   return (

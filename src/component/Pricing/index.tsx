@@ -17,7 +17,7 @@ const Pricing: React.FC = () => {
 
   const fetchPlans = async () => {
       try {
-          const response = await fetch('http://localhost:5000/plans');
+          const response = await fetch('http://localhost:3000/plans');
           const data = await response.json();
           setPlans(data);
       } catch (error) {

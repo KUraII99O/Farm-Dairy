@@ -1,37 +1,27 @@
-import React, { useState, useContext, useEffect,useHistory } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { VaccineMonitorContext } from "../Provider";
 import { IoInformationCircle } from "react-icons/io5";
-import { TiMinus } from "react-icons/ti"; // Import TiMinus icon
-import { FaRegEdit } from "react-icons/fa"; // Import FaRegEdit icon
+import { TiMinus } from "react-icons/ti";
+import { FaRegEdit } from "react-icons/fa";
 import { useTranslation } from "../../Translator/Provider";
 import { PiMonitor } from "react-icons/pi";
+import { ManageVaccineMonitorContext } from "../Provider";
 
 const EditVaccineMonitorForm = () => {
   const { id } = useParams<{ id: string }>();
-  const { vaccineMonitors, addVaccineMonitor, editVaccineMonitor } = useContext(
-    VaccineMonitorContext
-  );
-  const [currentDate, setCurrentDate] = useState<string>("");
+  const { vaccineRecords, addVaccineRecord, editVaccineRecord } = useContext(ManageVaccineMonitorContext);
   const { translate, language } = useTranslation();
-
-  const handleClick = () => {
-    history.back();
-  };
-  useEffect(() => {
-    const date = new Date();
-    const formattedDate = date.toLocaleDateString(); // Adjust the date format as needed
-    setCurrentDate(formattedDate);
-  }, []);
   const navigate = useNavigate();
 
   const isEditMode = !!id;
 
+  const [currentDate, setCurrentDate] = useState<string>("");
   const [formData, setFormData] = useState({
     stallNo: "",
     CowNumber: "",
-    date: currentDate,
+    date: "",
     note: "",
+    reportedby: "",
     informations: Array.from({ length: 3 }, () => ({
       VaccineName: "",
       Dose: "",
@@ -40,20 +30,43 @@ const EditVaccineMonitorForm = () => {
       GivenTime: "",
     })),
   });
-
   const [loading, setLoading] = useState(false);
   const [successPopup, setSuccessPopup] = useState(false);
 
   useEffect(() => {
+    const date = new Date();
+    const formattedDate = date.toISOString().split("T")[0];
+    setCurrentDate(formattedDate);
+    setFormData((prevFormData) => ({ ...prevFormData, date: formattedDate }));
+  }, []);
+
+  useEffect(() => {
     if (isEditMode) {
-      const selectedVaccineMonitor = vaccineMonitors.find(
-        (vaccineMonitor) => vaccineMonitor.id === parseInt(id)
-      );
+      const selectedVaccineMonitor = vaccineRecords.find((vaccineMonitor) => vaccineMonitor.id === id);
       if (selectedVaccineMonitor) {
-        setFormData(selectedVaccineMonitor);
+        setFormData({
+          stallNo: selectedVaccineMonitor.stallNo,
+          CowNumber: selectedVaccineMonitor.CowNumber,
+          date: selectedVaccineMonitor.date,
+          note: selectedVaccineMonitor.note,
+          reportedby: selectedVaccineMonitor.reportedby,
+          informations: selectedVaccineMonitor.informations,
+        });
       }
     }
-  }, [id, isEditMode, vaccineMonitors]);
+  }, [id, isEditMode, vaccineRecords]);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('loggedInUser');
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);
+      const { username } = userData;
+      setFormData(prevState => ({
+        ...prevState,
+        reportedby: username,
+      }));
+    }
+  }, []);
 
   const handleChange = (e, index) => {
     const { name, value } = e.target;
@@ -89,9 +102,9 @@ const EditVaccineMonitorForm = () => {
     e.preventDefault();
     setLoading(true);
     if (isEditMode) {
-      await editVaccineMonitor(parseInt(id), formData);
+      await editVaccineRecord(id, formData);
     } else {
-      await addVaccineMonitor(formData);
+      await addVaccineRecord(formData);
     }
     setLoading(false);
     setSuccessPopup(true);
@@ -104,21 +117,14 @@ const EditVaccineMonitorForm = () => {
   const handleRemoveRow = (indexToRemove) => {
     setFormData({
       ...formData,
-      informations: formData.informations.filter(
-        (_, index) => index !== indexToRemove
-      ),
+      informations: formData.informations.filter((_, index) => index !== indexToRemove),
     });
   };
-  
 
   return (
     <div>
       <form onSubmit={handleSubmit} className="flex flex-col w-full space-y-4">
-      <h2
-          className={`text-xl font-bold mb-4 flex items-center ${
-            language === "ar" ? "space-x-2" : ""
-          }`}
-        >
+        <h2 className={`text-xl font-bold mb-4 flex items-center ${language === "ar" ? "space-x-2" : ""}`}>
           <PiMonitor className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
           <span>{translate("vaccinemonitor")}</span>
         </h2>
@@ -127,165 +133,135 @@ const EditVaccineMonitorForm = () => {
           <span>{translate("basicinformation")}:</span>
         </h2>
         <div className="flex flex-wrap -mx-2">
-
-        <div className="flex flex-col space-y-1 px-2 w-1/2">
-          <label className="text-sm font-medium text-gray-700">{translate("stallNo")}:</label>
-          <input
-           
-            type="text"
-            placeholder={translate("stallNo")}
-            name="stallNo"
-            value={formData.stallNo}
-            onChange={(e) => handleChange(e, -1)}
-            className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-            required
-          />
+          <div className="flex flex-col space-y-1 px-2 w-1/2">
+            <label className="text-sm font-medium text-gray-700">{translate("stallNo")}:</label>
+            <input
+              type="text"
+              placeholder={translate("stallNo")}
+              name="stallNo"
+              value={formData.stallNo}
+              onChange={(e) => handleChange(e, -1)}
+              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+          <div className="flex flex-col space-y-1 px-2 w-1/2">
+            <label className="text-sm font-medium text-gray-700">{translate("cownumber")}:</label>
+            <input
+              type="text"
+              placeholder={translate("cownumber")}
+              name="CowNumber"
+              value={formData.CowNumber}
+              onChange={(e) => handleChange(e, -1)}
+              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
         </div>
-
-        <div className="flex flex-col space-y-1 px-2 w-1/2">
-          <label className="text-sm font-medium text-gray-700">
-          {translate("cownumber")}:
-          </label>
-          <input
-           
-            type="text"
-            placeholder={translate("cownumber")}
-            name="CowNumber"
-            value={formData.CowNumber}
-            onChange={(e) => handleChange(e, -1)}
-            className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-            required
-          />
-        </div>
-        </div>
-
         <h2 className="text-xl font-bold mt-2 mb-4 flex items-center">
           <FaRegEdit className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
-          <span> {translate("vaccinedateandnote")} :</span>
+          <span>{translate("vaccinedateandnote")}:</span>
         </h2>
-
         <div className="flex flex-wrap -mx-2">
-
-        <div className="flex flex-col space-y-1 px-2 w-1/2">
-          <label className="text-sm font-medium text-gray-700"> {translate("date")}:</label>
-          <input
-           
-            type="date"
-            placeholder= {translate("date")}
-            name="date"
-            value={formData.date}
-            onChange={(e) => handleChange(e, -1)}
-            className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-            required
-          />
+          <div className="flex flex-col space-y-1 px-2 w-1/2">
+            <label className="text-sm font-medium text-gray-700">{translate("date")}:</label>
+            <input
+              type="date"
+              placeholder={translate("date")}
+              name="date"
+              value={formData.date}
+              onChange={(e) => handleChange(e, -1)}
+              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+          <div className="flex flex-col space-y-1 px-2 w-1/2">
+            <label className="text-sm font-medium text-gray-700">{translate("note")}:</label>
+            <input
+              placeholder={translate("note")}
+              name="note"
+              value={formData.note}
+              onChange={(e) => handleChange(e, -1)}
+              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
         </div>
-
-        <div className="flex flex-col space-y-1 px-2 w-1/2">
-          <label className="text-sm font-medium text-gray-700">{translate("note")}:</label>
-          <input
-            placeholder={translate("note")}
-            name="note"
-            value={formData.note}
-            onChange={(e) => handleChange(e, -1)}
-            className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-          />
-        </div>
-        </div>
-
         <h2 className="text-xl font-bold mt-2 mb-4 flex items-center">
           <FaRegEdit className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
-          <span> {translate("vaccineslist")} :</span>
+          <span>{translate("vaccineslist")}:</span>
         </h2>
-        
-
         <table className="border-collapse w-full">
-            <thead>
-              <tr>
-                <th className="border border-gray-400 px-3 py-2">
-                {translate("vaccinename")}
-                </th>
-                <th className="border border-gray-400 px-3 py-2">{translate("dose")}</th>
-                <th className="border border-gray-400 px-3 py-2">{translate("repeat")}</th>
-                <th className="border border-gray-400 px-3 py-2">{translate("remark")}</th>
-                <th className="border border-gray-400 px-3 py-2">{translate("giventime")}</th>
+          <thead>
+            <tr>
+              <th className="border border-gray-400 px-3 py-2">{translate("vaccinename")}</th>
+              <th className="border border-gray-400 px-3 py-2">{translate("dose")}</th>
+              <th className="border border-gray-400 px-3 py-2">{translate("repeat")}</th>
+              <th className="border border-gray-400 px-3 py-2">{translate("remark")}</th>
+              <th className="border border-gray-400 px-3 py-2">{translate("giventime")}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {formData.informations.map((info, index) => (
+              <tr key={index}>
+                <td className="border border-gray-400 px-3 py-2">
+                  <input
+                    type="text"
+                    placeholder={translate("vaccinename")}
+                    name="VaccineName"
+                    value={info.VaccineName}
+                    onChange={(e) => handleChange(e, index)}
+                    className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
+                  />
+                </td>
+                <td className="border border-gray-400 px-3 py-2">
+                  <input
+                    type="text"
+                    placeholder={translate("dose")}
+                    name="Dose"
+                    value={info.Dose}
+                    onChange={(e) => handleChange(e, index)}
+                    className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
+                  />
+                </td>
+                <td className="border border-gray-400 px-3 py-2">
+                  <input
+                    type="text"
+                    placeholder={translate("repeat")}
+                    name="Repeat"
+                    value={info.Repeat}
+                    onChange={(e) => handleChange(e, index)}
+                    className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
+                  />
+                </td>
+                <td className="border border-gray-400 px-3 py-2">
+                  <input
+                    type="text"
+                    placeholder={translate("remark")}
+                    name="Remarks"
+                    value={info.Remarks}
+                    onChange={(e) => handleChange(e, index)}
+                    className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
+                  />
+                </td>
+                <td className="border border-gray-400 px-3 py-2">
+                  <input
+                    type="text"
+                    placeholder={translate("giventime")}
+                    name="GivenTime"
+                    value={info.GivenTime}
+                    onChange={(e) => handleChange(e, index)}
+                    className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveRow(index)}
+                    className="text-red-600 hover:text-red-800 ml-2 self-end"
+                  >
+                    <TiMinus />
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {formData.informations.map((info, index) => (
-                <tr key={index}>
-                  <td className="border border-gray-400 px-3 py-2">
-                    <input
-                      type="text"
-                      placeholder={translate("vaccinename")}
-                      name="VaccineName"
-                      value={info.VaccineName}
-                      onChange={(e) => handleChange(e, index)}
-                      className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
-                      required
-                      
-                    />
-                  </td>
-                  <td className="border border-gray-400 px-3 py-2">
-                    <input
-                      type="text"
-                      placeholder={translate("dose")}
-                      name="Dose"
-                      value={info.Dose}
-                      onChange={(e) => handleChange(e, index)}
-                      className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
-                      required
-                      
-                    />
-                  </td>
-                  <td className="border border-gray-400 px-3 py-2">
-                    <input
-                      type="text"
-                      placeholder={translate("repeat")}
-                      name="Repeat"
-                      value={info.Repeat}
-                      onChange={(e) => handleChange(e, index)}
-                      className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
-                      required
-                      
-                    />
-                  </td>
-                  <td className="border border-gray-400 px-3 py-2">
-                    <input
-                      type="text"
-                      placeholder={translate("remark")}
-                      name="Remarks"
-                      value={info.Remarks}
-                      onChange={(e) => handleChange(e, index)}
-                      className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
-                      required
-                      
-                    />
-                  </td>
-                  <td className="border border-gray-400 px-3 py-2">
-                    <input
-                      type="text"
-                      placeholder={translate("giventime")}
-                      name="GivenTime"
-                      value={info.GivenTime}
-                      onChange={(e) => handleChange(e, index)}
-                      className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
-                      required
-                      
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveRow(index)}
-                      className="text-red-600 hover:text-red-800 ml-2 self-end"
-                    >
-                      <TiMinus />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        
-          <button
+            ))}
+          </tbody>
+        </table>
+        <button
           style={{ width: "200px" }}
           type="submit"
           className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary self-end"
@@ -305,16 +281,13 @@ const EditVaccineMonitorForm = () => {
         >
           {translate("addrow")}
         </button>
-
-        
       </form>
       <button
-        onClick={handleClick}
+        onClick={() => navigate(-1)}
         className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary"
       >
         {translate("goback")}
       </button>
-
     </div>
   );
 };

@@ -1,14 +1,14 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { CowFeedContext } from "../Provider";
 import { PiForkKnifeBold } from "react-icons/pi";
 import { IoInformationCircle } from "react-icons/io5";
 import { TiMinus } from "react-icons/ti"; // Import TiMinus icon
 import { useTranslation } from "../../Translator/Provider";
+import { ManageCowFeedContext } from "../Provider";
 
 const EditCowFeedForm = () => {
   const { id } = useParams<{ id: string }>();
-  const { cowFeeds, addcowFeed, editcowFeed } = useContext(CowFeedContext);
+  const { cowFeedRecords, addCowFeedRecord, editCowFeedRecord } = useContext(ManageCowFeedContext);
   const navigate = useNavigate();
   const [currentDate, setCurrentDate] = useState<string>("");
   const { translate, language } = useTranslation();
@@ -25,7 +25,7 @@ const EditCowFeedForm = () => {
       quantity: "",
       feedingTime: "",
       unit: "",
-    })), // Change: Initialize informations as an empty array
+    })),
   });
 
   const [loading, setLoading] = useState(false);
@@ -33,22 +33,25 @@ const EditCowFeedForm = () => {
 
   useEffect(() => {
     const date = new Date();
-    const formattedDate = date.toLocaleDateString(); // Adjust the date format as needed
+    const formattedDate = date.toISOString().split("T")[0]; // Adjust the date format as needed
     setCurrentDate(formattedDate);
+    setFormData((prevFormData) => ({ ...prevFormData, date: formattedDate }));
   }, []);
-
-
 
   useEffect(() => {
     if (isEditMode) {
-      const selectedCowFeed = cowFeeds.find(
-        (cowFeed) => cowFeed.id === parseInt(id)
-      );
+      const selectedCowFeed = cowFeedRecords.find((cowFeed) => cowFeed.id === id);
       if (selectedCowFeed) {
-        setFormData(selectedCowFeed);
+        setFormData({
+          stallNo: selectedCowFeed.stallNo  ,
+          cowNumber: selectedCowFeed.cowNumber,
+          date: selectedCowFeed.formattedDate,
+          note: selectedCowFeed.note,
+          informations: selectedCowFeed.informations,
+        });
       }
     }
-  }, [id, isEditMode, cowFeeds]);
+  }, [id, isEditMode, cowFeedRecords]);
 
   const handleChange = (e, index) => {
     const { name, value } = e.target;
@@ -84,9 +87,9 @@ const EditCowFeedForm = () => {
     e.preventDefault();
     setLoading(true);
     if (isEditMode) {
-      await editcowFeed(parseInt(id), formData);
+      await editCowFeedRecord(id, formData);
     } else {
-      await addcowFeed(formData);
+      await addCowFeedRecord(formData);
     }
     setLoading(false);
     setSuccessPopup(true);
@@ -95,6 +98,7 @@ const EditCowFeedForm = () => {
       navigate("/Cow-Feed");
     }, 1000);
   };
+
   const handleRemoveRow = (indexToRemove) => {
     setFormData({
       ...formData,
@@ -122,14 +126,11 @@ const EditCowFeedForm = () => {
             value={formData.stallNo}
             onChange={(e) => handleChange(e, -1)}
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-            required
           />
         </div>
 
         <div className="flex flex-col space-y-1">
-          <label className="text-sm font-medium text-gray-700">
-          {translate("cownumber")}
-          </label>
+          <label className="text-sm font-medium text-gray-700">{translate("cownumber")}</label>
           <input
             type="text"
             placeholder={translate("cownumber")}
@@ -137,7 +138,6 @@ const EditCowFeedForm = () => {
             value={formData.cowNumber}
             onChange={(e) => handleChange(e, -1)}
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-            required
           />
         </div>
 
@@ -150,7 +150,6 @@ const EditCowFeedForm = () => {
             value={formData.date}
             onChange={(e) => handleChange(e, -1)}
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-            required
           />
         </div>
 
@@ -163,7 +162,6 @@ const EditCowFeedForm = () => {
             value={formData.note}
             onChange={(e) => handleChange(e, -1)}
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-            required
           />
         </div>
 
@@ -172,13 +170,11 @@ const EditCowFeedForm = () => {
           <span>{translate("feedinformation")} :</span>
         </h2>
 
-        <table className="border-collapse w-full" >
+        <table className="border-collapse w-full">
           <thead>
             <tr>
               <th className="border border-gray-400 px-3 py-2">{translate("fooditem")}</th>
-              <th className="border border-gray-400 px-3 py-2">
-              {translate("itemquantity")}
-              </th>
+              <th className="border border-gray-400 px-3 py-2">{translate("itemquantity")}</th>
               <th className="border border-gray-400 px-3 py-2">{translate("unit")}</th>
               <th className="border border-gray-400 px-3 py-2">{translate("feedingtime")}</th>
             </tr>
@@ -194,7 +190,6 @@ const EditCowFeedForm = () => {
                     value={info.foodItem}
                     onChange={(e) => handleChange(e, index)}
                     className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    required
                   />
                 </td>
                 <td className="border border-gray-400 px-3 py-2">
@@ -205,7 +200,6 @@ const EditCowFeedForm = () => {
                     value={info.quantity}
                     onChange={(e) => handleChange(e, index)}
                     className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    required
                   />
                 </td>
                 <td className="border border-gray-400 px-3 py-2">
@@ -221,7 +215,7 @@ const EditCowFeedForm = () => {
                   </select>
                 </td>
                 <td className="border border-gray-400 px-1 py-2 text-right">
-                <button
+                  <button
                     type="button"
                     onClick={() => handleRemoveRow(index)}
                     className="text-red-600 hover:text-red-800 self-end"
@@ -235,7 +229,6 @@ const EditCowFeedForm = () => {
                     value={info.feedingTime}
                     onChange={(e) => handleChange(e, index)}
                     className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    required
                   />
                 </td>
               </tr>
@@ -244,17 +237,16 @@ const EditCowFeedForm = () => {
         </table>
 
         <button
-         
           type="button"
           onClick={handleAddRow}
           className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary"
         >
-         {translate("addrow")}
+          {translate("addrow")}
         </button>
 
         <button
           type="submit"
-          className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary  w-full "
+          className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary w-full"
           disabled={loading}
         >
           {loading
@@ -264,8 +256,6 @@ const EditCowFeedForm = () => {
             : translate("addcowfeed")}
         </button>
       </form>
-
-      
     </div>
   );
 };

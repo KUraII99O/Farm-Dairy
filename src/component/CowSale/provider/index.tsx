@@ -1,139 +1,93 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { toast } from "react-toastify";
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { CowSales, CowSalesService } from "../CowSaleService";
 
-interface CowSales {
-  id: number;
-  customerName: string;
-  customerPhone: string;
-  customerEmail: string;
-  address: string;
-  totalPrice: number;
-  totalPaid: string;
-  due: number;
-  note: string;
-  collectedFrom: string;
-  image: string;
-  stallNo: string;
-  cowNumber: string;
-  gender: string;
-  weight: string;
-  height: string;
-}
+export const ManageSalesContext = createContext<any>(null);
 
-export const SaleListContext = createContext<any>(null);
-
-export const SaleListProvider = ({ children }) => {
+export const ManageSalesProvider: React.FC = ({ children }) => {
   const [sales, setSales] = useState<CowSales[]>([]);
 
   useEffect(() => {
-    const fetchCowSales = async () => {
+    const fetchSalesData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/sales");
-        if (!response.ok) {
-          throw new Error("Failed to fetch CowSales data");
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (!loggedInUser) {
+          throw new Error("User not logged in or user data not found");
         }
-        const data = await response.json();
-        setSales(data);
+        const user = JSON.parse(loggedInUser);
+        console.log("User ID:", user.id); // Log user ID
+  
+        const data = await CowSalesService.fetchSales();
+        console.log("Sales data:", data); // Log sales data
+        setSales(data || []);
       } catch (error) {
-        console.error("Error fetching CowSales data:", error.message);
+        console.error("Error fetching sales:", error);
       }
     };
-
-    fetchCowSales();
+  
+    fetchSalesData();
   }, []);
 
-  const addCowSales = async (newCowSales: Omit<CowSales, "id">) => {
+  const addSale = async (newSale: Omit<CowSales, 'id'>) => {
+    console.log("Adding sale:", newSale);
     try {
-      const id = sales.length + 1;
-      const cowSalesWithId: CowSales = { id, ...newCowSales };
-
-      const response = await fetch("http://localhost:3000/sales", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(cowSalesWithId),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to add CowSales");
-      }
-
-      setSales([...sales, cowSalesWithId]);
-      toast.success("CowSales added successfully");
+      const data = await CowSalesService.addSale(newSale);
+      console.log("Sale added successfully:", data);
+      setSales(prevSales => [...prevSales, data]);
     } catch (error) {
-      console.error("Error:", error.message);
-      toast.error("Failed to add CowSales");
+      console.error("Error adding sale:", error);
     }
   };
 
-  const deleteSale = async (id: number) => {
+  const editSale = async (id: string, updatedSale: Omit<CowSales, 'id'>) => {
     try {
-      const response = await fetch(`http://localhost:3000/sales/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete CowSales");
-      }
-
-      const updatedSales = sales.filter((sale) => sale.id !== id);
-      setSales(updatedSales);
-      toast.success("CowSales deleted successfully");
-    } catch (error) {
-      console.error("Error:", error.message);
-      toast.error("Failed to delete CowSales");
-    }
-  };
-
-  const editSale = async (id: number, updatedSale: Partial<CowSales>) => {
-    try {
-      const response = await fetch(`http://localhost:3000/sales/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedSale),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to edit CowSales");
-      }
-
-      const updatedSales = sales.map((sale) =>
-        sale.id === id ? { ...sale, ...updatedSale } : sale
+      const data = await CowSalesService.editSale(id, updatedSale);
+      setSales(prevSales =>
+        prevSales.map(sale => (sale.id === id ? { ...sale, ...updatedSale } : sale))
       );
-      setSales(updatedSales);
-      toast.success("CowSales edited successfully");
     } catch (error) {
-      console.error("Error:", error.message);
-      toast.error("Failed to edit CowSales");
+      console.error("Error editing sale:", error);
     }
   };
 
-  const getSaleById = (id: number) => {
-    return sales.find((sale) => sale.id === id);
+  const deleteSale = async (id: string) => {
+    try {
+      await CowSalesService.deleteSale(id);
+      setSales(prevSales => prevSales.filter(sale => sale.id !== id));
+    } catch (error) {
+      console.error("Error deleting sale:", error);
+    }
+  };
+
+  const toggleSaleStatus = async (id: string) => {
+    try {
+      const data = await CowSalesService.toggleSaleStatus(id);
+      setSales(prevSales =>
+        prevSales.map(sale => (sale.id === id ? { ...sale, status: !sale.status } : sale))
+      );
+    } catch (error) {
+      console.error("Error toggling sale status:", error);
+    }
   };
 
   const value = {
     sales,
-    addCowSales,
-    deleteSale,
+    addSale,
     editSale,
-    getSaleById,
+    deleteSale,
+    toggleSaleStatus
   };
 
   return (
-    <SaleListContext.Provider value={value}>
+    <ManageSalesContext.Provider value={value}>
       {children}
-    </SaleListContext.Provider>
+    </ManageSalesContext.Provider>
   );
 };
 
-export const useSaleList = () => {
-  const context = useContext(SaleListContext);
+export const useManageSales = () => {
+  const context = useContext(ManageSalesContext);
   if (!context) {
-    throw new Error("useSaleList must be used within a SaleListProvider");
+    throw new Error("useManageSales must be used within a ManageSalesProvider");
   }
   return context;
 };

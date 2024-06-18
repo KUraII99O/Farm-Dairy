@@ -17,17 +17,30 @@ const Invoice: React.FC = () => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const navigate = useNavigate();
 
+
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), "yyyy/MM/dd");
   };
 
   const fetchInvoices = async () => {
     try {
-      const response = await fetch('http://localhost:3000/users/:id/invoices');
+      const loggedInUser = localStorage.getItem('loggedInUser');
+      if (!loggedInUser) {
+        throw new Error("User not logged in");
+      }
+    
+      const user = JSON.parse(loggedInUser);
+      if (!user || !user.id) {
+        throw new Error("User ID not found");
+      }
+
+      console.log(`Fetching invoices for user ID: ${user.id}`);
+      const response = await fetch(`http://localhost:3000/users/${user.id}/invoices`);
       if (!response.ok) {
         throw new Error('Failed to fetch invoices');
       }
       const invoiceData = await response.json();
+      console.log('Fetched invoices:', invoiceData);
       setInvoices(invoiceData);
     } catch (error) {
       console.error('Error fetching invoices:', error);
@@ -35,7 +48,8 @@ const Invoice: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchInvoices();
+      fetchInvoices();
+    
   }, []);
 
   useEffect(() => {
@@ -45,13 +59,15 @@ const Invoice: React.FC = () => {
 
   const handlePay = async (invoiceId: number) => {
     try {
-      const response = await fetch(`http://localhost:3001/invoices/pay/${invoiceId}`, {
+      console.log(`Paying invoice ID: ${invoiceId}`);
+      const response = await fetch(`http://localhost:3000/invoices/pay/${invoiceId}`, {
         method: 'POST',
       });
       if (!response.ok) {
         throw new Error('Failed to update payment status');
       }
       const updatedInvoice = await response.json();
+      console.log('Updated invoice:', updatedInvoice);
       setInvoices((prevInvoices) =>
         prevInvoices.map((invoice) =>
           invoice.id === invoiceId ? updatedInvoice.invoice : invoice

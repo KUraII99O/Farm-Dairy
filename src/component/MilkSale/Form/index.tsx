@@ -1,24 +1,17 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ManageMilkSaleContext, } from "../Provider";
 import { FaUserPlus } from "react-icons/fa";
 import { useTranslation } from "../../Translator/Provider";
+import { ManageMilkSaleContext } from "../Provider";
 
 const EditMilkSale = () => {
   const { id } = useParams<{ id: string }>();
-  const { MilkSales, addMilkSaleRecord, editMilkSaleRecord, generateRandomInvoice } =
-    useContext(ManageMilkSaleContext);
+  const { milkSaleRecords, addMilkSaleRecord, editMilkSaleRecord } = useContext(ManageMilkSaleContext);
   const navigate = useNavigate();
-  
-
-  const [currentDate, setCurrentDate] = useState<string>("");
-  const { translate, language } = useTranslation();
-
-  const isEditMode = !!id;
-
   const [formData, setFormData] = useState({
     accountNo: "",
     supplier: "",
+    userId: "",
     name: "",
     contact: "",
     email: "",
@@ -30,17 +23,29 @@ const EditMilkSale = () => {
     paid: "",
     date: "",
     soldBy: "",
-    invoice: "generateRandomInvoice",
+    invoice: ""
   });
+  const [loading, setLoading] = useState(false);
+  const [successPopup, setSuccessPopup] = useState(false);
+  const { translate, language } = useTranslation();
 
   useEffect(() => {
     const date = new Date();
     const formattedDate = date.toLocaleDateString(); // Adjust the date format as needed
     setFormData(prevState => ({
       ...prevState,
-      Date: formattedDate,
+      date: formattedDate,
     }));
   }, []);
+
+  useEffect(() => {
+    if (id && milkSaleRecords.length > 0) {
+      const selectedMilkSale = milkSaleRecords.find(milkSale => milkSale.id === id);
+      if (selectedMilkSale) {
+        setFormData(selectedMilkSale);
+      }
+    }
+  }, [id, milkSaleRecords]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('loggedInUser');
@@ -54,250 +59,198 @@ const EditMilkSale = () => {
     }
   }, []);
 
-  const [loading, setLoading] = useState(false);
-  const [successPopup, setSuccessPopup] = useState(false);
-
-
-  useEffect(() => {
-    if (id && MilkSales.length > 0) {
-      const selectedMilkSale = MilkSales.find(sale => sale.id === id);
-      if (selectedMilkSale) {
-        // Update the formData state with the selected milk sale record
-        setFormData(selectedMilkSale);
-      }
-    }
-  }, [id, MilkSales]);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData(prevState => ({
+      ...prevState,
       [name]: value,
-    });
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    // Generate sequential invoice number
-    const invoice = generateRandomInvoice();
-
-    // Update formData with generated invoice number
-    const updatedFormData = { ...formData, invoice };
-
-    if (isEditMode) {
-      await editMilkSaleRecord(parseInt(id), updatedFormData);
-    } else {
-      await addMilkSaleRecord(updatedFormData);
+    try {
+      if (id) {
+        await editMilkSaleRecord(id, formData);
+      } else {
+        await addMilkSaleRecord(formData);
+      }
+      setSuccessPopup(true);
+      setTimeout(() => {
+        setSuccessPopup(false);
+        navigate("/milk-sale");
+      }, 1000); // Close the popup and navigate after 1 second
+    } catch (error) {
+      console.error("Error:", error);
+      setLoading(false);
     }
-
-    setLoading(false);
-    setSuccessPopup(true);
-    setTimeout(() => {
-      setSuccessPopup(false);
-      navigate("/Milk-Sale");
-    }, 1000); // Close the popup and navigate after 2 seconds
   };
 
   return (
     <div>
       <form onSubmit={handleSubmit} className="flex flex-col w-full space-y-4">
-        <h2 className="text-xl font-bold text-gray-700 mb-4 flex items-center">
-          <FaUserPlus className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
-          <span>{translate("milksaleInformation")}</span>
-        </h2>
-        <div className="flex flex-wrap -mx-2">
-          <div className="flex flex-col space-y-1 px-2 w-1/2">
-            <label className="text-sm font-medium text-gray-700">
-              {translate("accountNo")}
-            </label>
-            <input
-              type="text"
-              placeholder={translate("accountNo")}
-              name="accountNo"
-              value={formData.accountNo}
-              onChange={handleChange}
-              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              
-            />
-          </div>
+        {/* Form fields */}
+        {/* Account No */}
+        <label className="text-sm font-medium text-gray-700">{translate("accountNo")}</label>
+        <input
+          type="text"
+          placeholder={translate("accountNo")}
+          name="accountNo"
+          value={formData.accountNo}
+          onChange={handleChange}
+          className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+          
+        />
 
-          <div className="flex flex-col space-y-1 px-2 w-1/2">
-            <label className="text-sm font-medium text-gray-700">
-              {translate("suppliers")} :
-            </label>
-            <input
-              type="text"
-              placeholder={translate("suppliers")}
-              name="supplier"
-              value={formData.supplier}
-              onChange={handleChange}
-              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              
-            />
-          </div>
-        </div>
+        {/* Supplier */}
+        <label className="text-sm font-medium text-gray-700">{translate("supplier")}</label>
+        <input
+          type="text"
+          placeholder={translate("supplier")}
+          name="supplier"
+          value={formData.supplier}
+          onChange={handleChange}
+          className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+          
+        />
 
-        <div className="flex flex-wrap -mx-2">
-          <div className="flex flex-col space-y-1 px-2 w-1/2">
-            <label className="text-sm font-medium text-gray-700">
-              {translate("name")} :
-            </label>
-            <input
-              type="text"
-              placeholder={translate("name")}
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              
-            />
-          </div>
+        {/* Name */}
+        <label className="text-sm font-medium text-gray-700">{translate("name")}</label>
+        <input
+          type="text"
+          placeholder={translate("name")}
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+          
+        />
 
-          <div className="flex flex-col space-y-1 px-2 w-1/2">
-            <label className="text-sm font-medium text-gray-700">
-              {translate("contact")}:
-            </label>
-            <input
-              type="text"
-              placeholder={translate("contact")}
-              name="contact"
-              value={formData.contact}
-              onChange={handleChange}
-              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              
-            />
-          </div>
-        </div>
+        {/* Contact */}
+        <label className="text-sm font-medium text-gray-700">{translate("contact")}</label>
+        <input
+          type="text"
+          placeholder={translate("contact")}
+          name="contact"
+          value={formData.contact}
+          onChange={handleChange}
+          className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+          
+        />
 
-        <div className="flex flex-wrap -mx-2">
-          <div className="flex flex-col space-y-1 px-2 w-full">
-            <label className="text-sm font-medium text-gray-700">
-              {translate("address")}:
-            </label>
-            <textarea
-              style={{ height: "150px" }}
-              placeholder={translate("address")}
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              
-            />
-          </div>
-        </div>
+        {/* Email */}
+        <label className="text-sm font-medium text-gray-700">{translate("email")}</label>
+        <input
+          type="email"
+          placeholder={translate("email")}
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+          
+        />
 
-        <div className="flex flex-wrap -mx-2">
-          <div className="flex flex-col space-y-1 px-2 w-1/2">
-            <label className="text-sm font-medium text-gray-700">
-              {translate("email")} :
-            </label>
-            <input
-              type="email"
-              placeholder={translate("email")}
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              
-            />
-          </div>
+        {/* Address */}
+        <label className="text-sm font-medium text-gray-700">{translate("address")}</label>
+        <input
+          type="text"
+          placeholder={translate("address")}
+          name="address"
+          value={formData.address}
+          onChange={handleChange}
+          className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+          
+        />
 
-          <div className="flex flex-col space-y-1 px-2 w-1/2">
-            <label className="text-sm font-medium text-gray-700">
-              {translate("liter")}*:
-            </label>
-            <input
-              type="text"
-              placeholder={translate("liter")}
-              name="litre"
-              value={formData.litre}
-              onChange={handleChange}
-              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              
-            />
-          </div>
-        </div>
+        {/* Litre */}
+        <label className="text-sm font-medium text-gray-700">{translate("litre")}</label>
+        <input
+          type="text"
+          placeholder={translate("litre")}
+          name="litre"
+          value={formData.litre}
+          onChange={handleChange}
+          className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+          
+        />
 
-        <div className="flex flex-wrap -mx-2">
-          <div className="flex flex-col space-y-1 px-2 w-1/2">
-            <label className="text-sm font-medium text-gray-700">
-              {translate("price")}/{translate("liter")}:
-            </label>
-            <input
-              type="text"
-              placeholder={`${translate("price")}/${translate("liter")}`}
-              name="price"
-              value={formData.price}
-              onChange={handleChange}
-              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              
-            />
-          </div>
+        {/* Price */}
+        <label className="text-sm font-medium text-gray-700">{translate("price")}</label>
+        <input
+          type="text"
+          placeholder={translate("price")}
+          name="price"
+          value={formData.price}
+          onChange={handleChange}
+          className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+          
+        />
 
-          <div className="flex flex-col space-y-1 px-2 w-1/2">
-            <label className="text-sm font-medium text-gray-700">
-              {translate("total")} :
-            </label>
-            <input
-              type="text"
-              placeholder={translate("total")}
-              name="total"
-              value={formData.total}
-              onChange={handleChange}
-              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              
-            />
-          </div>
-        </div>
+        {/* Total */}
+        <label className="text-sm font-medium text-gray-700">{translate("total")}</label>
+        <input
+          type="text"
+          placeholder={translate("total")}
+          name="total"
+          value={formData.total}
+          onChange={handleChange}
+          className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+          
+        />
 
-        <div className="flex flex-wrap -mx-2">
-          <div className="flex flex-col space-y-1 px-2 w-1/2">
-            <label className="text-sm font-medium text-gray-700">
-              {translate("paid")} :
-            </label>
-            <input
-              type="text"
-              placeholder={translate("paid")}
-              name="paid"
-              value={formData.paid}
-              onChange={handleChange}
-              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              
-            />
-          </div>
-
-          <div className="flex flex-col space-y-1 px-2 w-1/2">
-            <label className="text-sm font-medium text-gray-700">
-              {translate("due")}*:
-            </label>
-            <input
-              type="text"
-              placeholder={translate("due")}
-              name="due"
-              value={formData.due}
-              onChange={handleChange}
-              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              
-            />
-          </div>
-        </div>
-
-        <button
-          type="submit"
-          className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary w-full"
-          disabled={loading}
-        >
-          {loading
-            ? "Loading..."
-            : isEditMode
-            ? translate("save")
-            : translate("addmilksale")}
-        </button>
-      </form>
-    </div>
-  );
-};
-
-export default EditMilkSale;
+        {/* Due */}
+        <label className="text-sm font-medium text-gray-700">{translate("due")}</label>
+        <input
+          type="text"
+          placeholder={translate("due")}
+          name="due"
+          value={formData.due}
+          onChange={handleChange}
+          className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+          
+          />
+  
+          {/* Paid */}
+          <label className="text-sm font-medium text-gray-700">{translate("paid")}</label>
+          <input
+            type="text"
+            placeholder={translate("paid")}
+            name="paid"
+            value={formData.paid}
+            onChange={handleChange}
+            className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+            
+          />
+  
+          {/* Invoice */}
+          <label className="text-sm font-medium text-gray-700">{translate("invoice")}</label>
+          <input
+            type="text"
+            placeholder={translate("invoice")}
+            name="invoice"
+            value={formData.invoice}
+            onChange={handleChange}
+            className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+            
+          />
+  
+          {/* Submit button */}
+          <button
+            type="submit"
+            className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary w-full"
+            disabled={loading}
+          >
+            {loading
+              ? "Loading..."
+              : id
+              ? translate("save")
+              : translate("addMilkSale")}
+          </button>
+        </form>
+      </div>
+    );
+  };
+  
+  export default EditMilkSale;

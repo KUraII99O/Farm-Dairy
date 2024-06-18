@@ -1,16 +1,16 @@
-import React, { useState, useContext, useEffect, useHistory } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { RoutineMonitorContext } from "../Provider";
 import { PiMonitor } from "react-icons/pi";
 import { IoInformationCircle } from "react-icons/io5";
 import { TiMinus } from "react-icons/ti"; // Import TiMinus icon
 import { FaRegEdit } from "react-icons/fa"; // Import FaRegEdit icon
 import { useTranslation } from "../../Translator/Provider";
+import { ManageRoutineContext } from "../Provider";
 
 const EditRoutineMonitorForm = () => {
   const { id } = useParams<{ id: string }>();
-  const { routineMonitors, addRoutineMonitor, editRoutineMonitor } = useContext(
-    RoutineMonitorContext
+  const { routineRecords, addRoutineRecord, editRoutineRecord } = useContext(
+    ManageRoutineContext
   );
   const navigate = useNavigate();
   const [currentDate, setCurrentDate] = useState<string>("");
@@ -21,17 +21,21 @@ const EditRoutineMonitorForm = () => {
   const handleClick = () => {
     history.back();
   };
+
   useEffect(() => {
     const date = new Date();
-    const formattedDate = date.toLocaleDateString(); // Adjust the date format as needed
+    const formattedDate = date.toISOString().split("T")[0]; // Adjust the date format as needed
     setCurrentDate(formattedDate);
+    setFormData((prevFormData) => ({ ...prevFormData, date: formattedDate }));
   }, []);
+
 
   const [formData, setFormData] = useState({
     stallNo: "",
     animalID: "",
     date: currentDate,
     note: "",
+    reportedby: "",
     healthStatus: 50,
     informations: Array.from({ length: 3 }, () => ({
       ServiceName: "",
@@ -50,14 +54,37 @@ const EditRoutineMonitorForm = () => {
 
   useEffect(() => {
     if (isEditMode) {
-      const selectedRoutineMonitor = routineMonitors.find(
-        (routineMonitor) => routineMonitor.id === parseInt(id)
-      );
-      if (selectedRoutineMonitor) {
-        setFormData(selectedRoutineMonitor);
+      const selectedRoutineRecord = routineRecords.find((routineRecord) => routineRecord.id === id);
+      if (selectedRoutineRecord) {
+        setFormData({
+          stallNo: selectedRoutineRecord.stallNo,
+          animalID: selectedRoutineRecord.animalID,
+          date: selectedRoutineRecord.date,
+          note: selectedRoutineRecord.note,
+          reportedby: selectedRoutineRecord.reportedby,
+          healthStatus: selectedRoutineRecord.healthStatus,
+          informations: selectedRoutineRecord.informations,
+          updatedWeight: selectedRoutineRecord.updatedWeight,
+          updatedHeight: selectedRoutineRecord.updatedHeight,
+          milkPerDay: selectedRoutineRecord.milkPerDay,
+          monitoringDate: selectedRoutineRecord.monitoringDate,
+          reports: selectedRoutineRecord.reports,
+        });
       }
     }
-  }, [id, isEditMode, routineMonitors]);
+  }, [id, isEditMode, routineRecords]);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('loggedInUser');
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);
+      const { username } = userData;
+      setFormData(prevState => ({
+        ...prevState,
+        reportedby: username,
+      }));
+    }
+  }, []);
 
   const handleChange = (e, index) => {
     const { name, value } = e.target;
@@ -93,9 +120,9 @@ const EditRoutineMonitorForm = () => {
     e.preventDefault();
     setLoading(true);
     if (isEditMode) {
-      await editRoutineMonitor(parseInt(id), formData);
+      await editRoutineRecord(id, formData);
     } else {
-      await addRoutineMonitor(formData);
+      await addRoutineRecord(formData);
     }
     setLoading(false);
     setSuccessPopup(true);
@@ -113,6 +140,7 @@ const EditRoutineMonitorForm = () => {
       ),
     });
   };
+
   const handleHealthStatusChange = (e) => {
     setFormData({
       ...formData,

@@ -1,17 +1,16 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { SaleListContext } from "../provider";
+import { ManageSalesContext } from "../provider";
 import { IoInformationCircle } from "react-icons/io5";
 import { useTranslation } from "../../Translator/Provider";
 import { FaMinusCircle, FaPlusCircle } from "react-icons/fa";
 
 const EditSaleForm = () => {
   const { id } = useParams<{ id: string }>();
-  const { sales, addSale, editSale } = useContext(SaleListContext);
+  const { sales, addSale, editSale } = useContext(ManageSalesContext);
   const [showCowDetails, setShowCowDetails] = useState(false);
   const [stallList, setStallList] = useState([]);
   const [cowList, setCowList] = useState([]);
-  const [selectedImage] = useState<string | null>(null); // State to store selected image path
   const { translate, language } = useTranslation();
 
   const navigate = useNavigate();
@@ -29,22 +28,24 @@ const EditSaleForm = () => {
     totalPaid: "",
     due: "",
     note: "",
-    AnimalType: "",
-    information: {
-      image: "",
-      animalID: "",
-      stallNumber: "",
-      gender: "",
-      weight: "",
-      height: "",
-    },
   });
+
+  const [cowDetails, setCowDetails] = useState([
+    {
+      animalType: "",
+      stallNumber: "",
+      animalID: "",
+      totalPrice: "",
+      image: "",
+    },
+  ]);
 
   useEffect(() => {
     if (isEditMode) {
-      const selectedSale = sales.find((sale) => sale.id === parseInt(id));
+      const selectedSale = sales.find((sale) => sale.id === id);
       if (selectedSale) {
         setFormData(selectedSale);
+        setCowDetails(selectedSale.cowDetails || cowDetails);
       }
     }
   }, [id, isEditMode, sales]);
@@ -83,19 +84,6 @@ const EditSaleForm = () => {
       });
   }, []);
 
-  useEffect(() => {
-    if (
-      formData.stallNo !== "" &&
-      formData.animalID !== "" &&
-      formData.animalType !== "" &&
-      formData.image 
-    ) {
-      setShowCowDetails(true);
-    } else {
-      setShowCowDetails(false);
-    }
-  }, [formData]);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -104,30 +92,46 @@ const EditSaleForm = () => {
     });
   };
 
-  const handleInformationChange = (e) => {
+  const handleCowDetailsChange = (index, e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      information: {
-        ...formData.information,
-        [name]: value,
-      },
-    });
+    const updatedCowDetails = cowDetails.map((detail, idx) =>
+      idx === index ? { ...detail, [name]: value } : detail
+    );
+    setCowDetails(updatedCowDetails);
   };
-  const handleFileChange = (e) => {
+
+  const handleFileChange = (index, e) => {
     const file = e.target.files[0];
-    setFormData({
-      ...formData,
-      image: URL.createObjectURL(file), // Store file path for preview
-    });
+    const updatedCowDetails = cowDetails.map((detail, idx) =>
+      idx === index ? { ...detail, image: URL.createObjectURL(file) } : detail
+    );
+    setCowDetails(updatedCowDetails);
+  };
+
+  const handleAddRow = () => {
+    setCowDetails([
+      ...cowDetails,
+      {
+        animalType: "",
+        stallNumber: "",
+        animalID: "",
+        totalPrice: "",
+        image: "",
+      },
+    ]);
+  };
+
+  const handleRemoveRow = (index) => {
+    setCowDetails(cowDetails.filter((_, idx) => idx !== index));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const newFormData = { ...formData, cowDetails };
     if (isEditMode) {
-      await editSale(parseInt(id), formData);
+      await editSale(id, newFormData);
     } else {
-      await addSale(formData);
+      await addSale(newFormData);
     }
     navigate("/Cow-Sale-List");
   };
@@ -149,7 +153,6 @@ const EditSaleForm = () => {
               value={formData.date}
               onChange={handleChange}
               className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
             />
           </div>
           <div className="flex flex-col space-y-1 px-2 w-full md:w-1/2">
@@ -163,7 +166,6 @@ const EditSaleForm = () => {
               value={formData.customerName}
               onChange={handleChange}
               className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
             />
           </div>
         </div>
@@ -179,7 +181,6 @@ const EditSaleForm = () => {
               value={formData.customerPhone}
               onChange={handleChange}
               className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
             />
           </div>
           <div className="flex flex-col space-y-1 px-2 w-full md:w-1/2">
@@ -193,7 +194,6 @@ const EditSaleForm = () => {
               value={formData.customerEmail}
               onChange={handleChange}
               className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
             />
           </div>
         </div>
@@ -205,7 +205,6 @@ const EditSaleForm = () => {
             value={formData.address}
             onChange={handleChange}
             className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            required
           />
         </div>
         <div className="flex flex-col space-y-1 w-full">
@@ -218,142 +217,139 @@ const EditSaleForm = () => {
             className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
-      </form>
 
-      <div className="flex flex-col space-y-1">
-        <h2 className="text-xl font-bold mt-2 mb-4 flex items-center">
-          <IoInformationCircle className="mr-2" />
-          <span>Cow Selection</span>
-        </h2>
-        <table className="border-collapse w-full mb-6">
-          <thead>
-            <tr>
-              <th className="border border-gray-400 px-3 py-2">Image</th>
-              <th className="border border-gray-400 px-3 py-2">Animal Type</th>
-              <th className="border border-gray-400 px-3 py-2">Animal ID</th>
-              <th className="border border-gray-400 px-3 py-2">Stall No</th>
-              <th className="border border-gray-400 px-3 py-2">Sell Price</th>
-              <th className="border border-gray-400 px-3 py-2">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="border border-gray-400 px-3 py-2">
-                <div className="relative flex justify-center ">
-                  <label
-                    htmlFor="uploadInput"
-                    className={`cursor-pointer border my-6 border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white hover:bg-gray-100 text-center ${
-                      isArabic ? "" : ""
-                    }`}
-                    style={{
-                      width: "100px", // Adjust width as needed
-                      height: "100px", // Adjust height as needed
-                      lineHeight: "100px", // Adjust line height to center content vertically
-                    }}
-                  >
-                    {formData.image ? (
-                      <img
-                      
-                        src={formData.image}
-                        alt="Uploaded"
-                        className="w-full h-full object-cover items-center"
+        <div className="flex flex-col space-y-1">
+          <h2 className="text-xl font-bold mt-2 mb-4 flex items-center">
+            <IoInformationCircle className="mr-2" />
+            <span>Cow Selection</span>
+          </h2>
+          <table className="border-collapse w-full mb-6">
+            <thead>
+              <tr>
+                <th className="border border-gray-400 px-3 py-2">Image</th>
+                <th className="border border-gray-400 px-3 py-2">Animal Type</th>
+                <th className="border border-gray-400 px-3 py-2">Stall No</th>
+                <th className="border border-gray-400 px-3 py-2">Animal ID</th>
+                <th className="border border-gray-400 px-3 py-2">Sell Price</th>
+                <th className="border border-gray-400 px-3 py-2">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {cowDetails.map((detail, index) => (
+                <tr key={index}>
+                  <td className="border border-gray-400 px-3 py-2">
+                    <div className="relative flex justify-center">
+                      <input
+                        type="file"
+                        id={`uploadInput-${index}`}
+                        name="image"
+                        accept="image/*"
+                        onChange={(e) => handleFileChange(index, e)}
+                        className="hidden"
                       />
-                    ) : (
-                      translate("image")
-                    )}
-                  </label>
-                </div>
-              </td>
-              <td className="border border-gray-400 px-3 py-2">
-                <label className="text-sm font-medium text-gray-700"></label>
-                <select
-                  style={{ height: "2.5rem" }}
-                  id="animalType"
-                  name="animalType"
-                  className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  value={formData.animalType}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">-- Select --</option>
-                  {cowList.map((cow) => (
-                    <option key={cow.animalType} value={cow.animalType}>
-                      {cow.animalType}
-                    </option>
-                  ))}
-                </select>
-              </td>
-              <td className="border border-gray-400 px-3 py-2">
-                <label className="text-sm font-medium text-gray-700"></label>
-                <select
-                  style={{ height: "2.5rem" }}
-                  id="stallNo"
-                  name="stallNo"
-                  className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  value={formData.stallNumber}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">-- Select --</option>
-                  {stallList.map((stall) => (
-                    <option key={stall.id} value={stall.stallNumber}>
-                      {stall.stallNumber}
-                    </option>
-                  ))}
-                </select>
-              </td>
-              <td className="border border-gray-400 px-3 py-2">
-                <label className="text-sm font-medium text-gray-700"></label>
-                <select
-                  style={{ height: "2.5rem" }}
-                  id="animalID"
-                  name="animalID"
-                  className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  value={formData.animalID}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">-- Select --</option>
-                  {cowList.map((cow) => (
-                    <option key={cow.id} value={cow.id}>
-                      {cow.id}
-                    </option>
-                  ))}
-                </select>
-              </td>
-              <td className="border border-gray-400 px-3 py-2">
-                <label className="text-sm font-medium text-gray-700"></label>
-                <input
-                  style={{ height: "2.5rem" }}
-                  type="number"
-                  placeholder="total Price"
-                  name="totalPrice"
-                  value={formData.totalPrice}
-                  onChange={handleInformationChange}
-                  className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </td>
-              <td className="border border-gray-400 px-3 py-2 text-center">
-                <div style={{ display: "flex" }}>
-                  <FaMinusCircle
-                    className="text-red-500 mr-2 cursor-pointer text-3xl ml-4"
-                    onClick={() => handleMinusClick()}
-                  />
-                  <FaPlusCircle
-                    className="text-green-500 cursor-pointer text-3xl text-center "
-                    onClick={() => handlePlusClick()}
-                  />
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <h2 className="text-xl font-bold mt-2 mb-6 flex items-center">
-        <IoInformationCircle className="mr-2" />
-        <span> Payment Information :</span>
-      </h2>
-      <form>
+                      <label
+                        htmlFor={`uploadInput-${index}`}
+                        className={`cursor-pointer border my-6 border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white hover:bg-gray-100 text-center ${
+                          isArabic ? "" : ""
+                        }`}
+                        style={{
+                          width: "100px",
+                          height: "100px",
+                          lineHeight: "100px",
+                        }}
+                      >
+                        {detail.image ? (
+                          <img
+                            src={detail.image}
+                            alt="Uploaded"
+                            className="w-full h-full object-cover items-center"
+                          />
+                        ) : (
+                          translate("image")
+                        )}
+                      </label>
+                    </div>
+                  </td>
+                  <td className="border border-gray-400 px-3 py-2">
+                    <select
+                      style={{ height: "2.5rem" }}
+                      name="animalType"
+                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      value={detail.animalType}
+                      onChange={(e) => handleCowDetailsChange(index, e)}
+                    >
+                      <option value="">-- Select --</option>
+                      {cowList.map((cow) => (
+                        <option key={cow.animalType} value={cow.animalType}>
+                          {cow.animalType}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td className="border border-gray-400 px-3 py-2">
+                    <select
+                      style={{ height: "2.5rem" }}
+                      name="stallNumber"
+                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      value={detail.stallNumber}
+                      onChange={(e) => handleCowDetailsChange(index, e)}
+                    >
+                      <option value="">-- Select --</option>
+                      {stallList.map((stall) => (
+                        <option key={stall.id} value={stall.stallNumber}>
+                          {stall.stallNumber}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td className="border border-gray-400 px-3 py-2">
+                    <select
+                      style={{ height: "2.5rem" }}
+                      name="animalID"
+                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      value={detail.animalID}
+                      onChange={(e) => handleCowDetailsChange(index, e)}
+                    >
+                      <option value="">-- Select --</option>
+                      {cowList.map((cow) => (
+                        <option key={cow.id} value={cow.id}>
+                          {cow.id}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td className="border border-gray-400 px-3 py-2">
+                    <input
+                      style={{ height: "2.5rem" }}
+                      type="number"
+                      placeholder="Sell Price"
+                      name="totalPrice"
+                      value={detail.totalPrice}
+                      onChange={(e) => handleCowDetailsChange(index, e)}
+                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    />
+                  </td>
+                  <td className="border border-gray-400 px-3 py-2 text-center">
+                    <div style={{ display: "flex", justifyContent: "center" }}>
+                      <FaMinusCircle
+                        className="text-red-500 mr-2 cursor-pointer text-3xl ml-4"
+                        onClick={() => handleRemoveRow(index)}
+                      />
+                      <FaPlusCircle
+                        className="text-green-500 cursor-pointer text-3xl text-center "
+                        onClick={handleAddRow}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <h2 className="text-xl font-bold mt-2 mb-6 flex items-center">
+          <IoInformationCircle className="mr-2" />
+          <span>Payment Information :</span>
+        </h2>
         <div className="flex justify-between">
           <div className="flex flex-col space-y-1" style={{ width: "30%" }}>
             <label className="text-sm font-medium text-gray-700">
@@ -366,13 +362,9 @@ const EditSaleForm = () => {
               value={formData.totalPrice}
               onChange={handleChange}
               className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
-              required
             />
           </div>
-          <div
-            className="flex flex-col space-y-1 ml-4"
-            style={{ width: "30%" }}
-          >
+          <div className="flex flex-col space-y-1 ml-4" style={{ width: "30%" }}>
             <label className="text-sm font-medium text-gray-700">
               Total Paid:
             </label>
@@ -383,13 +375,9 @@ const EditSaleForm = () => {
               value={formData.totalPaid}
               onChange={handleChange}
               className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
-              required
             />
           </div>
-          <div
-            className="flex flex-col space-y-1 ml-4"
-            style={{ width: "30%" }}
-          >
+          <div className="flex flex-col space-y-1 ml-4" style={{ width: "30%" }}>
             <label className="text-sm font-medium text-gray-700">Due:</label>
             <input
               type="text"
@@ -398,10 +386,10 @@ const EditSaleForm = () => {
               value={formData.due}
               onChange={handleChange}
               className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
-              required
             />
           </div>
         </div>
+
         <button
           type="submit"
           className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary"

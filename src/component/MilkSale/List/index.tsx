@@ -1,26 +1,25 @@
-import React, { useState, useContext,useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { Link } from "react-router-dom";
-import { LiaFileInvoiceSolid } from "react-icons/lia";
 import { useTranslation } from "../../Translator/Provider";
 
 import "react-toastify/dist/ReactToastify.css";
-import { ManageMilkSaleContext } from "../Provider"; // Assuming MilkSaleContext is provided similarly to UserContext
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import Pagination from "../../Pagination";
 import { BsPencil } from "react-icons/bs";
 import { AiOutlineDelete } from "react-icons/ai";
 import MilkSaleList from "../Table";
+import { ManageMilkSaleContext } from "../Provider";
 
 const MilkSaleTable: React.FC = () => {
-  const { milkSales, deleteMilkSaleRecord } = useContext(ManageMilkSaleContext);
+  const { milkSaleRecords, deleteMilkSaleRecord } = useContext(ManageMilkSaleContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5); // Number of milk entries per page
+  const [itemsPerPage, setItemsPerPage] = useState(5); // Number of milk sale entries per page
   const [isDeleting, setIsDeleting] = useState(false);
-  const [milkToDelete, setMilkToDelete] = useState<number | null>(null);
+  const [milkSaleToDelete, setMilkSaleToDelete] = useState<number | null>(null);
   const [user, setUser] = useState<{ username: string }>({
     username: "",
   });
@@ -30,9 +29,22 @@ const MilkSaleTable: React.FC = () => {
 
   const formClass = isArabic ? "rtl" : "ltr";
 
+  const filteredMilkSales = milkSaleRecords.filter(
+    (milkSale: { [s: string]: unknown } | ArrayLike<unknown>) =>
+      Object.values(milkSale).some((field) =>
+        field.toString().toLowerCase().includes(searchTerm.toLowerCase())
+      )
+  );
+  useEffect(() => {
+    const date = new Date();
+    const formattedDate = date.toLocaleDateString(); // Adjust the date format as needed
+    setCurrentDate(formattedDate);
+  }, []);
+
   const [formData, setFormData] = useState({
     accountNo: "",
     supplier: "",
+    userId: "",
     name: "",
     contact: "",
     email: "",
@@ -44,22 +56,10 @@ const MilkSaleTable: React.FC = () => {
     paid: "",
     date: "",
     soldBy: "",
-    invoice: "generateRandomInvoice",
+    invoice: ""
   });
-  const filteredMilkSales = milkSales.filter(
-    (milkSale: { [s: string]: unknown } | ArrayLike<unknown>) =>
-      Object.values(milkSale).some((field) =>
-        field.toString().toLowerCase().includes(searchTerm.toLowerCase())
-      )
-  );
 
-  useEffect(() => {
-    const date = new Date();
-    const formattedDate = date.toLocaleDateString(); // Adjust the date format as needed
-    setCurrentDate(formattedDate);
-  }, []);
-
-
+  
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -68,7 +68,7 @@ const MilkSaleTable: React.FC = () => {
           const userData = JSON.parse(storedUser);
           const { username } = userData;
           setUser({ username: username }); // Corrected to set 'username' field
-          setFormData(prevFormData => ({ ...prevFormData, soldBy: username })); // Update AddedBy field in formData
+          setFormData(prevFormData => ({ ...prevFormData, soldBy: username })); // Update soldBy field in formData
           console.log("Username fetched successfully:", username);
         } else {
           console.error("No user data found in local storage");
@@ -101,7 +101,7 @@ const MilkSaleTable: React.FC = () => {
 
   const indexOfLastMilkSale = currentPage * itemsPerPage;
   const indexOfFirstMilkSale = indexOfLastMilkSale - itemsPerPage;
-  const currentMilkSales = sortedMilkSales.slice(indexOfFirstMilkSale, indexOfLastMilkSale);
+  const currentMilkSale = sortedMilkSales.slice(indexOfFirstMilkSale, indexOfLastMilkSale);
 
   // Pagination end
 
@@ -128,7 +128,7 @@ const MilkSaleTable: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     setIsDeleting(true);
     try {
       await deleteMilkSaleRecord(id);
@@ -151,24 +151,23 @@ const MilkSaleTable: React.FC = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="p-2 rounded border border-gray-300 ml-2"
           />
-
           <Link
-            to="/add-milk-sale "
+            to="/add-milk-sale"
             className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary ml-2"
           >
-            {translate("collectnew")}
+            {translate("addMilkSale")}
           </Link>
         </div>
       </div>
-      <h1 className="text-xl font-bold mb-4 mr-4">{translate("milksaletable")}</h1>
+      <h1 className="text-xl font-bold mb-4">{translate("milkSaleTable")}</h1>
       <MilkSaleList
-        currentMilkSales={currentMilkSales}
+        currentMilkSales={currentMilkSale}
         handleSort={handleSort}
         sortIcon={sortIcon}
         handleDeleteConfirmation={handleDeleteConfirmation}
         translate={translate}
         formClass={formClass}
-        soldByUser={formData.soldBy} // Pass the AddedBy field as prop
+        SoldByUser={formData.soldBy} // Pass the soldBy field as prop
       />
       {/* Pagination */}
       <Pagination

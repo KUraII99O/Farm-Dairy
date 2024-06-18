@@ -1,8 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 
-export interface MilkSales {
-  id: number;
+export interface MilkSaleRecord {
+  id: string;
   Date: string;
+  userId: string;
   AccountNo: string;
   StallNo: string;
   AnimalID: string;
@@ -11,8 +12,7 @@ export interface MilkSales {
   Price: number;
   Total: number;
   CollectedFrom: string;
-  AddedBy: string;
-  invoice: string;
+  addedBy: string;
 }
 
 const MilkSaleService = {
@@ -22,7 +22,7 @@ const MilkSaleService = {
   deleteMilkSaleRecord
 };
 
-async function fetchMilkSaleRecords(): Promise<MilkSales[]> {
+async function fetchMilkSaleRecords(): Promise<MilkSaleRecord[]> {
   const loggedInUser = localStorage.getItem('loggedInUser');
   if (!loggedInUser) {
     throw new Error("User not logged in");
@@ -34,11 +34,11 @@ async function fetchMilkSaleRecords(): Promise<MilkSales[]> {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/milksale?userId=' + user.id);
+    const response = await fetch('http://localhost:3000/milksales?userId=' + user.id);
     if (!response.ok) {
       throw new Error('Failed to fetch milk sale records data');
     }
-    const milkSaleRecordsData: MilkSales[] = await response.json();
+    const milkSaleRecordsData: MilkSaleRecord[] = await response.json();
     return milkSaleRecordsData;
   } catch (error) {
     console.error('Error fetching milk sale records data:', error.message);
@@ -46,7 +46,7 @@ async function fetchMilkSaleRecords(): Promise<MilkSales[]> {
   }
 }
 
-async function addMilkSaleRecord(newMilkSaleRecord: Omit<MilkSales, 'id'>): Promise<MilkSales> {
+async function addMilkSaleRecord(newMilkSaleRecord: Omit<MilkSaleRecord, 'id' | 'userId'>): Promise<MilkSaleRecord> {
   const loggedInUser = localStorage.getItem('loggedInUser');
   if (!loggedInUser) {
     throw new Error("User not logged in or user data not found");
@@ -58,9 +58,9 @@ async function addMilkSaleRecord(newMilkSaleRecord: Omit<MilkSales, 'id'>): Prom
   }
 
   try {
-    const milkSaleRecordWithId: MilkSales = { id: uuidv4(), AddedBy: user.id, ...newMilkSaleRecord };
+    const milkSaleRecordWithId: MilkSaleRecord = { id: uuidv4(), userId: user.id, ...newMilkSaleRecord };
 
-    const response = await fetch('http://localhost:3000/milksale', {
+    const response = await fetch('http://localhost:3000/milksales', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -79,7 +79,7 @@ async function addMilkSaleRecord(newMilkSaleRecord: Omit<MilkSales, 'id'>): Prom
   }
 }
 
-async function editMilkSaleRecord(id: number, updatedMilkSaleRecord: Omit<MilkSales, 'id'>): Promise<void> {
+async function editMilkSaleRecord(id: string, updatedMilkSaleRecord: Omit<MilkSaleRecord, 'id' | 'userId'>): Promise<void> {
   const loggedInUser = localStorage.getItem('loggedInUser');
   if (!loggedInUser) {
     throw new Error("User not logged in");
@@ -91,12 +91,12 @@ async function editMilkSaleRecord(id: number, updatedMilkSaleRecord: Omit<MilkSa
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/milksale/${id}`, {
+    const response = await fetch(`http://localhost:3000/milksales/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(updatedMilkSaleRecord),
+      body: JSON.stringify({ ...updatedMilkSaleRecord, userId: user.id }),
     });
     if (!response.ok) {
       throw new Error('Failed to update milk sale record');
@@ -107,14 +107,19 @@ async function editMilkSaleRecord(id: number, updatedMilkSaleRecord: Omit<MilkSa
   }
 }
 
-async function deleteMilkSaleRecord(id: number): Promise<void> {
+async function deleteMilkSaleRecord(id: string): Promise<void> {
   const loggedInUser = localStorage.getItem('loggedInUser');
   if (!loggedInUser) {
     throw new Error("User not logged in");
   }
 
+  const user = JSON.parse(loggedInUser);
+  if (!user || !user.id) {
+    throw new Error("User ID not found");
+  }
+
   try {
-    const response = await fetch(`http://localhost:3000/milksale/${id}`, {
+    const response = await fetch(`http://localhost:3000/milksales/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) {
@@ -126,4 +131,4 @@ async function deleteMilkSaleRecord(id: number): Promise<void> {
   }
 }
 
-export { MilkSaleService, MilkSales };
+export { MilkSaleService, MilkSaleRecord };

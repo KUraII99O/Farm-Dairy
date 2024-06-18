@@ -1,133 +1,81 @@
-import React, { createContext, useState, useContext,useEffect } from 'react';
-import { toast } from 'react-toastify';
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { VaccineMonitor, VaccineService } from "../VaccineMonitorService";
 
-export const VaccineMonitorContext = createContext<any>(null);
+export const ManageVaccineMonitorContext = createContext<any>(null);
 
-
-interface VaccineMonitor {
-  id: number;
-  date: string;
-  StallNo: string;
-  CowNumber: 'string';
-  note: string;
-  reportedBy: string;
-  ServiceName: string;
-  Remarks: string;
-  GivenTime: string;
-}
-
-export const VaccineMonitorProvider = ({ children }) => {
-  const [vaccineMonitors, setVaccineMonitors] = useState<VaccineMonitor[]>([]);
-
+export const ManageVaccineMonitorProvider: React.FC = ({ children }) => {
+  const [vaccineRecords, setVaccineRecords] = useState<VaccineMonitor[]>([]);
 
   useEffect(() => {
-    const fetchVaccineMonitor = async () => {
+    const fetchVaccineRecordsData = async () => {
       try {
-        const response = await fetch('http://localhost:3000/Vaccinemonitors');
-        if (!response.ok) {
-          throw new Error('Failed to fetch vaccine Monitors data');
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (!loggedInUser) {
+          throw new Error("User not logged in or user data not found");
         }
-        const data = await response.json();
-        setVaccineMonitors(data);
+        const user = JSON.parse(loggedInUser);
+        console.log("User ID:", user.id); // Log user ID
+  
+        const data = await VaccineService.fetchVaccineRecords();
+        console.log("Vaccine records data:", data); // Log vaccine records data
+        setVaccineRecords(data || []);
       } catch (error) {
-        console.error('Error fetching vaccine Monitors data:', error.message);
+        console.error("Error fetching vaccine records:", error);
       }
     };
-
-    fetchVaccineMonitor();
+  
+    fetchVaccineRecordsData();
   }, []);
 
-
-  const addVaccineMonitor = async (newVaccineMonitor: Omit<VaccineMonitor, 'id'>) => {
+  const addVaccineRecord = async (newVaccineRecord: Omit<VaccineMonitor, 'id'>) => {
+    console.log("Adding vaccine record:", newVaccineRecord);
     try {
-      const id = vaccineMonitors.length + 1;
-      const VaccineMonitorWithId: VaccineMonitor = { id, ...newVaccineMonitor };
-
-      const response = await fetch('http://localhost:3000/VaccineMonitors', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(VaccineMonitorWithId),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to add routine Monitor');
-      }
-
-      setVaccineMonitors([...vaccineMonitors, VaccineMonitorWithId]);
-      toast.success('Routine Monitor added successfully');
+      const data = await VaccineService.addVaccineRecord(newVaccineRecord);
+      console.log("Vaccine record added successfully:", data);
+      setVaccineRecords(prevVaccineRecords => [...prevVaccineRecords, data]);
     } catch (error) {
-      console.error('Error:', error.message);
-      toast.error('Failed to add Routine Monitor');
+      console.error("Error adding vaccine record:", error);
     }
   };
 
-  const editVaccineMonitor = async (id: number, updatedVaccineMonitor: Partial<VaccineMonitor>) => {
+  const editVaccineRecord = async (id: string, updatedVaccineRecord: Omit<VaccineMonitor, 'id'>) => {
     try {
-      const response = await fetch(`http://localhost:3000/VaccineMonitors/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedVaccineMonitor),
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to update vaccine monitor');
-      }
-  
-      const updatedVaccineMonitors = vaccineMonitors.map(item =>
-        item.id === id ? { ...item, ...updatedVaccineMonitor } : item
+      await VaccineService.editVaccineRecord(id, updatedVaccineRecord);
+      setVaccineRecords(prevRecords =>
+        prevRecords.map(record => (record.id === id ? { ...record, ...updatedVaccineRecord } : record))
       );
-      setVaccineMonitors(updatedVaccineMonitors);
-      toast.success('Vaccine monitor updated successfully');
     } catch (error) {
-      console.error('Error:', error.message);
-      toast.error('Failed to update vaccine monitor');
+      console.error("Error editing vaccine record:", error);
     }
   };
-  
-  const deleteVaccineMonitor = async (id: number) => {
-    try {
-      const response = await fetch(`http://localhost:3000/VaccineMonitors/${id}`, {
-        method: 'DELETE',
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to delete vaccine monitor');
-      }
-  
-      const updatedVaccineMonitors = vaccineMonitors.filter(vaccineMonitor => vaccineMonitor.id !== id);
-      setVaccineMonitors(updatedVaccineMonitors);
-      toast.success('Vaccine monitor deleted successfully');
-    } catch (error) {
-      console.error('Error:', error.message);
-      toast.error('Failed to delete vaccine monitor');
-    }
-  };
-  
 
-  const getVaccineMonitorById = (id) => {
-    // Find and return the vaccine monitor with the given ID
-    return vaccineMonitors.find((vaccineMonitor) => vaccineMonitor.id === id);
+  const deleteVaccineRecord = async (id: string) => {
+    try {
+      await VaccineService.deleteVaccineRecord(id);
+      setVaccineRecords(prevVaccineRecords => prevVaccineRecords.filter(record => record.id !== id));
+    } catch (error) {
+      console.error("Error deleting vaccine record:", error);
+    }
   };
 
   const value = {
-    vaccineMonitors,
-    addVaccineMonitor,
-    editVaccineMonitor,
-    deleteVaccineMonitor,
-    getVaccineMonitorById,
+    vaccineRecords,
+    addVaccineRecord,
+    editVaccineRecord,
+    deleteVaccineRecord
   };
 
-  return <VaccineMonitorContext.Provider value={value}>{children}</VaccineMonitorContext.Provider>;
+  return (
+    <ManageVaccineMonitorContext.Provider value={value}>
+      {children}
+    </ManageVaccineMonitorContext.Provider>
+  );
 };
 
-export const useVaccineMonitor = () => {
-  const context = useContext(VaccineMonitorContext);
+export const useManageVaccine = () => {
+  const context = useContext(ManageVaccineMonitorContext);
   if (!context) {
-    throw new Error('useVaccineMonitor must be used within a VaccineMonitorProvider');
+    throw new Error("useManageVaccine must be used within a ManageVaccineProvider");
   }
   return context;
-}
+};

@@ -89,20 +89,20 @@ const MilkSaleList = ({
           {currentMilkSales.map((sale) => (
             <Table.Row key={sale.id}>
               <Table.Cell>{sale.invoice}</Table.Cell>
-              <Table.Cell>{sale.AccountNo}</Table.Cell>
-              <Table.Cell>{sale.Name}</Table.Cell>
-              <Table.Cell>{sale.Contact}</Table.Cell>
-              <Table.Cell>{sale.Email}</Table.Cell>
-              <Table.Cell>{sale.Liter}</Table.Cell>
-              <Table.Cell>{sale.Price}</Table.Cell>
-              <Table.Cell>{sale.Total}</Table.Cell>
-              <Table.Cell>{sale.Paid}</Table.Cell>
-              <Table.Cell>{sale.Due}</Table.Cell>
+              <Table.Cell>{sale.accountNo}</Table.Cell>
+              <Table.Cell>{sale.name}</Table.Cell>
+              <Table.Cell>{sale.contact}</Table.Cell>
+              <Table.Cell>{sale.email}</Table.Cell>
+              <Table.Cell>{sale.litre}</Table.Cell>
+              <Table.Cell>{sale.price}</Table.Cell>
+              <Table.Cell>{sale.total}</Table.Cell>
+              <Table.Cell>{sale.paid}</Table.Cell>
+              <Table.Cell>{sale.due}</Table.Cell>
               <Table.Cell>{sale.soldBy}</Table.Cell>
               <Table.Cell>
                 <div className="flex items-center">
                   <Link
-                    to={`/edit-sale/${String(sale.id)}`}
+                    to={`/edit-milk-sale/${String(sale.id)}`}
                     className="text-blue-500 hover:underline flex items-center mr-2"
                   >
                     <BsPencil className="w-5 h-5 mr-1" />

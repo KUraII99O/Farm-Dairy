@@ -16,7 +16,7 @@ interface Props {
   };
 }
 
-const ItemDetailDrawer = ({ isOpen, onClose, routineMonitor  }) => {
+const ItemDetailDrawer: React.FC<Props> = ({ isOpen, onClose, routineMonitor }) => {
   const { translate } = useTranslation();
   const ref = useRef(null);
 
@@ -33,17 +33,15 @@ const ItemDetailDrawer = ({ isOpen, onClose, routineMonitor  }) => {
     };
   }, []);
 
+  if (!routineMonitor) return null;
+
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-70 z-40" >
-          <div className="fixed inset-0  z-50 flex justify-end ">
-
-            <div ref={ref}  className="w-full max-w-md bg-white shadow-lg p-6">
-
-            <h1 className=" inline-block text-xl font-bold mb-4">
-
-                
+        <div >
+          <div>
+            <div ref={ref} className="w-full max-w-md bg-white  p-6">
+              <h1 className="inline-block text-xl font-bold mb-4">
                 {translate("itemdetails")}
               </h1>
               <button
@@ -107,4 +105,3 @@ const ItemDetailDrawer = ({ isOpen, onClose, routineMonitor  }) => {
 };
 
 export default ItemDetailDrawer;
-

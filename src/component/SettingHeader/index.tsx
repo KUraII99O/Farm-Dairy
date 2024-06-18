@@ -2,26 +2,26 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const SettingHeader: React.FC = () => {
-    const location = useLocation();
-  
-    const isActive = (pathname: string) => {
-      return location.pathname === pathname;
-    };
-  
-    const getLinkStyles = (pathname: string) => {
-      const isActiveLink = isActive(pathname);
-      return `inline-flex items-center justify-center p-4 border-b-2 ${
-        isActiveLink
-          ? "border-b-2 text-secondary text-secondary	 dark:text-secondary	 dark:text-secondary	"
-          : "border-transparent hover:text-gray-600 hover:text-secondary	 dark:hover:text-gray-300 group"
-      } rounded-t-lg`;
-    };
-  
-    const getIconColor = (pathname: string) => {
-      return isActive(pathname)
-        ? "text-secondary	 dark:text-secondary	"
-        : "text-gray-400 dark:text-gray-500";
-    };
+  const location = useLocation();
+
+  const isActive = (pathname: string) => {
+    return location.pathname === pathname;
+  };
+
+  const getLinkStyles = (pathname: string) => {
+    const isActiveLink = isActive(pathname);
+    return `inline-flex items-center justify-center p-4 border-b-2 ${
+      isActiveLink
+        ? "border-b-2 text-secondary text-secondary	 dark:text-secondary	 dark:text-secondary	"
+        : "border-transparent hover:text-gray-600 hover:text-secondary	 dark:hover:text-gray-300 group"
+    } rounded-t-lg`;
+  };
+
+  const getIconColor = (pathname: string) => {
+    return isActive(pathname)
+      ? "text-secondary	 dark:text-secondary	"
+      : "text-gray-400 dark:text-gray-500";
+  };
 
   return (
     <div className="border-b text-secondary dark:text-secondary w-full">
@@ -65,13 +65,23 @@ const SettingHeader: React.FC = () => {
             >
               <path d="M5 11.424V1a1 1 0 1 0-2 0v10.424a3.228 3.228 0 0 0 0 6.152V19a1 1 0 1 0 2 0v-1.424a3.228 3.228 0 0 0 0-6.152ZM19.25 14.5A3.243 3.243 0 0 0 17 11.424V1a1 1 0 0 0-2 0v10.424a3.227 3.227 0 0 0 0 6.152V19a1 1 0 1 0 2 0v-1.424a3.243 3.243 0 0 0 2.25-3.076Zm-6-9A3.243 3.243 0 0 0 11 2.424V1a1 1 0 0 0-2 0v1.424a3.228 3.228 0 0 0 0 6.152V19a1 1 0 1 0 2 0V8.576A3.243 3.243 0 0 0 13.25 5.5Z" />
             </svg>
-            General 
+            Subscription
           </Link>
         </li>
-        <li>
-          <a className="inline-block p-4 text-gray-400 rounded-t-lg cursor-not-allowed dark:text-gray-500">
-            Disabled
-          </a>
+
+        <li className="me-2">
+          <Link to="/Invoices" className={getLinkStyles("/profile")}>
+            <svg
+              className={`w-4 h-4 me-2 ${getIconColor("/invoice")}`}
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path d="M19 2H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h8l6-6V4c0-1.1-.9-2-2-2zM14 2v6h6M8 14h8v2H8zm0-4h8v2H8zm0-4h4v2H8zm8.5 10.5l-1.41 1.41L14 16.83l-2.09 2.09L10.5 18.5 14 15l4.5 4.5z" />
+            </svg>
+            Invoice
+          </Link>
         </li>
       </ul>
     </div>

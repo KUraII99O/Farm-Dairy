@@ -1,128 +1,81 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { toast } from 'react-toastify';
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { RoutineMonitor, RoutineService } from "../RoutineMonitorService";
 
-export const RoutineMonitorContext = createContext<any>(null);
+export const ManageRoutineContext = createContext<any>(null);
 
-interface RoutineMonitor {
-  id: number;
-  date: string;
-  StallNo: string;
-  healthStatus: string;
-  note: number;
-  reportedBy: string;
-  quantity: number;
-  ServiceName: string;
-  Result: string;
-  MonitoringTime: string;
-}
-
-export const RoutineMonitorProvider: React.FC = ({ children }) => {
-  const [routineMonitors, setRoutineMonitors] = useState<RoutineMonitor[]>([]);
+export const ManageRoutineProvider: React.FC = ({ children }) => {
+  const [routineRecords, setRoutineRecords] = useState<RoutineMonitor[]>([]);
 
   useEffect(() => {
-    const fetchRoutineMonitors = async () => {
+    const fetchRoutineRecordsData = async () => {
       try {
-        const response = await fetch('http://localhost:3000/routineMonitors');
-        if (!response.ok) {
-          throw new Error('Failed to fetch routine Monitors data');
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (!loggedInUser) {
+          throw new Error("User not logged in or user data not found");
         }
-        const data = await response.json();
-        setRoutineMonitors(data);
+        const user = JSON.parse(loggedInUser);
+        console.log("User ID:", user.id); // Log user ID
+  
+        const data = await RoutineService.fetchRoutineRecords();
+        console.log("Routine records data:", data); // Log routine records data
+        setRoutineRecords(data || []);
       } catch (error) {
-        console.error('Error fetching routine Monitors data:', error.message);
+        console.error("Error fetching routine records:", error);
       }
     };
-
-    fetchRoutineMonitors();
+  
+    fetchRoutineRecordsData();
   }, []);
 
-  const addRoutineMonitor = async (newRoutineMonitor: Omit<RoutineMonitor, 'id'>) => {
+  const addRoutineRecord = async (newRoutineRecord: Omit<RoutineMonitor, 'id'>) => {
+    console.log("Adding routine record:", newRoutineRecord);
     try {
-      const id = routineMonitors.length + 1;
-      const routineMonitorWithId: RoutineMonitor = { id, ...newRoutineMonitor };
-
-      const response = await fetch('http://localhost:3000/routineMonitors', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(routineMonitorWithId),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to add routine Monitor');
-      }
-
-      setRoutineMonitors([...routineMonitors, routineMonitorWithId]);
-      toast.success('Routine Monitor added successfully');
+      const data = await RoutineService.addRoutineRecord(newRoutineRecord);
+      console.log("Routine record added successfully:", data);
+      setRoutineRecords(prevRoutineRecords => [...prevRoutineRecords, data]);
     } catch (error) {
-      console.error('Error:', error.message);
-      toast.error('Failed to add Routine Monitor');
+      console.error("Error adding routine record:", error);
     }
   };
 
-  const editRoutineMonitor = async (id: number, updatedRoutineMonitor: Omit<RoutineMonitor, "id">) => {
+  const editRoutineRecord = async (id: string, updatedRoutineRecord: Omit<RoutineMonitor, 'id'>) => {
     try {
-      const response = await fetch(`http://localhost:3000/RoutineMonitors/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedRoutineMonitor),
-      });
-  
-      if (!response.ok) {
-        throw new Error("Failed to update cow Feed record");
-      }
-  
-      setRoutineMonitors((prevRoutineMonitors) =>
-        prevRoutineMonitors.map((RoutineMonitor) =>
-          RoutineMonitor.id === id ? { ...RoutineMonitor, ...updatedRoutineMonitor } : RoutineMonitor
-        )
+      await RoutineService.editRoutineRecord(id, updatedRoutineRecord);
+      setRoutineRecords(prevRecords =>
+        prevRecords.map(record => (record.id === id ? { ...record, ...updatedRoutineRecord } : record))
       );
-  
-      toast.success(" RoutineMonitor updated successfully");
     } catch (error) {
-      console.error("Error:", error.message);
-      toast.error("Failed to update  Routine Monitor");
+      console.error("Error editing routine record:", error);
     }
   };
 
-  const deleteRoutineMonitor = async (id: number) => {
+  const deleteRoutineRecord = async (id: string) => {
     try {
-      await fetch(`http://localhost:3000/routineMonitors/${id}`, {
-        method: 'DELETE',
-      });
-
-      const updatedRoutineMonitors = routineMonitors.filter(routineMonitor => routineMonitor.id !== id);
-      setRoutineMonitors(updatedRoutineMonitors);
-      toast.success('Routine Monitor deleted successfully');
+      await RoutineService.deleteRoutineRecord(id);
+      setRoutineRecords(prevRoutineRecords => prevRoutineRecords.filter(record => record.id !== id));
     } catch (error) {
-      console.error('Error:', error.message);
-      toast.error('Failed to delete Routine Monitor');
+      console.error("Error deleting routine record:", error);
     }
-  };
-
-  const getRoutineMonitorById = (id: number) => {
-    // Find and return the routine monitor with the given ID
-    return routineMonitors.find(routineMonitor => routineMonitor.id === id);
   };
 
   const value = {
-    routineMonitors,
-    addRoutineMonitor,
-    editRoutineMonitor,
-    deleteRoutineMonitor,
-    getRoutineMonitorById,
+    routineRecords,
+    addRoutineRecord,
+    editRoutineRecord,
+    deleteRoutineRecord
   };
 
-  return <RoutineMonitorContext.Provider value={value}>{children}</RoutineMonitorContext.Provider>;
+  return (
+    <ManageRoutineContext.Provider value={value}>
+      {children}
+    </ManageRoutineContext.Provider>
+  );
 };
 
-export const useRoutineMonitor = () => {
-  const context = useContext(RoutineMonitorContext);
+export const useManageRoutine = () => {
+  const context = useContext(ManageRoutineContext);
   if (!context) {
-    throw new Error('useRoutineMonitor must be used within a RoutineMonitorProvider');
+    throw new Error("useManageRoutine must be used within a ManageRoutineProvider");
   }
   return context;
 };
