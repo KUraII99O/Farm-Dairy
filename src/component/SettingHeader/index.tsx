@@ -1,33 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import Invoices from "../Invoices";
+import ProfileISettings from "../ProfileISettings";
+import Subscription from "../Subscription";
 
 const SettingHeader: React.FC = () => {
   const location = useLocation();
+  const [activeSection, setActiveSection] = useState<string>("");
 
   const isActive = (pathname: string) => {
-    return location.pathname === pathname;
+    return location.pathname === pathname || activeSection === pathname;
   };
 
   const getLinkStyles = (pathname: string) => {
     const isActiveLink = isActive(pathname);
     return `inline-flex items-center justify-center p-4 border-b-2 ${
       isActiveLink
-        ? "border-b-2 text-secondary text-secondary	 dark:text-secondary	 dark:text-secondary	"
-        : "border-transparent hover:text-gray-600 hover:text-secondary	 dark:hover:text-gray-300 group"
+        ? "border-b-2 text-secondary dark:text-secondary"
+        : "border-transparent hover:text-gray-600 dark:hover:text-gray-300 group"
     } rounded-t-lg`;
   };
 
   const getIconColor = (pathname: string) => {
     return isActive(pathname)
-      ? "text-secondary	 dark:text-secondary	"
+      ? "text-secondary dark:text-secondary"
       : "text-gray-400 dark:text-gray-500";
+  };
+
+  const handleSectionClick = (section: string) => {
+    setActiveSection(section);
   };
 
   return (
     <div className="border-b text-secondary dark:text-secondary w-full">
-      <ul className="flex flex-wrap -mb-px text-sm font-medium text-gray-500 dark:text-gray-400 ">
+      <ul className="flex flex-wrap -mb-px text-sm font-medium text-gray-500 dark:text-gray-400">
         <li className="me-2">
-          <Link to="/profile" className={getLinkStyles("/profile")}>
+          <Link
+            to="#"
+            onClick={() => handleSectionClick("/profile")}
+            className={getLinkStyles("/profile")}
+          >
             <svg
               className={`w-4 h-4 me-2 ${getIconColor("/profile")}`}
               aria-hidden="true"
@@ -41,7 +53,11 @@ const SettingHeader: React.FC = () => {
           </Link>
         </li>
         <li className="me-2">
-          <Link to="/dashboard" className={getLinkStyles("/dashboard")}>
+          <Link
+            to="#"
+            onClick={() => handleSectionClick("/dashboard")}
+            className={getLinkStyles("/dashboard")}
+          >
             <svg
               className={`w-4 h-4 me-2 ${getIconColor("/dashboard")}`}
               aria-hidden="true"
@@ -55,7 +71,11 @@ const SettingHeader: React.FC = () => {
           </Link>
         </li>
         <li className="me-2">
-          <Link to="/settings" className={getLinkStyles("/settings")}>
+          <Link
+            to="#"
+            onClick={() => handleSectionClick("/settings")}
+            className={getLinkStyles("/settings")}
+          >
             <svg
               className={`w-4 h-4 me-2 ${getIconColor("/settings")}`}
               aria-hidden="true"
@@ -68,9 +88,12 @@ const SettingHeader: React.FC = () => {
             Subscription
           </Link>
         </li>
-
         <li className="me-2">
-          <Link to="/Invoices" className={getLinkStyles("/profile")}>
+          <a
+            onClick={() => handleSectionClick("/invoice")}
+            className={getLinkStyles("/invoice")}
+            style={{ cursor: 'pointer' }}
+          >
             <svg
               className={`w-4 h-4 me-2 ${getIconColor("/invoice")}`}
               aria-hidden="true"
@@ -81,9 +104,13 @@ const SettingHeader: React.FC = () => {
               <path d="M19 2H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h8l6-6V4c0-1.1-.9-2-2-2zM14 2v6h6M8 14h8v2H8zm0-4h8v2H8zm0-4h4v2H8zm8.5 10.5l-1.41 1.41L14 16.83l-2.09 2.09L10.5 18.5 14 15l4.5 4.5z" />
             </svg>
             Invoice
-          </Link>
+          </a>
         </li>
       </ul>
+      {activeSection === "/profile" && <ProfileISettings />}
+      {activeSection === "/dashboard" && <Dashboard />}
+      {activeSection === "/settings" && <Subscription />}
+      {activeSection === "/invoice" && <Invoices />}
     </div>
   );
 };
