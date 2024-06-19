@@ -73,11 +73,11 @@ const SettingHeader: React.FC = () => {
         <li className="me-2">
           <Link
             to="#"
-            onClick={() => handleSectionClick("/settings")}
-            className={getLinkStyles("/settings")}
+            onClick={() => handleSectionClick("/Subscription")}
+            className={getLinkStyles("/Subscription")}
           >
             <svg
-              className={`w-4 h-4 me-2 ${getIconColor("/settings")}`}
+              className={`w-4 h-4 me-2 ${getIconColor("/Subscription")}`}
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="currentColor"
@@ -109,7 +109,7 @@ const SettingHeader: React.FC = () => {
       </ul>
       {activeSection === "/profile" && <ProfileISettings />}
       {activeSection === "/dashboard" && <Dashboard />}
-      {activeSection === "/settings" && <Subscription />}
+      {activeSection === "/Subscription" && <Subscription />}
       {activeSection === "/invoice" && <Invoices />}
     </div>
   );

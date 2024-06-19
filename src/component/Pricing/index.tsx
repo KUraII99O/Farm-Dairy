@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+// Define the interface for the subscription plan
 interface SubscriptionPlan {
-  id: string;
+  id: number;
   name: string;
   price: string;
-  features: string;
+  features: {
+    description: string;
+    limitations: {
+      cows: number;
+      usageHours: number;
+    };
+  };
 }
 
 const Pricing: React.FC = () => {
@@ -20,7 +27,7 @@ const Pricing: React.FC = () => {
 
   const fetchPlans = async () => {
     try {
-      const response = await fetch('http://localhost:3000/plans');
+      const response = await fetch('http://localhost:3000/plans'); // Replace with your backend API endpoint
       if (!response.ok) {
         throw new Error('Failed to fetch plans');
       }
@@ -68,9 +75,7 @@ const Pricing: React.FC = () => {
                 >
                   <div className="mb-8">
                     <h3 className="text-2xl font-semibold text-white">{plan.name}</h3>
-                    <p className="mt-4 text-white">
-                      {plan.features}
-                    </p>
+                    <p className="mt-4 text-white">{plan.features.description}</p>
                   </div>
                   <div className="mb-8">
                     <span className="text-3xl font-extrabold text-white">
@@ -79,25 +84,40 @@ const Pricing: React.FC = () => {
                     <span className="text-xl font-medium text-white">/mo</span>
                   </div>
                   <ul className="mb-8 space-y-4 text-white">
-                    {plan.features.split(',').map((feature, index) => (
-                      <li key={index} className="flex items-center">
-                        <svg
-                          className="h-6 w-6 text-white mr-2"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                        <span>{feature.trim()}</span>
-                      </li>
-                    ))}
+                    <li className="flex items-center">
+                      <svg
+                        className="h-6 w-6 text-white mr-2"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                      <span>Number of cows: {plan.features.limitations.cows}</span>
+                    </li>
+                    <li className="flex items-center">
+                      <svg
+                        className="h-6 w-6 text-white mr-2"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                      <span>Usage hours: {plan.features.limitations.usageHours} hours</span>
+                    </li>
                   </ul>
                   <button
                     onClick={() => handleSignUp(plan)}
