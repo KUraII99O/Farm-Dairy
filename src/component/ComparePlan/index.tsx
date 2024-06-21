@@ -68,7 +68,7 @@ const CompareDrawer: React.FC<CompareDrawerProps> = ({ plan, onClose, allPlans }
           >
             <option value="">Select a plan...</option>
             {allPlans.map((p) => (
-              <option key={p.id} value={p.id}>
+              p.id !== plan?.id && <option key={p.id} value={p.id}>
                 {p.name}
               </option>
             ))}

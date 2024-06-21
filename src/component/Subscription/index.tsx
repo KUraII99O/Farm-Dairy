@@ -20,11 +20,11 @@ const SubscriptionDetails: React.FC = () => {
   const [allPlans, setAllPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [compareOpen, setCompareOpen] = useState(false);
-  const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const [isCompareOpen, setIsCompareOpen] = useState(false);
+  const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
 
   useEffect(() => {
-    const fetchPlan = () => {
+    const fetchPlan = async () => {
       try {
         const storedUser = localStorage.getItem('loggedInUser');
         if (storedUser) {
@@ -47,10 +47,13 @@ const SubscriptionDetails: React.FC = () => {
     const fetchAllPlans = async () => {
       try {
         const response = await fetch('http://localhost:3000/plans');
+        if (!response.ok) {
+          throw new Error('Failed to fetch plans');
+        }
         const data = await response.json();
         setAllPlans(data);
       } catch (err) {
-        console.error('Failed to fetch plans:', err);
+        setError('Failed to fetch all plans');
       }
     };
 
@@ -58,11 +61,51 @@ const SubscriptionDetails: React.FC = () => {
     fetchAllPlans();
   }, []);
 
-  const toggleCompareDrawer = () => setCompareOpen(!compareOpen);
-  const toggleUpgradeDrawer = () => setUpgradeOpen(!upgradeOpen);
-
-  const handleUpgrade = (selectedPlanId: number) => {
-    alert(`Upgrade to plan with ID: ${selectedPlanId}`);
+  const handleUpgrade = async (selectedPlanId: number) => {
+    try {
+      setLoading(true);
+  
+      const storedUser = localStorage.getItem('loggedInUser');
+      if (!storedUser) {
+        setError('No logged-in user found');
+        setLoading(false);
+        return;
+      }
+  
+      const loggedInUser = JSON.parse(storedUser);
+      const loggedInUserId = loggedInUser.id; // Adjust to how your user ID is stored
+  
+      const response = await fetch(`http://localhost:3000/upgrade/${loggedInUserId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ planId: selectedPlanId }),
+      });
+  
+      if (response.ok) {
+        const updatedPlan = allPlans.find(p => p.id === selectedPlanId);
+        if (updatedPlan) {
+          setPlan(updatedPlan); // Update local state with the new plan
+          loggedInUser.plan = updatedPlan; // Optionally update logged-in user's plan
+          localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser)); // Update localStorage
+        }
+        setIsUpgradeOpen(false); // Close upgrade drawer
+      } else {
+        const errorMessage = await response.text();
+        if (response.status === 404 && errorMessage === 'User not found') {
+          setError('User not found. Please log in again.');
+        } else {
+          setError(`Failed to upgrade plan: ${errorMessage}`);
+        }
+        console.error('Upgrade request failed:', response.status, errorMessage);
+      }
+    } catch (error) {
+      setError('Failed to upgrade plan. Please try again later.');
+      console.error('Error upgrading plan:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading) return <div className="text-center text-gray-600">Loading...</div>;
@@ -72,27 +115,34 @@ const SubscriptionDetails: React.FC = () => {
     <div className="mx-auto mt-10 p-6">
       <h1 className="text-3xl font-bold text-green-500 mb-4">Your Subscription Plan</h1>
       <p className="text-lg text-black mb-4">Plan Name: <strong>{plan?.name}</strong></p>
-      <div className="text-left mb-4 text-black">
-        <ul className="list-disc pl-4">
-          <li>Description: {plan?.features.description}</li>
-          <li>Number of cows: {plan?.features.limitations.cows}</li>
-          <li>Usage hours: {plan?.features.limitations.usageHours} hours</li>
-        </ul>
-      </div>
+      
       <button
-        onClick={toggleCompareDrawer}
+        onClick={() => setIsCompareOpen(true)}
         className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary transition duration-200 mr-4"
       >
         Compare
       </button>
       <button
-        onClick={toggleUpgradeDrawer}
+        onClick={() => setIsUpgradeOpen(true)}
         className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary transition duration-200 mr-4"
       >
-        Upgrade Plan
+        Upgrade
       </button>
-      {compareOpen && <CompareDrawer plan={plan} onClose={toggleCompareDrawer} allPlans={allPlans} />}
-      {upgradeOpen && <UpgradeDrawer plan={plan} onClose={toggleUpgradeDrawer} allPlans={allPlans} onUpgrade={handleUpgrade} />}
+      {isCompareOpen && (
+        <CompareDrawer
+          plan={plan}
+          onClose={() => setIsCompareOpen(false)}
+          allPlans={allPlans}
+        />
+      )}
+      {isUpgradeOpen && (
+        <UpgradeDrawer
+          plan={plan}
+          onClose={() => setIsUpgradeOpen(false)}
+          allPlans={allPlans}
+          onUpgrade={handleUpgrade}
+        />
+      )}
     </div>
   );
 };

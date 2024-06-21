@@ -171,7 +171,7 @@ export const TranslationProvider: React.FC = ({ children }) => {
       save: "Save",
       milksaletable: "Milk Sale Table",
       collectnew: "Collect new",
-      invocie: "Invoice",
+      invoice: "Invoice",
       contact: "Contact",
       paid: "Paid",
       due: "Due",
@@ -289,7 +289,8 @@ export const TranslationProvider: React.FC = ({ children }) => {
       AtGescowwerededicatedtomodernizingfarmmanagementOurtalentedteamhascraftedacomprehensivesolutiontostreamlinecowmanagementpregnancytrackingandstafforganization:
         "At Gescow, we're dedicated to modernizing farm management. Our talented team has crafted a comprehensive solution to streamline cow management, pregnancy tracking, and staff organization",
      welcometo:" Welcome to ",
-     ElevatingFarmManagement:"Elevating Farm Management"
+     ElevatingFarmManagement:"Elevating Farm Management",
+     subscription:"Subscription",
     },
     fr: {
       adminDashboard: "Tableau de bord de l'administrateur",
@@ -458,7 +459,7 @@ export const TranslationProvider: React.FC = ({ children }) => {
       save: "Enregistrer",
       milksaletable: "Tableau des ventes de lait",
       collectnew: "collecter de nouveaux",
-      invocie: "Facture",
+      invoice: "Facture",
       contact: "Contact",
       paid: "Payé",
       due: "Dû",
@@ -579,6 +580,8 @@ export const TranslationProvider: React.FC = ({ children }) => {
         "Chez Gescow, nous nous consacrons à la modernisation de la gestion agricole. Notre équipe talentueuse a élaboré une solution complète pour rationaliser la gestion des vaches, le suivi de la grossesse et l'organisation du personnel",
         ElevatingFarmManagement:"Élever la Gestion Agricole",
         welcometo:"Bienvenue à",
+        subscription:"Abonnement",
+
     },
     ar: {
       adminDashboard: "لوحة القيادة للمشرف",
@@ -744,7 +747,7 @@ export const TranslationProvider: React.FC = ({ children }) => {
       save: "حفظ",
       milksaletable: "جدول بيع الحليب",
       collectnew: "جمع جديد",
-      invocie: "فاتورة",
+      invoice: "فاتورة",
       contact: "اتصال ",
       paid: "مدفوع ",
       due: "مستحق ",
@@ -864,7 +867,8 @@ export const TranslationProvider: React.FC = ({ children }) => {
       welcometo: " مرحبًا بك في ",
       AtGescowwerededicatedtomodernizingfarmmanagementOurtalentedteamhascraftedacomprehensivesolutiontostreamlinecowmanagementpregnancytrackingandstafforganization:
         "في جيسكو، نكرس جهودنا لتحديث إدارة المزارع. فريقنا الموهوب قد وضع حلاً شاملاً لتبسيط إدارة الأبقار، وتتبع الحمل، وتنظيم العمال",
-        ElevatingFarmManagement:"رفع إدارة المزارع "
+        ElevatingFarmManagement:"رفع إدارة المزارع ",
+        subscription:"اشتراك ",
 
     },
   };

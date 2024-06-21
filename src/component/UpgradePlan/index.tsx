@@ -17,11 +17,13 @@ interface UpgradeDrawerProps {
   plan: Plan | null;
   onClose: () => void;
   allPlans: Plan[];
-  onUpgrade: (selectedPlanId: number) => void;
+  onUpgrade: (selectedPlanId: number) => void; // Callback to handle upgrade
 }
 
 const UpgradeDrawer: React.FC<UpgradeDrawerProps> = ({ plan, onClose, allPlans, onUpgrade }) => {
   const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handlePlanSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = parseInt(e.target.value, 10);
@@ -30,7 +32,17 @@ const UpgradeDrawer: React.FC<UpgradeDrawerProps> = ({ plan, onClose, allPlans, 
 
   const handleUpgrade = () => {
     if (selectedPlanId !== null) {
-      onUpgrade(selectedPlanId);
+      setIsLoading(true);
+      try {
+        // Perform any necessary client-side operations (e.g., updating state)
+        onUpgrade(selectedPlanId); // Trigger the upgrade action (e.g., state change)
+        setIsLoading(false);
+        onClose(); // Close the drawer or handle UI state change
+      } catch (error) {
+        setIsLoading(false);
+        setError('Failed to upgrade plan. Please try again later.');
+        console.error('Error upgrading plan:', error);
+      }
     }
   };
 
@@ -66,7 +78,7 @@ const UpgradeDrawer: React.FC<UpgradeDrawerProps> = ({ plan, onClose, allPlans, 
           >
             <option value="">Select a plan...</option>
             {allPlans.map((p) => (
-              <option key={p.id} value={p.id}>
+              p.id !== plan?.id && <option key={p.id} value={p.id}>
                 {p.name}
               </option>
             ))}
@@ -85,14 +97,20 @@ const UpgradeDrawer: React.FC<UpgradeDrawerProps> = ({ plan, onClose, allPlans, 
             </ul>
           </div>
         )}
-        <div className="flex justify-end">
-          <button
-            onClick={handleUpgrade}
-            className="bg-secondary text-white font-bold py-2 px-4 rounded-lg hover:bg-primary transition duration-200"
-          >
-            Upgrade to Selected Plan
-          </button>
-        </div>
+        {isLoading ? (
+          <p className="text-center my-4">Loading...</p>
+        ) : (
+          <div className="flex justify-end">
+            <button
+              onClick={handleUpgrade}
+              className="bg-secondary text-white font-bold py-2 px-4 rounded-lg hover:bg-primary transition duration-200"
+              disabled={!selectedPlanId}
+            >
+              Upgrade to Selected Plan
+            </button>
+          </div>
+        )}
+        {error && <p className="text-red-500 mt-2">{error}</p>}
       </div>
     </div>
   );
