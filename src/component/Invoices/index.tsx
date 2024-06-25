@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import PaymentMethodPopup from '../../component/PaymentMethod'
+
+
+
 
 interface Invoice {
   id: number;
@@ -10,7 +14,7 @@ interface Invoice {
   features: {
     description: string;
     limitations: {
-      [key: string]: number; // Adjust based on actual structure
+      [key: string]: number;
     };
   };
   startDate: string;
@@ -20,7 +24,8 @@ interface Invoice {
 
 const Invoice: React.FC = () => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [loading, setLoading] = useState(true); // State for loading indicator
+  const [showPopup, setShowPopup] = useState(false);
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<number | null>(null);
   const navigate = useNavigate();
 
   const formatDate = (dateString: string) => {
@@ -51,8 +56,6 @@ const Invoice: React.FC = () => {
       setInvoices(invoiceData);
     } catch (error) {
       console.error("Error fetching invoices:", error);
-    } finally {
-      setLoading(false); // Set loading state to false once done loading
     }
   };
 
@@ -60,152 +63,109 @@ const Invoice: React.FC = () => {
     fetchInvoices();
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(fetchInvoices, 60000); // 60000 milliseconds = 1 minute
-    return () => clearInterval(interval);
-  }, []);
-
-  const handlePay = async (invoiceId: number) => {
-    try {
-      console.log(`Paying invoice ID: ${invoiceId}`);
-      const response = await fetch(
-        `http://localhost:3000/invoices/pay/${invoiceId}`,
-        {
-          method: "POST",
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to update payment status");
-      }
-      const updatedInvoice = await response.json();
-      console.log("Updated invoice:", updatedInvoice);
-      setInvoices((prevInvoices) =>
-        prevInvoices.map((invoice) =>
-          invoice.id === invoiceId ? updatedInvoice.invoice : invoice
-        )
-      );
-    } catch (error) {
-      console.error("Error updating payment status:", error);
-    }
-  };
-
   const handleDetails = (invoiceId: number) => {
     navigate(`/details/${invoiceId}`);
   };
 
-  const handleBuyPlan = () => {
-    navigate("/buy-plan"); // Example: Navigate to buy plan page
+  const handlePay = (invoiceId: number) => {
+    setSelectedInvoiceId(invoiceId);
+    setShowPopup(true);
   };
+
+  const closePopup = () => {
+    setShowPopup(false);
+    setSelectedInvoiceId(null);
+  };
+
+  if (invoices.length === 0) {
+    return <div>Loading...</div>; // Handle initial loading state
+  }
 
   return (
     <div className="p-4">
       <h2 className="text-2xl font-semibold mb-6">Your Invoices</h2>
-      {loading && <p className="text-gray-600">Loading invoices...</p>}
-      {!loading && invoices.length === 0 && (
-        <div className="flex items-center justify-center h-24">
-          <p className="text-gray-600">
-            No invoices available. You have a free plan.
-          </p>
-          <button
-            className="bg-blue-500 text-white px-4 py-2 ml-4 rounded"
-            onClick={handleBuyPlan}
-          >
-            Buy Plan
-          </button>
-        </div>
-      )}
-      {!loading && invoices.length > 0 && (
-        <table className="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-600">
-                User
-              </th>
-              <th className="px-6 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-600">
-                Plan
-              </th>
-              <th className="px-6 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-600">
-                Price
-              </th>
-              
-              <th className="px-6 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-600">
-                Start Date
-              </th>
-              <th className="px-6 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-600">
-                Due Date
-              </th>
-              <th className="px-6 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-600">
-                Payment Status
-              </th>
-              <th className="px-6 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-600">
-                Action
-              </th>
+      <table className="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-6 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-600">
+              User
+            </th>
+            <th className="px-6 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-600">
+              Plan
+            </th>
+            <th className="px-6 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-600">
+              Price
+            </th>
+            <th className="px-6 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-600">
+              Features
+            </th>
+            <th className="px-6 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-600">
+              Start Date
+            </th>
+            <th className="px-6 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-600">
+              Due Date
+            </th>
+            <th className="px-6 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-600">
+              Payment Status
+            </th>
+            <th className="px-6 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-600">
+              Action
+            </th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-200">
+          {invoices.map((invoice) => (
+            <tr key={invoice.id} className="hover:bg-gray-100">
+              <td className="px-6 py-4 text-sm text-gray-700">
+                {invoice.user}
+              </td>
+              <td className="px-6 py-4 text-sm text-gray-700">
+                {invoice.plan}
+              </td>
+              <td className="px-6 py-4 text-sm text-gray-700">
+                ${invoice.price}
+              </td>
+              <td className="px-6 py-4 text-sm text-gray-700">
+                Cows: {invoice.features.limitations.cows}, Hours:{" "}
+                {invoice.features.limitations.usageHours}
+              </td>
+              <td className="px-6 py-4 text-sm text-gray-700">
+                {formatDate(invoice.startDate)}
+              </td>
+              <td className="px-6 py-4 text-sm text-gray-700">
+                {formatDate(invoice.dueDate)}
+              </td>
+              <td className="px-6 py-4 text-sm text-gray-700">
+                {invoice.paymentStatus}
+              </td>
+              <td className="px-6 py-4 text-sm text-gray-700">
+                <button
+                  className={`px-2 py-1 rounded mr-2 ${
+                    invoice.paymentStatus === "paid"
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-green-500 text-white"
+                  }`}
+                  onClick={() =>
+                    invoice.paymentStatus !== "paid" && handlePay(invoice.id)
+                  }
+                  disabled={invoice.paymentStatus === "paid"}
+                >
+                  Pay
+                </button>
+                <button
+                  className="bg-blue-500 text-white px-2 py-1 rounded ml-2"
+                  onClick={() => handleDetails(invoice.id)}
+                >
+                  Details
+                </button>
+              </td>
             </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {invoices.map((invoice) => (
-              <tr key={invoice.id} className="hover:bg-gray-100">
-                <td className="px-6 py-4 text-sm text-gray-700">
-                  {invoice.user}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-700">
-                  {invoice.plan}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-700">
-                  ${invoice.price}
-                </td>
-                
-                <td className="px-6 py-4 text-sm text-gray-700">
-                  {formatDate(invoice.startDate)}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-700">
-                  {formatDate(invoice.dueDate)}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-700">
-                  {invoice.paymentStatus}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-700">
-                  {invoice.plan === "Free Plan" ? (
-                    <>
-                      <p className="text-xs text-gray-500">
-                        Free plan - No invoice available
-                      </p>
-                      <button
-                        className="bg-blue-500 text-white px-2 py-1 rounded mt-2"
-                        onClick={handleBuyPlan}
-                      >
-                        Buy Plan
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button
-                        className={`px-2 py-1 rounded mr-2 ${
-                          invoice.paymentStatus === "paid"
-                            ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-green-500 text-white"
-                        }`}
-                        onClick={() =>
-                          invoice.paymentStatus !== "paid" &&
-                          handlePay(invoice.id)
-                        }
-                        disabled={invoice.paymentStatus === "paid"}
-                      >
-                        Pay
-                      </button>
-                      <button
-                        className="bg-blue-500 text-white px-2 py-1 rounded"
-                        onClick={() => handleDetails(invoice.id)}
-                      >
-                        Details
-                      </button>
-                    </>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          ))}
+        </tbody>
+      </table>
+
+      {showPopup && selectedInvoiceId !== null && (
+        <PaymentMethodPopup onClose={closePopup} invoiceId={selectedInvoiceId} />
       )}
     </div>
   );

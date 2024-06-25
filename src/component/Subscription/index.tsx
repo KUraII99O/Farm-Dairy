@@ -22,6 +22,7 @@ const SubscriptionDetails: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isCompareOpen, setIsCompareOpen] = useState(false);
   const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
+  const [showCancelConfirmation, setShowCancelConfirmation] = useState(false); // State for confirmation dialog
 
   useEffect(() => {
     const fetchPlan = async () => {
@@ -108,6 +109,60 @@ const SubscriptionDetails: React.FC = () => {
     }
   };
 
+  const handleCancel = async () => {
+    try {
+      setLoading(true);
+  
+      const storedUser = localStorage.getItem('loggedInUser');
+      if (!storedUser) {
+        setError('No logged-in user found');
+        setLoading(false);
+        return;
+      }
+  
+      const loggedInUser = JSON.parse(storedUser);
+      const loggedInUserId = loggedInUser.id; // Adjust to how your user ID is stored
+  
+      const response = await fetch(`http://localhost:3000/cancel/${loggedInUserId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        const result = await response.json();
+        // Handle cancellation success
+        console.log('Cancellation success:', result.message);
+        // Update local storage or state with the updated user information
+        loggedInUser.plan = result.user.plan;
+        localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
+        setShowCancelConfirmation(false); // Close confirmation dialog after successful cancellation
+      } else {
+        const errorMessage = await response.text();
+        if (response.status === 404 && errorMessage === 'User not found') {
+          setError('User not found. Please log in again.');
+        } else {
+          setError(`Failed to cancel subscription: ${errorMessage}`);
+        }
+        console.error('Cancellation request failed:', response.status, errorMessage);
+      }
+    } catch (error) {
+      setError('Failed to cancel subscription. Please try again later.');
+      console.error('Error cancelling subscription:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOpenCancelConfirmation = () => {
+    setShowCancelConfirmation(true); // Show confirmation dialog
+  };
+
+  const handleCloseCancelConfirmation = () => {
+    setShowCancelConfirmation(false); // Close confirmation dialog
+  };
+
   if (loading) return <div className="text-center text-gray-600">Loading...</div>;
   if (error) return <div className="text-center text-red-500">{error}</div>;
 
@@ -128,6 +183,13 @@ const SubscriptionDetails: React.FC = () => {
       >
         Upgrade
       </button>
+      <button
+        onClick={handleOpenCancelConfirmation} // Open confirmation dialog on click
+        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-200"
+      >
+        Cancel Subscription
+      </button>
+
       {isCompareOpen && (
         <CompareDrawer
           plan={plan}
@@ -142,6 +204,30 @@ const SubscriptionDetails: React.FC = () => {
           allPlans={allPlans}
           onUpgrade={handleUpgrade}
         />
+      )}
+
+      {/* Confirmation Dialog */}
+      {showCancelConfirmation && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white p-8 rounded shadow-lg max-w-md">
+            <h2 className="text-lg font-bold mb-4">Confirm Cancellation</h2>
+            <p className="text-sm text-gray-700 mb-4">Are you sure you want to cancel your subscription?</p>
+            <div className="flex justify-end">
+              <button
+                onClick={handleCloseCancelConfirmation} // Close confirmation dialog
+                className="bg-gray-300 text-gray-800 px-4 py-2 rounded mr-2 hover:bg-gray-400 transition duration-200"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCancel} // Handle cancellation
+                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-200"
+              >
+                Confirm Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

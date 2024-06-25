@@ -91,7 +91,11 @@ import DesktopOptionsPage from "./Pages/DesktopOptionsPage";
 import MobilePage from "./Pages/MobilePage";
 import InvoicePage from "./Pages/InvoicePage";
 import DetailsPage from "./Pages/DetailsPage";
+import PaymentPage from "./Pages/PaymentPage";
 import { ManageVaccineMonitorProvider } from "./component/VaccineMonitor/Provider";
+import CreditCardPage from "./Pages/CreditCardPage";
+import PaypalPage from "./Pages/PaypalPage";
+import BankTransferPage from "./Pages/BankTransferPage";
 
 const App: React.FC = () => {
   return (
@@ -616,6 +620,38 @@ const App: React.FC = () => {
                                                               element={
                                                                 <RequireAuthentication>
                                                                   <InvoicePage />
+                                                                </RequireAuthentication>
+                                                              }
+                                                            />
+                                                            <Route
+                                                              path="/payment/:invoiceId"
+                                                              element={
+                                                                <RequireAuthentication>
+                                                                  <PaymentPage />
+                                                                </RequireAuthentication>
+                                                              }
+                                                            />
+                                                            <Route
+                                                              path="/add-credit-card"
+                                                              element={
+                                                                <RequireAuthentication>
+                                                                  <CreditCardPage />
+                                                                </RequireAuthentication>
+                                                              }
+                                                            />
+                                                            <Route
+                                                              path="add-paypal"
+                                                              element={
+                                                                <RequireAuthentication>
+                                                                  <PaypalPage />
+                                                                </RequireAuthentication>
+                                                              }
+                                                            />
+                                                            <Route
+                                                              path="/add-bank-transfer"
+                                                              element={
+                                                                <RequireAuthentication>
+                                                                  <BankTransferPage />
                                                                 </RequireAuthentication>
                                                               }
                                                             />
