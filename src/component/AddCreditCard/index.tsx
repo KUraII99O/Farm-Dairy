@@ -10,46 +10,27 @@ const AddCreditCard: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-      // Simple validation for card number (16 digits), expiry date (MM/YY), and CVV (3 digits)
-      if (cardNumber.length !== 16 || !/^\d+$/.test(cardNumber)) {
-        throw new Error('Please enter a valid 16-digit card number.');
-      }
-
-      if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiryDate)) {
-        throw new Error('Please enter a valid expiry date (MM/YY format).');
-      }
-
-      if (cvv.length !== 3 || !/^\d+$/.test(cvv)) {
-        throw new Error('Please enter a valid 3-digit CVV.');
-      }
-
-      // Prepare data to send to the backend
-      const creditCardData = {
-        cardNumber,
-        expiryDate,
-        cvv,
-      };
-
-      const response = await fetch('http://localhost:3000/credit-cards', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(creditCardData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save credit card. Please try again.');
-      }
-
-      // If successful, notify user and navigate to payment methods page
-      alert('Credit card saved successfully.');
-      navigate('/settings');
-    } catch (error) {
-      console.error('Error saving credit card:', error.message);
-      alert(error.message);
+    // Simple validation for card number (16 digits), expiry date (MM/YY), and CVV (3 digits)
+    if (cardNumber.length !== 16 || !/^\d+$/.test(cardNumber)) {
+      alert('Please enter a valid 16-digit card number.');
+      return;
     }
+
+    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiryDate)) {
+      alert('Please enter a valid expiry date (MM/YY format).');
+      return;
+    }
+
+    if (cvv.length !== 3 || !/^\d+$/.test(cvv)) {
+      alert('Please enter a valid 3-digit CVV.');
+      return;
+    }
+
+    // Simulate sending data to backend (replace with actual backend call)
+    setTimeout(() => {
+      alert('Credit card saved successfully.');
+      navigate('/payment-methods');
+    }, 1000); // Simulating delay for async operation
   };
 
   return (

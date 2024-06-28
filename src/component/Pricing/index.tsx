@@ -9,6 +9,7 @@ interface SubscriptionPlan {
   features: {
     description: string;
     limitations: {
+      staffs: number;
       cows: number;
       usageHours: number;
     };
@@ -100,6 +101,7 @@ const Pricing: React.FC = () => {
                         />
                       </svg>
                       <span>Number of cows: {plan.features.limitations.cows}</span>
+                      <span>Number of staffs: {plan.features.limitations.staffs}</span>
                     </li>
                     <li className="flex items-center">
                       <svg

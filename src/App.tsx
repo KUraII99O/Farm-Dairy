@@ -58,7 +58,10 @@ import CowCalfListPage from "./Pages/CowCalfListPage";
 import { ManageCowCalfProvider } from "./component/ManageCowCalf/Provider";
 import EditCowCalfPage from "./Pages/EditCowCalfPage";
 import CowSaleListPage from "./Pages/CowSaleListPage";
-import { ManageSalesProvider, SaleListProvider } from "./component/CowSale/provider";
+import {
+  ManageSalesProvider,
+  SaleListProvider,
+} from "./component/CowSale/provider";
 import EditCowSalePage from "./Pages/EditCowSalePage";
 import { ExpenseProvider } from "./component/FarmExpense/Provider";
 import FarmExpenseListPgae from "./Pages/FarmExpenseListPgae";
@@ -96,9 +99,12 @@ import { ManageVaccineMonitorProvider } from "./component/VaccineMonitor/Provide
 import CreditCardPage from "./Pages/CreditCardPage";
 import PaypalPage from "./Pages/PaypalPage";
 import BankTransferPage from "./Pages/BankTransferPage";
-
+import AddPaymentMethodPage from "./Pages/AddPaymentMethodPage";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const App: React.FC = () => {
   return (
+    
     <ManageUserProvider>
       <ManageStaffProvider>
         <ManageEmployeeProvider>
@@ -652,6 +658,14 @@ const App: React.FC = () => {
                                                               element={
                                                                 <RequireAuthentication>
                                                                   <BankTransferPage />
+                                                                </RequireAuthentication>
+                                                              }
+                                                            />
+                                                            <Route
+                                                              path="/add-payment-method"
+                                                              element={
+                                                                <RequireAuthentication>
+                                                                  <AddPaymentMethodPage />
                                                                 </RequireAuthentication>
                                                               }
                                                             />
