@@ -1,9 +1,8 @@
-import React, { useState, useContext } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useContext, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
-import Pagination from "../../Pagination";
 import { useTranslation } from "../../Translator/Provider";
 import StaffList from "../Table";
 import { ManageStaffContext } from "../Provider";
@@ -17,11 +16,35 @@ const StaffTable: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5); // Number of staff per page
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [staffToDelete, setStaffToDelete] = useState<number | null>(null);
-  const [importedData, setImportedData] = useState<any[]>([]);
+  const [itemsPerPage, setItemsPerPage] = useState(5,10); // Number of staff per page
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const useQuery = () => {
+    return new URLSearchParams(location.search);
+  };
+  const query = useQuery();
+
+  useEffect(() => {
+    const result = query.get("result");
+    const error = query.get("error");
+
+    if (result === "success") {
+      toast.success("Staff Added successfully!");
+      navigate(location.pathname, { replace: true });
+    } else if (error === "limit-reached") {
+      toast.error(
+        <span onClick={() => navigate("/settings")}>
+          Limit has been reached. Click here to <b>upgrade</b>.
+        </span>,
+        {
+          autoClose: false,
+          closeOnClick: false,
+        }
+      );
+      navigate(location.pathname, { replace: true });
+    }
+  }, [query, location.pathname, navigate]);
 
   // Filter staff based on search term
   const filteredStaff = staff.filter((staffMember) =>
@@ -43,25 +66,6 @@ const StaffTable: React.FC = () => {
       )
     : filteredStaff;
 
-  // Pagination
-  const handlePageChange = (page: number, itemsPerPage: number) => {
-    setCurrentPage(page);
-    setItemsPerPage(itemsPerPage);
-  };
-
-  const indexOfLastStaff = currentPage * itemsPerPage;
-  const indexOfFirstStaff = indexOfLastStaff - itemsPerPage;
-  const currentStaff = sortedStaff.slice(indexOfFirstStaff, indexOfLastStaff);
-
-  const handleToggleStatus = async (id: number, newStatus: string) => {
-    try {
-      await toggleStaffStatus(id, newStatus);
-      toast.success("Staff status updated successfully!");
-    } catch (error) {
-      toast.error("An error occurred while updating staff status.");
-    }
-  };
-
   const handleSort = (fieldName: string) => {
     if (sortBy === fieldName) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -76,6 +80,15 @@ const StaffTable: React.FC = () => {
       return sortOrder === "asc" ? <FaSortUp /> : <FaSortDown />;
     }
     return <FaSort />;
+  };
+
+  const handleToggleStatus = async (id: number, newStatus: string) => {
+    try {
+      await toggleStaffStatus(id, newStatus);
+      toast.success("Staff status updated successfully!");
+    } catch (error) {
+      toast.error("An error occurred while updating staff status.");
+    }
   };
 
   const handleDeleteConfirmation = async (id: number) => {
@@ -107,7 +120,6 @@ const StaffTable: React.FC = () => {
           const sheetName = workbook.SheetNames[0];
           const sheet = workbook.Sheets[sheetName];
           const excelData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-          setImportedData(excelData);
           saveImportedData(excelData);
         }
       };
@@ -126,7 +138,7 @@ const StaffTable: React.FC = () => {
           joiningDate: row[5],
           grossSalary: row[6],
           status: row[7],
-          image: row[0]
+          image: row[0],
         });
       }
       toast.success("Data imported successfully!");
@@ -170,7 +182,10 @@ const StaffTable: React.FC = () => {
               style={{ display: "none" }}
             />
           </label>
-          <button className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary ml-2" onClick={exportToExcel}>
+          <button
+            className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary ml-2"
+            onClick={exportToExcel}
+          >
             {translate("export")}
           </button>
         </div>
@@ -179,21 +194,16 @@ const StaffTable: React.FC = () => {
       {/* Translate table title */}
       <div className="rtl:mirror-x">
         <StaffList
-          currentStaff={currentStaff}
+          staff={sortedStaff}
           handleSort={handleSort}
           sortIcon={sortIcon}
           handleToggleStatus={handleToggleStatus}
           handleDeleteConfirmation={handleDeleteConfirmation}
           translate={translate}
           formClass={formClass}
+          itemsPerPage={itemsPerPage}
         />
       </div>
-      {/* Pagination */}
-      <Pagination
-        totalItems={sortedStaff.length}
-        defaultItemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
-      />
       {/* Toast container for notifications */}
       <ToastContainer />
     </div>

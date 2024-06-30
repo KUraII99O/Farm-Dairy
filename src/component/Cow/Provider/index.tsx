@@ -1,163 +1,80 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
-import { toast } from "react-toastify";
-import { useTranslation } from "../../Translator/Provider";
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { Cow, CowService } from "../CowService";
 
 export const ManageCowContext = createContext<any>(null);
 
-interface Cow {
-  id: string;
-  image: string; // Add image property
-  gender: string;
-  animalType: string;
-  buyDate: Date;
-  buyingPrice: number;
-  pregnantStatus: boolean;
-  milkPerDay: string;
-  animalStatus: boolean;
-  stallNumber: string;
-  dateOfBirth: Date;
-  animalAgeDays: string;
-  weight: string;
-  height: string;
-  color: string;
-  numOfPregnant: string;
-  nextPregnancyApproxTime: string;
-  buyFrom: string;
-  prevVaccineDone: string;
-  note: string;
-  CreatedBy: string;
-}
-
-export const ManageCowProvider = ({ children }) => {
+export const ManageCowProvider: React.FC = ({ children }) => {
   const [cows, setCows] = useState<Cow[]>([]);
-  const { translate } = useTranslation();
 
   useEffect(() => {
-    const fetchCows = async () => {
+    const fetchCowData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/cows/");
-        if (!response.ok) {
-          throw new Error("Failed to fetch Cow data");
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (!loggedInUser) {
+          throw new Error("User not logged in or user data not found");
         }
-        const data = await response.json();
-        setCows(data);
+        const user = JSON.parse(loggedInUser);
+        console.log("User ID:", user.id); // Log user ID
+  
+        const data = await CowService.fetchCows(user.id);
+        console.log("Cow data:", data); // Log cow data
+        setCows(data || []);
       } catch (error) {
-        console.error("Error fetching Cow data:", error.message);
+        console.error("Error fetching cows:", error);
       }
     };
-
-    fetchCows();
+  
+    fetchCowData();
   }, []);
 
-  const addCow = async (newCow: Omit<Cow, "id">) => {
+  const addCow = async (newCow: Omit<Cow, 'id'>) => {
+    console.log("Adding cow:", newCow);
     try {
-      const id = cows.length + 1;
-      const cowWithId: Cow = { id, ...newCow };
-      console.log(cowWithId);
-      const response = await fetch("http://localhost:3000/cows", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(cowWithId),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to add cow");
-      }
-
-      setCows([...cows, cowWithId]);
+      const data = await CowService.addCow(newCow);
+      console.log("Cow added successfully:", data);
+      setCows(prevCows => [...prevCows, data]);
     } catch (error) {
-      console.error("Error:", error.message);
+      console.error("Error adding cow:", error);
     }
   };
 
-  const editCow = async (id: number, updatedCow: Partial<Cow>) => {
+  const editCow = async (id: string, updatedCow: Omit<Cow, 'id'>) => {
     try {
-      const response = await fetch(`http://localhost:3000/cows/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedCow),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to edit cow");
-      }
-
-      const updatedCows = cows.map((cow) =>
-        cow.id === id ? { ...cow, ...updatedCow } : cow
+      await CowService.editCow(id, updatedCow);
+      setCows(prevCows =>
+        prevCows.map(cow => (cow.id === id ? { ...cow, ...updatedCow } : cow))
       );
-
-      setCows(updatedCows);
     } catch (error) {
-      console.error("Error:", error.message);
+      console.error("Error editing cow:", error);
     }
   };
 
-  const deleteCow = async (id: number) => {
+  const toggleCowStatus = async (id: string) => {
     try {
-      const response = await fetch(`http://localhost:3000/cows/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete cow");
-      }
-
-      const updatedCows = cows.filter((cow) => cow.id !== id);
-      setCows(updatedCows);
+      await CowService.toggleCowStatus(id);
+      setCows(prevCows =>
+        prevCows.map(cow => (cow.id === id ? { ...cow, status: !cow.status } : cow))
+      );
     } catch (error) {
-      console.error("Error:", error.message);
+      console.error("Error toggling cow status:", error);
     }
   };
 
-  const ToggleStatus = async (id: number) => {
+  const deleteCow = async (id: string) => {
     try {
-      const response = await fetch(
-        `http://localhost:3000/cows/${id}/toggle-status`,
-        {
-          method: "PUT",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to toggle cow status");
-      }
-
-      const updatedCows = cows.map((cow) =>
-        cow.id === id ? { ...cow, animalStatus: !cow.animalStatus } : cow
-      );
-
-      setCows(updatedCows);
-
-      toast.info(translate("Cow status updated successfully"), {
-        autoClose: 1000,
-        hideProgressBar: true,
-      });
+      await CowService.deleteCow(id);
+      setCows(prevCows => prevCows.filter(cow => cow.id !== id));
     } catch (error) {
-      console.error("Error:", error.message);
-      toast.error("Failed to toggle cow status", {
-        autoClose: 2000,
-        hideProgressBar: true,
-      });
+      console.error("Error deleting cow:", error);
     }
-  };
-
-  const getCowById = (id: number) => {
-    // Find and return the cow with the given ID
-    return cows.find((cow) => cow.id === id);
   };
 
   const value = {
     cows,
-    setCows, // Include setCows in the value object
     addCow,
     editCow,
     deleteCow,
-    getCowById,
-    ToggleStatus,
+    toggleCowStatus
   };
 
   return (
@@ -167,10 +84,10 @@ export const ManageCowProvider = ({ children }) => {
   );
 };
 
-export const useManageCow = () => {
+export const useManageCows = () => {
   const context = useContext(ManageCowContext);
   if (!context) {
-    throw new Error("useManageCow must be used within a ManageCowProvider");
+    throw new Error("useManageCows must be used within a ManageCowProvider");
   }
   return context;
 };

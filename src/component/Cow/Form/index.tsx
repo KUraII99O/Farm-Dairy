@@ -1,10 +1,11 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ManageCowContext } from "../Provider";
 import { IoInformationCircle } from "react-icons/io5";
 import { FaBriefcaseMedical, FaImage } from "react-icons/fa";
 import { useTranslation } from "../../Translator/Provider";
 import { readAndCompressImage } from 'browser-image-resizer';
+import { ManageCowContext } from "../Provider";
+import { ToastContainer, toast } from "react-toastify";
 
 const Checkbox = ({
   label,
@@ -31,7 +32,7 @@ const Checkbox = ({
 
 const EditCowForm = () => {
   const { id } = useParams<{ id: string }>();
-  const { addCow, editCow, getCowById } = useContext(ManageCowContext);
+  const { cows,addCow, editCow } = useContext(ManageCowContext);
   const [selectedImage, setSelectedImage] = useState<string | null>(null); // State to store selected image path
   const navigate = useNavigate();
   const { translate, language } = useTranslation();
@@ -129,23 +130,15 @@ const EditCowForm = () => {
     history.back();
   };
 
-  useEffect(() => {
-    if (isEditMode) {
-      const selectedCow = getCowById(parseInt(id));
-      if (selectedCow) {
-        // Merge selectedCow with formData, ensuring all fields are filled
-        const mergedFormData = {
-          ...formData,
-          ...selectedCow,
-          informations: {
-            ...formData.informations,
-            ...selectedCow.informations,
-          },
-        };
-        setFormData(mergedFormData);
-      }
+  
+useEffect(() => {
+  if (isEditMode && id && cows.length > 0) {
+    const selectedCow = cows.find((item) => item.id === id); // Ensure id is of the same type as item.id
+    if (selectedCow) {
+      setFormData(selectedCow);
     }
-  }, [id, isEditMode, getCowById]);
+  }
+}, [id, isEditMode, cows]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -232,11 +225,14 @@ const EditCowForm = () => {
 
     try {
       if (isEditMode) {
-        await editCow(parseInt(id), formDataToSend);
+        await editCow(id, formData);
       } else {
-        await addCow(formDataToSend);
+        await addCow(formData);
+
       }
-      navigate("/manage-cow");
+
+      navigate("/manage-cow?result=success");
+
     } catch (error) {
       console.error("Error submitting form:", error);
       // Handle error
@@ -244,6 +240,8 @@ const EditCowForm = () => {
   };
   return (
     <div>
+            <ToastContainer />
+
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-3 gap-4  ">
           <div className="col-span-3 mb-4 ">

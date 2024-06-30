@@ -38,7 +38,7 @@ const Pagination: React.FC<PaginationProps> = ({
   };
 
   // Determine the direction based on the current language
-  const isRTL = language === "ar"; // Change to your RTL language code if different
+  const isRTL = language === "ar"; // Adjust to your RTL language code if different
 
   return (
     <div className={`flex justify-between items-center mt-4 ${isRTL ? 'rtl' : ''}`}>

@@ -1,107 +1,108 @@
 import React, { useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { BsPencil } from "react-icons/bs";
-import { Table } from "flowbite-react"; // Adjust based on your table library
+import { Table } from "flowbite-react";
 import { Link } from "react-router-dom";
-import Pagination from "../../Pagination"; // Import pagination component
+import { FaEye } from "react-icons/fa";
+import Pagination from "../../Pagination";
 
-interface StaffListProps {
-  staff: any[]; // Update with actual type of staff data
-  handleSort: (fieldName: string) => void;
-  sortIcon: (fieldName: string) => React.ReactNode;
-  handleToggleStatus: (id: number, newStatus: string) => void;
-  handleDeleteConfirmation: (id: number) => void;
-  translate: (key: string) => string;
-  formClass: string;
-  itemsPerPage: number;
-}
-
-const StaffList: React.FC<StaffListProps> = ({
-  staff,
+const CowList = ({
+  currentCows,
   handleSort,
   sortIcon,
-  handleToggleStatus,
   handleDeleteConfirmation,
+  handleViewDetails,
+  toggleCowStatus,
   translate,
   formClass,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-  // Pagination
+
+  const indexOfLastCow = currentPage * itemsPerPage;
+  const indexOfFirstCow = indexOfLastCow - itemsPerPage;
+  const currentCowsPage = currentCows.slice(indexOfFirstCow, indexOfLastCow);
+
   const handlePageChange = (page, itemsPerPage) => {
     setCurrentPage(page);
     setItemsPerPage(itemsPerPage);
   };
 
-  const indexOfLastStaff = currentPage * itemsPerPage;
-  const indexOfFirstStaff = indexOfLastStaff - itemsPerPage;
-  const currentStaff = staff.slice(indexOfFirstStaff, indexOfLastStaff);
-
   return (
-    <div className="rtl:mirror-x">
+    <div className={`rtl:mirror-x ${formClass === "rtl" ? "text-right" : ""}`}>
       <Table>
         <Table.Head>
+          <Table.HeadCell onClick={() => handleSort("id")}>
+            <div className="flex items-center">{translate("ID")}</div>
+          </Table.HeadCell>
           <Table.HeadCell onClick={() => handleSort("image")}>
-            <div className="flex items-center">{translate("image")}</div>
-          </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("name")}>
             <div className="flex items-center">
-              {translate("staffName")}
-              {sortIcon("name")}
+              {translate("Image")}
+              {sortIcon("image")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("email")}>
+          <Table.HeadCell onClick={() => handleSort("gender")}>
             <div className="flex items-center">
-              {translate("email")}
-              {sortIcon("email")}
+              {translate("Gender")}
+              {sortIcon("gender")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("mobile")}>
+          <Table.HeadCell onClick={() => handleSort("animalType")}>
             <div className="flex items-center">
-              {translate("mobile")}
-              {sortIcon("mobile")}
+              {translate("Animal Type")}
+              {sortIcon("animalType")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("designation")}>
+          <Table.HeadCell onClick={() => handleSort("buyDate")}>
             <div className="flex items-center">
-              {translate("designation")}
-              {sortIcon("designation")}
+              {translate("Buy Date")}
+              {sortIcon("buyDate")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("joiningDate")}>
+          <Table.HeadCell onClick={() => handleSort("buyingPrice")}>
             <div className="flex items-center">
-              {translate("joiningDate")}
-              {sortIcon("joiningDate")}
+              {translate("Buying Price")}
+              {sortIcon("buyingPrice")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("salary")}>
+          <Table.HeadCell onClick={() => handleSort("pregnantStatus")}>
             <div className="flex items-center">
-              {translate("salary")}
-              {sortIcon("GrossSalary")}
+              {translate("Pregnant Status")}
+              {sortIcon("pregnantStatus")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("status")}>
-            <div className="flex items-center">{translate("status")}</div>
+          <Table.HeadCell onClick={() => handleSort("milkPerDay")}>
+            <div className="flex items-center">
+              {translate("Milk Per Day")}
+              {sortIcon("milkPerDay")}
+            </div>
           </Table.HeadCell>
-          <Table.HeadCell>{translate("action")}</Table.HeadCell>
+          <Table.HeadCell onClick={() => handleSort("animalStatus")}>
+            <div className="flex items-center">
+              {translate("Animal Status")}
+              {sortIcon("animalStatus")}
+            </div>
+          </Table.HeadCell>
+          <Table.HeadCell>{translate("Action")}</Table.HeadCell>
         </Table.Head>
         <Table.Body className="divide-y">
-          {currentStaff.map((staffMember) => (
-            <Table.Row key={staffMember.id}>
+          {currentCowsPage.map((cow, index) => (
+            <Table.Row key={cow.id}>
+              <Table.Cell>{indexOfFirstCow + index + 1}</Table.Cell>
               <Table.Cell>
                 <img
-                  src={staffMember.image}
+                  src={cow.image}
                   alt="Profile"
                   className="h-12 w-12 rounded-full"
                 />
               </Table.Cell>
-              <Table.Cell>{staffMember.name}</Table.Cell>
-              <Table.Cell>{staffMember.email}</Table.Cell>
-              <Table.Cell>{staffMember.mobile}</Table.Cell>
-              <Table.Cell>{staffMember.designation}</Table.Cell>
-              <Table.Cell>{staffMember.joiningDate}</Table.Cell>
-              <Table.Cell>{staffMember.grossSalary}</Table.Cell>
-              <Table.Cell>
+              <Table.Cell>{cow.gender}</Table.Cell>
+              <Table.Cell>{cow.animalType}</Table.Cell>
+              <Table.Cell>{cow.buyDate}</Table.Cell>
+              <Table.Cell>{cow.buyingPrice}</Table.Cell>
+              <Table.Cell>{cow.pregnantStatus}</Table.Cell>
+              <Table.Cell>{cow.milkPerDay}</Table.Cell>
+              <Table.Cell className="px-4 py-2">
                 <label
                   className={`inline-flex items-center cursor-pointer ${
                     formClass === "rtl" ? "flex-row-reverse" : ""
@@ -110,13 +111,8 @@ const StaffList: React.FC<StaffListProps> = ({
                   <input
                     type="checkbox"
                     className="sr-only peer"
-                    checked={staffMember.status}
-                    onChange={() =>
-                      handleToggleStatus(
-                        staffMember.id,
-                        staffMember.status ? "false" : "true"
-                      )
-                    }
+                    checked={cow.status}
+                    onChange={() => toggleCowStatus(cow.id, !cow.status)} // Toggle the status directly
                   />
                   <div
                     className={`relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 ${
@@ -134,22 +130,27 @@ const StaffList: React.FC<StaffListProps> = ({
                       formClass === "rtl" ? "me-3" : "ms-3"
                     }`}
                   >
-                    {staffMember.status
-                      ? translate("active")
-                      : translate("inactive")}
+                    {cow.status ? translate("active") : translate("inactive")}{" "}
+                    {/* Use cow.status directly */}
                   </span>
                 </label>
               </Table.Cell>
               <Table.Cell>
                 <div className="flex items-center">
+                  <button
+                    onClick={() => handleViewDetails(cow)}
+                    className="text-secondary hover:text-primary focus:outline-none flex mr-4"
+                  >
+                    <FaEye className="w-5 h-5 mr-1" />
+                  </button>
                   <Link
-                    to={`/edit-staff/${String(staffMember.id)}`}
-                    className="text-blue-500 hover:underline flex items-center mr-2"
+                    to={`/Edit-Cow/${cow.id}`}
+                    className="text-blue-500 hover:underline flex items-center mr-4"
                   >
                     <BsPencil className="w-5 h-5 mr-1" />
                   </Link>
                   <button
-                    onClick={() => handleDeleteConfirmation(staffMember.id)}
+                    onClick={() => handleDeleteConfirmation(cow.id)}
                     className="text-red-500 hover:text-red-700 focus:outline-none flex items-center"
                   >
                     <AiOutlineDelete className="w-5 h-5 mr-1" />
@@ -161,7 +162,7 @@ const StaffList: React.FC<StaffListProps> = ({
         </Table.Body>
       </Table>
       <Pagination
-        totalItems={staff.length}
+        totalItems={currentCows.length}
         defaultItemsPerPage={itemsPerPage}
         onPageChange={handlePageChange}
       />
@@ -169,4 +170,4 @@ const StaffList: React.FC<StaffListProps> = ({
   );
 };
 
-export default StaffList;
+export default CowList;

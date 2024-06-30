@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
-import PaymentMethodPopup from '../../component/PaymentMethod'
-
-
-
+import PaymentMethodPopup from "../../component/PaymentMethod";
 
 interface Invoice {
   id: number;
@@ -25,8 +22,11 @@ interface Invoice {
 const Invoice: React.FC = () => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [showPopup, setShowPopup] = useState(false);
-  const [selectedInvoiceId, setSelectedInvoiceId] = useState<number | null>(null);
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<number | null>(
+    null
+  );
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
 
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), "yyyy/MM/dd");
@@ -56,6 +56,8 @@ const Invoice: React.FC = () => {
       setInvoices(invoiceData);
     } catch (error) {
       console.error("Error fetching invoices:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -84,6 +86,13 @@ const Invoice: React.FC = () => {
   return (
     <div className="p-4">
       <h2 className="text-2xl font-semibold mb-6">Your Invoices</h2>
+      <p>You are on a free plan, no invoices available.</p>
+      <button
+        className="bg-blue-500 text-white px-2 py-1 rounded ml-2 mt-4"
+        onClick={() => navigate("/pricing")}
+      >
+        Upgrade
+      </button>{" "}
       <table className="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
         <thead className="bg-gray-50">
           <tr>
@@ -163,9 +172,11 @@ const Invoice: React.FC = () => {
           ))}
         </tbody>
       </table>
-
       {showPopup && selectedInvoiceId !== null && (
-        <PaymentMethodPopup onClose={closePopup} invoiceId={selectedInvoiceId} />
+        <PaymentMethodPopup
+          onClose={closePopup}
+          invoiceId={selectedInvoiceId}
+        />
       )}
     </div>
   );

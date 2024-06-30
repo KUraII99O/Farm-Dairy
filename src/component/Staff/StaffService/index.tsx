@@ -67,7 +67,9 @@ async function addStaff(newStaff: Omit<Staff, 'id' | 'userId'>): Promise<Staff> 
       body: JSON.stringify(staffWithId),
     });
 
-    if (!response.ok) {
+    if (response.status === 403) {
+      throw new Error('Limit has been reached');
+    } else if (!response.ok) {
       throw new Error('Failed to add staff');
     }
 

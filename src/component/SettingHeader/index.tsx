@@ -8,7 +8,7 @@ import { useTranslation } from "../Translator/Provider";
 const SettingHeader: React.FC = () => {
   const location = useLocation();
   
-  const [activeSection, setActiveSection] = useState<string>("");
+  const [activeSection, setActiveSection] = useState<string>("/Subscription");
 
   const isActive = (pathname: string) => {
     return location.pathname === pathname || activeSection === pathname;
@@ -118,9 +118,9 @@ const SettingHeader: React.FC = () => {
           </a>
         </li>
       </ul>
+      {activeSection === "/Subscription" && <Subscription />}
       {activeSection === "/profile" && <ProfileISettings />}
       {activeSection === "/dashboard" && <Dashboard />}
-      {activeSection === "/Subscription" && <Subscription />}
       {activeSection === "/invoice" && <Invoices />}
     </div>
   );

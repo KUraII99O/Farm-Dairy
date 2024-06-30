@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext, } from "react";
 import { Staff, StaffService } from "../StaffService";
 
 export const ManageStaffContext = createContext<any>(null);
@@ -33,8 +33,10 @@ export const ManageStaffProvider: React.FC = ({ children }) => {
       const data = await StaffService.addStaff(newStaff);
       console.log("Staff added successfully:", data);
       setStaff(prevStaff => [...prevStaff, data]);
+      return null; // Return null if there's no error
     } catch (error) {
       console.error("Error adding staff:", error);
+      return error; // Return the error if there is one
     }
   };
 

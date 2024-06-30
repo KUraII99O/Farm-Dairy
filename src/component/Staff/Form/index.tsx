@@ -1,17 +1,17 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ManageStaffContext } from "../Provider";
-import { FaUserPlus, FaImage  } from "react-icons/fa";
+import { FaUserPlus, FaImage } from "react-icons/fa";
 import { useTranslation } from "../../Translator/Provider";
 import ImageUpload from "../../ImageUpload";
+import { toast } from "react-toastify";
 
 const EditStaff = () => {
   const { id } = useParams<{ id: string }>();
   const { staff, addStaff, editStaff } = useContext(ManageStaffContext);
   const { translate, language } = useTranslation();
   const navigate = useNavigate();
-  const [selectedImage, setSelectedImage] = useState<string | null>(null); // State to store selected image path
-
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const isEditMode = !!id;
 
   const [formData, setFormData] = useState({
@@ -22,7 +22,7 @@ const EditStaff = () => {
     joiningDate: "",
     permanentAddress: "",
     nid: "",
-    image: "", // This will hold the image data
+    image: "",
     userType: "",
     presentAddress: "",
     basicSalary: "",
@@ -30,19 +30,29 @@ const EditStaff = () => {
     resignDate: "",
     status: "true",
   });
-  const [loading, setLoading] = useState(false);
+
+  const [planLimitations, setPlanLimitations] = useState<any>({});
+  const [loading, setLoading] = useState(false); // Define loading state
 
   useEffect(() => {
-    if (isEditMode && id && staff.length > 0) {
-      const selectedStaff = staff.find((item) => item.id === id); // Ensure id is of the same type as item.id
-      if (selectedStaff) {
-        setFormData(selectedStaff);
+    fetchPlanDetails(); // Fetch plan details on component mount or user login
+  }, []);
+
+  const fetchPlanDetails = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/plans");
+      if (!response.ok) {
+        throw new Error("Failed to fetch plan details");
       }
+      const data = await response.json();
+      setPlanLimitations(data.features.limitations);
+    } catch (error) {
+      console.error("Error fetching plan details:", error);
+      // Handle error
     }
-  }, [id, isEditMode, staff]);
+  };
 
   const handleImageUpload = (imageData: string) => {
-    // Update the formData with the image data received from the ImageUpload component
     setFormData({
       ...formData,
       image: imageData,
@@ -52,8 +62,7 @@ const EditStaff = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === "status") {
-      // Convert the selected value to boolean
-      const statusValue = value === "true"; // Convert string value to boolean
+      const statusValue = value === "true";
       setFormData({
         ...formData,
         [name]: statusValue,
@@ -66,21 +75,31 @@ const EditStaff = () => {
     }
   };
 
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
   
+    setLoading(true);
+  
     try {
       if (isEditMode) {
-        await editStaff(id, formData); // Parse `id` to a number
+        await editStaff(id, formData);
+        toast.success("Staff updated successfully!");
+        navigate("/staff?result=success");
       } else {
-        await addStaff(formData);
+        const error = await addStaff(formData);
+  
+        if (error && error.message === "Limit has been reached") {
+          toast.error("Limit has been reached");
+          setLoading(false);
+          return navigate("/staff?error=limit-reached");
+        } else {
+          toast.success("Staff added successfully!");
+          navigate("/staff?result=success");
+        }
       }
-      navigate("/staff");
     } catch (error) {
       console.error("Error submitting form:", error);
-      // Handle error
+      setLoading(false);
     }
   };
 
