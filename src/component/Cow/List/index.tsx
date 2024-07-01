@@ -1,10 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { BsPencil } from "react-icons/bs";
-import { AiOutlineDelete } from "react-icons/ai";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import { BiListUl } from "react-icons/bi";
-import { FaEye } from "react-icons/fa";
 import { ManageCowContext } from "../Provider";
 import ItemDetailDrawer from "../ItemDatils";
 import { toast, ToastContainer } from "react-toastify";
@@ -31,7 +28,7 @@ const AnimalList: React.FC = () => {
 
   useEffect(() => {
     if (query.get("result") === "success") {
-      toast.success("Cow Added successfully!");
+      toast.success("Milk Entry  Added successfully!");
       navigate(location.pathname, { replace: true });
     }
   }, [query, location.pathname, navigate]);

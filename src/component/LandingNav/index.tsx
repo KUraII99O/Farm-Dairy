@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Button,
   Navbar,
@@ -8,23 +8,54 @@ import {
   NavbarToggle,
   Dropdown,
 } from "flowbite-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "../Translator/Provider";
 
-const LandingNav: React.FC = () => {
+interface LandingNavProps {
+  onPricingClick?: () => void;
+  onServiceClick?: () => void;
+  onContactClick?: () => void;
+}
+
+const LandingNav: React.FC<LandingNavProps> = ({ onPricingClick, onServiceClick, onContactClick }) => {
   const { translate, setLanguage, language } = useTranslation();
+  const navigate = useNavigate();
 
   const handleChangeLanguage = (newLanguage: string) => {
     console.log("Changing language to:", newLanguage);
     setLanguage(newLanguage);
   };
 
+  const handlePricingClick = () => {
+    if (onPricingClick) {
+      onPricingClick();
+    } else {
+      navigate("/desktop#pricing");
+    }
+  };
+
+  const handleServiceClick = () => {
+    if (onServiceClick) {
+      onServiceClick();
+    } else {
+      navigate("/desktop#services");
+    }
+  };
+
+  const handleContactClick = () => {
+    if (onContactClick) {
+      onContactClick();
+    } else {
+      navigate("/desktop#contact");
+    }
+  };
+
   return (
     <div>
       <Navbar fluid rounded>
-        <NavbarBrand href="https://flowbite-react.com">
+        <NavbarBrand href="/">
           <Link
-            to="/" // Corrected link destination
+            to="/"
             className="h-8 w-auto flex items-center transition-opacity duration-500"
           >
             <img
@@ -33,23 +64,21 @@ const LandingNav: React.FC = () => {
               alt="Your Company"
             />
             <h3 className="text-lg sm:text-xl font-bold ml-2 text-primary">
-              {translate("Ges Cow")} {/* Translate the company name */}
+              {translate("Ges Cow")}
             </h3>
           </Link>
         </NavbarBrand>
         <div className="flex md:order-2">
           <Button className="bg-primary mr-24">
             {translate("getstarted")}
-          </Button>{" "}
-          {/* Translate the button text */}
+          </Button>
           <div className="flex items-center ">
             <select
               value={language}
               onChange={(e) => handleChangeLanguage(e.target.value)}
               className="mr-2"
             >
-              <option value="en">{translate("🇺🇸")}</option>{" "}
-              {/* Translate the country flag emojis */}
+              <option value="en">{translate("🇺🇸")}</option>
               <option value="fr">{translate("🇫🇷")}</option>
               <option value="ar">{translate("🇹🇳")}</option>
             </select>
@@ -57,22 +86,21 @@ const LandingNav: React.FC = () => {
           <NavbarToggle />
         </div>
         <NavbarCollapse>
-          <NavbarLink href="/">{translate("home")}</NavbarLink>{" "}
-          {/* Translate navbar links */}
+          <NavbarLink href="/">{translate("home")}</NavbarLink>
           <Dropdown label={translate("solutions")} inline>
             <Dropdown.Item>
-              <a href="link_to_web_solution">{translate("web")}</a>
+              <Link to="/solutions/web">{translate("web")}</Link>
             </Dropdown.Item>
             <Dropdown.Item>
-              <Link to="/solutions/mobile">{translate("mobilee")}</Link>
+              <Link to="/solutions/mobile">{translate("mobile")}</Link>
             </Dropdown.Item>
             <Dropdown.Item>
               <Link to="/solutions/desktop">{translate("desktop")}</Link>
             </Dropdown.Item>
           </Dropdown>
-          <NavbarLink href="#">{translate("services")}</NavbarLink>
-          <NavbarLink href="#">{translate("pricing")}</NavbarLink>
-          <NavbarLink href="#">{translate("contact")}</NavbarLink>
+          <NavbarLink className="cursor-pointer" onClick={handleServiceClick}>{translate("services")}</NavbarLink>
+          <NavbarLink className="cursor-pointer" onClick={handlePricingClick}>{translate("pricing")}</NavbarLink>
+          <NavbarLink className="cursor-pointer" onClick={handleContactClick}>{translate("contact")}</NavbarLink>
         </NavbarCollapse>
       </Navbar>
     </div>

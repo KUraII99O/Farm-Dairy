@@ -1,60 +1,49 @@
 import React, { useState, useContext, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "../../Translator/Provider";
 
 import "react-toastify/dist/ReactToastify.css";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
-import Pagination from "../../Pagination";
-import { BsPencil } from "react-icons/bs";
-import { AiOutlineDelete } from "react-icons/ai";
-import MilkList from "../Table";
 import { ManageMilkContext } from "../Provider";
+import MilkList from "../Table";
 
 const MilkTable: React.FC = () => {
   const { milkRecords, deleteMilkRecord } = useContext(ManageMilkContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5); // Number of milk entries per page
   const [isDeleting, setIsDeleting] = useState(false);
-  const [milkToDelete, setMilkToDelete] = useState<number | null>(null);
   const [user, setUser] = useState<{ username: string }>({
     username: "",
   });
-  const [currentDate, setCurrentDate] = useState<string>("");
   const { translate, language } = useTranslation();
   const isArabic = language === "ar";
-
+  const location = useLocation();
+  const navigate = useNavigate();
   const formClass = isArabic ? "rtl" : "ltr";
 
   const filteredMilks = milkRecords.filter(
-    (milk: { [s: string]: unknown } | ArrayLike<unknown>) =>
-      Object.values(milk).some((field) =>
-        field.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    (milk) =>
+      Object.values(milk).some(
+        (field) =>
+          field &&
+          typeof field === "string" &&
+          field.toLowerCase().includes(searchTerm.toLowerCase())
       )
   );
+  const useQuery = () => {
+    return new URLSearchParams(location.search);
+  };
+  const query = useQuery();
+
   useEffect(() => {
-    const date = new Date();
-    const formattedDate = date.toLocaleDateString(); // Adjust the date format as needed
-    setCurrentDate(formattedDate);
-  }, []);
+    if (query.get("result") === "success") {
+      toast.success("Cow Added successfully!");
+      navigate(location.pathname, { replace: true });
+    }
+  }, [query, location.pathname, navigate]);
 
-  const [formData, setFormData] = useState({
-    AccountNo: "",
-    StallNo: "",
-    AnimalID: "",
-    Liter: "",
-    CollectedFrom: "",
-    Fate: "",
-    Price: "",
-    Total: "",
-    AddedBy: "", // Ensure this field is included
-    Date: "",
-  });
-
-  
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -62,8 +51,12 @@ const MilkTable: React.FC = () => {
         if (storedUser) {
           const userData = JSON.parse(storedUser);
           const { username } = userData;
-          setUser({ username: username }); // Corrected to set 'username' field
-          setFormData(prevFormData => ({ ...prevFormData, AddedBy: username })); // Update AddedBy field in formData
+          setUser({ username: username }); // Set 'username' field correctly
+          setFormData(prevFormData => ({
+            ...prevFormData,
+            AddedBy: username,
+            Date: new Date().toLocaleDateString(), // Set current date
+          }));
           console.log("Username fetched successfully:", username);
         } else {
           console.error("No user data found in local storage");
@@ -79,26 +72,10 @@ const MilkTable: React.FC = () => {
   const sortedMilks = sortBy
     ? filteredMilks.sort((a, b) =>
         sortOrder === "asc"
-          ? a[sortBy] > b[sortBy]
-            ? 1
-            : -1
-          : a[sortBy] < b[sortBy]
-          ? 1
-          : -1
+          ? a[sortBy].localeCompare(b[sortBy])
+          : b[sortBy].localeCompare(a[sortBy])
       )
     : filteredMilks;
-
-  // Pagination
-  const handlePageChange = (page: number, itemsPerPage: number) => {
-    setCurrentPage(page);
-    setItemsPerPage(itemsPerPage);
-  };
-
-  const indexOfLastMilk = currentPage * itemsPerPage;
-  const indexOfFirstMilk = indexOfLastMilk - itemsPerPage;
-  const currentMilk = sortedMilks.slice(indexOfFirstMilk, indexOfLastMilk);
-
-  // Pagination end
 
   const handleSort = (fieldName: string) => {
     if (sortBy === fieldName) {
@@ -123,14 +100,17 @@ const MilkTable: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     setIsDeleting(true);
     try {
-      await deleteMilkRecord(id);
+      await deleteMilkRecord(id.toString()); // Ensure id is passed as string if needed
       setIsDeleting(false);
+      toast.success("Milk entry deleted successfully");
       // Implement your deletion logic here
     } catch (error) {
       setIsDeleting(false);
+      console.error("Error deleting milk entry:", error);
+      toast.error("Failed to delete milk entry");
     }
   };
 
@@ -156,19 +136,12 @@ const MilkTable: React.FC = () => {
       </div>
       <h1 className="text-xl font-bold mb-4">{translate("milktable")}</h1>
       <MilkList
-        currentMilks={currentMilk}
+        currentMilks={sortedMilks}
         handleSort={handleSort}
         sortIcon={sortIcon}
         handleDeleteConfirmation={handleDeleteConfirmation}
         translate={translate}
         formClass={formClass}
-        AddedByUser={formData.AddedBy} // Pass the AddedBy field as prop
-      />
-      {/* Pagination */}
-      <Pagination
-        totalItems={sortedMilks.length}
-        defaultItemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
       />
       {/* Toast container for notifications */}
       <ToastContainer />

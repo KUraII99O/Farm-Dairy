@@ -1,30 +1,37 @@
-import React, { useState, useContext } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useContext, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ManageUserContext } from "../Provider";
-import { User } from "../types";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
-import Pagination from "../../Pagination";
-import { BsPencil } from "react-icons/bs";
-import { AiOutlineDelete } from "react-icons/ai";
+
 import { useTranslation } from "../../Translator/Provider";
 import UserList from "../Table";
 
 const UserTable: React.FC = () => {
   const { users, toggleStatus, deleteUser } = useContext(ManageUserContext);
-  const { translate,language } = useTranslation();
+  const { translate, language } = useTranslation();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5); // Number of users per page
   const [isDeleting, setIsDeleting] = useState(false);
   const [userToDelete, setUserToDelete] = useState<number | null>(null);
 
-  // Filter users based on search term
-  const filteredUsers = users.filter((user) =>
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const useQuery = () => {
+    return new URLSearchParams(location.search);
+  };
+  const query = useQuery();
+
+  useEffect(() => {
+    if (query.get("result") === "success") {
+      toast.success("User Added successfully!");
+      navigate(location.pathname, { replace: true });
+    }
+  }, [query, location.pathname, navigate]);  const filteredUsers = users.filter((user) =>
     Object.values(user).some((field) =>
       field.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
@@ -33,31 +40,9 @@ const UserTable: React.FC = () => {
   // Sort users based on the selected field
   const sortedUsers = sortBy
     ? filteredUsers.sort((a, b) =>
-        sortOrder === "asc"
-          ? a[sortBy] > b[sortBy]
-            ? 1
-            : -1
-          : a[sortBy] < b[sortBy]
-          ? 1
-          : -1
+        sortOrder === "asc" ? (a[sortBy] > b[sortBy] ? 1 : -1) : a[sortBy] < b[sortBy] ? 1 : -1
       )
     : filteredUsers;
-
-  // Pagination
-  const handlePageChange = (page: number, itemsPerPage: number) => {
-    setCurrentPage(page);
-    setItemsPerPage(itemsPerPage);
-  };
-
-  const indexOfLastUser = currentPage * itemsPerPage;
-  const indexOfFirstUser = indexOfLastUser - itemsPerPage;
-  const currentUser = sortedUsers.slice(indexOfFirstUser, indexOfLastUser);
-
-  // Pagination end
-
-  const handleToggleStatus = (id: number) => {
-    toggleStatus(id);
-  };
 
   const handleSort = (fieldName: string) => {
     if (sortBy === fieldName) {
@@ -87,9 +72,10 @@ const UserTable: React.FC = () => {
     try {
       await deleteUser(id);
       setIsDeleting(false);
-      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+      toast.success("User deleted successfully!");
     } catch (error) {
       setIsDeleting(false);
+      toast.error("Failed to delete user.");
     }
   };
 
@@ -101,6 +87,7 @@ const UserTable: React.FC = () => {
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center"></div>
         <div className="flex items-center">
+
           <input
             type="text"
             placeholder={translate("searchPlaceholder")}
@@ -115,27 +102,20 @@ const UserTable: React.FC = () => {
             {translate("adduser")}
           </Link>
         </div>
+        
       </div>
-      <h1 className="text-xl font-bold mb-4">{translate("UserTable")}</h1>{" "}
-      {/* Translate table title */}
+      <h1 className="text-xl font-bold mb-4">{translate("UserTable")}</h1>
       <div className="rtl:mirror-x">
-      <UserList 
-          currentUser={currentUser}
+        <UserList
+          currentUser={sortedUsers}
           handleSort={handleSort}
           sortIcon={sortIcon}
-          handleToggleStatus={handleToggleStatus}
+          handleToggleStatus={toggleStatus} // Assuming toggleStatus is provided by ManageUserContext
           handleDeleteConfirmation={handleDeleteConfirmation}
           translate={translate}
           formClass={formClass}
         />
       </div>
-      
-      {/* Pagination */}
-      <Pagination
-        totalItems={sortedUsers.length}
-        defaultItemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
-      />
       {/* Toast container for notifications */}
       <ToastContainer />
     </div>

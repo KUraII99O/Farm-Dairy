@@ -5,6 +5,7 @@ import { IoInformationCircle } from "react-icons/io5";
 import { FaBriefcaseMedical, FaImage } from "react-icons/fa";
 import { useTranslation } from "../../Translator/Provider";
 import { ManageCowContext } from "../../Cow/Provider";
+import { toast } from "react-toastify";
 
 // Modified Checkbox component to handle checked state and onChange event
 const Checkbox = ({
@@ -31,7 +32,7 @@ const Checkbox = ({
 
 const EditCalfForm = () => {
   const { id } = useParams<{ id: string }>();
-  const { addCowCalf, editCowCalf, getCowCalfById } =
+  const { calves, addCalf, editCalf } =
     useContext(ManageCowCalfContext);
   const [selectedImage] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -77,6 +78,12 @@ const EditCalfForm = () => {
     },
   });
 
+
+  const [planLimitations, setPlanLimitations] = useState<any>({});
+  const [loading, setLoading] = useState(false); // Define loading state
+
+
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setFormData({
@@ -90,21 +97,13 @@ const EditCalfForm = () => {
   };
 
   useEffect(() => {
-    if (isEditMode) {
-      const selectedCalf = getCowCalfById(parseInt(id));
+    if (isEditMode && id && calves.length > 0) {
+      const selectedCalf = calves.find((item) => item.id === id); // Ensure id is of the same type as item.id
       if (selectedCalf) {
-        const mergedFormData = {
-          ...formData,
-          ...selectedCalf,
-          informations: {
-            ...formData.informations,
-            ...selectedCalf.informations,
-          },
-        };
-        setFormData(mergedFormData);
+        setFormData(selectedCalf);
       }
     }
-  }, [id, isEditMode, getCowCalfById]);
+  }, [id, isEditMode, calves]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -179,26 +178,34 @@ const EditCalfForm = () => {
       },
     });
   };
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const formDataToSend = { ...formData };
-    if (selectedImage) {
-      formDataToSend.image = selectedImage;
-    }
-
+  
+    setLoading(true);
+  
     try {
       if (isEditMode) {
-        await editCowCalf(parseInt(id), formDataToSend);
+        await editCalf(id, formData);
+        toast.success("Calf updated successfully!");
+        navigate("/manage-cow-calf?result=success");
       } else {
-        await addCowCalf(formDataToSend);
+        const error = await addCalf(formData);
+  
+        if (error && error.message === "Limit has been reached") {
+          toast.error("Limit has been reached");
+          setLoading(false);
+          return navigate("/manage-cow-calf?error=limit-reached");
+        } else {
+          toast.success("Calf added successfully!");
+          navigate("/manage-cow-calf?result=success");
+        }
       }
-      navigate("/manage-cow-calf");
     } catch (error) {
       console.error("Error submitting form:", error);
+      setLoading(false);
     }
   };
-
   return (
     <div>
       <form onSubmit={handleSubmit}>

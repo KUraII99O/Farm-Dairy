@@ -8,16 +8,25 @@ import OptionSelection from '../OptionSelection';
 
 const DesktopLanding = () => {
   const optionSelectionRef = useRef(null);
+  const pricingRef = useRef(null);
 
   const scrollToOptionSelection = () => {
     optionSelectionRef.current.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const scrollToPricing = () => {
+    if (pricingRef.current) {
+      pricingRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div>
-      <LandingNav />
+      <LandingNav onPricingClick={scrollToPricing} />
       <Desktop scrollToOptionSelection={scrollToOptionSelection} />
-      <Pricing />
+      <div ref={pricingRef}>
+        <Pricing />
+      </div>
       <div ref={optionSelectionRef}>
         <OptionSelection id="OptionSelection" />
       </div>

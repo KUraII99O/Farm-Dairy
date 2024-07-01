@@ -3,11 +3,11 @@ import { Link, useLocation } from "react-router-dom";
 import Invoices from "../Invoices";
 import ProfileISettings from "../ProfileISettings";
 import Subscription from "../Subscription";
+import Dashboard from "../Dashboard"; // Assuming you have a Dashboard component
 import { useTranslation } from "../Translator/Provider";
 
 const SettingHeader: React.FC = () => {
   const location = useLocation();
-  
   const [activeSection, setActiveSection] = useState<string>("/Subscription");
 
   const isActive = (pathname: string) => {
@@ -32,6 +32,7 @@ const SettingHeader: React.FC = () => {
   const handleSectionClick = (section: string) => {
     setActiveSection(section);
   };
+  
   const { translate, language } = useTranslation();
 
   return (
@@ -53,8 +54,6 @@ const SettingHeader: React.FC = () => {
               <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z" />
             </svg>
             {translate("profile")}
-
-            
           </Link>
         </li>
         <li className="me-2">
@@ -73,8 +72,6 @@ const SettingHeader: React.FC = () => {
               <path d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8 1.857 8h4.286A1.857 1.857 0 0 0 8 6.143V1.857A1.857 1.857 0 0 0 6.143 0Zm10 0h-4.286A1.857 1.857 0 0 0 10 1.857v4.286C10 7.169 10.831 8 11.857 8h4.286A1.857 1.857 0 0 0 18 6.143v-1.286A3.243 3.243 0 0 0 16.143 0Zm-10 10H1.857A1.857 1.857 0 0 0 0 11.857v4.286C0 17.169.831 18 1.857 18h4.286A1.857 1.857 0 0 0 8 16.143v-4.286A1.857 1.857 0 0 0 6.143 10Zm10 0h-4.286A1.857 1.857 0 0 0 10 11.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 18 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z" />
             </svg>
             {translate("dashboard")}
-
-            
           </Link>
         </li>
         <li className="me-2">
@@ -93,8 +90,6 @@ const SettingHeader: React.FC = () => {
               <path d="M5 11.424V1a1 1 0 1 0-2 0v10.424a3.228 3.228 0 0 0 0 6.152V19a1 1 0 1 0 2 0v-1.424a3.228 3.228 0 0 0 0-6.152ZM19.25 14.5A3.243 3.243 0 0 0 17 11.424V1a1 1 0 0 0-2 0v10.424a3.227 3.227 0 0 0 0 6.152V19a1 1 0 1 0 2 0v-1.424a3.243 3.243 0 0 0 2.25-3.076Zm-6-9A3.243 3.243 0 0 0 11 2.424V1a1 1 0 0 0-2 0v1.424a3.228 3.228 0 0 0 0 6.152V19a1 1 0 1 0 2 0V8.576A3.243 3.243 0 0 0 13.25 5.5Z" />
             </svg>
             {translate("subscription")}
-
-            
           </Link>
         </li>
         <li className="me-2">
@@ -113,8 +108,6 @@ const SettingHeader: React.FC = () => {
               <path d="M19 2H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h8l6-6V4c0-1.1-.9-2-2-2zM14 2v6h6M8 14h8v2H8zm0-4h8v2H8zm0-4h4v2H8zm8.5 10.5l-1.41 1.41L14 16.83l-2.09 2.09L10.5 18.5 14 15l4.5 4.5z" />
             </svg>
             {translate("invoice")}
-
-            
           </a>
         </li>
       </ul>

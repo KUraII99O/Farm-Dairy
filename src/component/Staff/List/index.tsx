@@ -16,7 +16,7 @@ const StaffTable: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [itemsPerPage, setItemsPerPage] = useState(5,10); // Number of staff per page
+  const [itemsPerPage, setItemsPerPage] = useState(5,); // Number of staff per page
   const location = useLocation();
   const navigate = useNavigate();
 

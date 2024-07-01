@@ -1,20 +1,41 @@
-import React from "react";
+import React, { useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { BsPencil } from "react-icons/bs";
 import { Table } from "flowbite-react";
 import { Link } from "react-router-dom";
+import Pagination from "../../Pagination";
 
-const MilkList = ({
+interface MilkListProps {
+  currentMilks: any[]; // Replace 'any' with the actual type of milk data
+  handleSort: (fieldName: string) => void;
+  sortIcon: (fieldName: string) => React.ReactNode;
+  handleDeleteConfirmation: (id: number) => void;
+  translate: (key: string) => string;
+  formClass: string;
+  itemsPerPage: number; // If pagination is involved
+}
+
+const MilkList: React.FC<MilkListProps> = ({
   currentMilks,
   handleSort,
   sortIcon,
   handleDeleteConfirmation,
   translate,
   formClass,
-  addedByUser 
+  AddedByUser,
 }) => {
-  // Get user name from localStorage
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
+  // Calculate pagination indexes
+  const indexOfLastMilk = currentPage * itemsPerPage;
+  const indexOfFirstMilk = indexOfLastMilk - itemsPerPage;
+  const currentMilksPage = currentMilks.slice(indexOfFirstMilk, indexOfLastMilk);
+
+  const handlePageChange = (page:number, itemsPerPage:number) => {
+    setCurrentPage(page);
+    setItemsPerPage(itemsPerPage);
+  };
   return (
     <div className="rtl:mirror-x">
       <Table>
@@ -82,18 +103,17 @@ const MilkList = ({
           <Table.HeadCell>{translate("action")}</Table.HeadCell>
         </Table.Head>
         <Table.Body className="divide-y">
-          {currentMilks.map((milk) => (
+          {currentMilksPage.map((milk) => (
             <Table.Row key={milk.id}>
               <Table.Cell>{milk.Date}</Table.Cell>
-              <Table.Cell>{milk.AccountNo}</Table.Cell>
-              <Table.Cell>{milk.StallNo}</Table.Cell>
-              <Table.Cell>{milk.AnimalID}</Table.Cell>
-              <Table.Cell>{milk.Liter}</Table.Cell>
-              <Table.Cell>{milk.Fate}</Table.Cell>
-              <Table.Cell>{milk.Price}</Table.Cell>
-              <Table.Cell>{milk.Total}</Table.Cell>
-              <Table.Cell>{milk.CollectedFrom}</Table.Cell>
-              {/* Display addedByUser instead of milk.addedBy */}
+              <Table.Cell>{milk.accountNo}</Table.Cell>
+              <Table.Cell>{milk.stallNo}</Table.Cell>
+              <Table.Cell>{milk.animalId}</Table.Cell>
+              <Table.Cell>{milk.liter}</Table.Cell>
+              <Table.Cell>{milk.fat}</Table.Cell>
+              <Table.Cell>{milk.price}</Table.Cell>
+              <Table.Cell>{milk.total}</Table.Cell>
+              <Table.Cell>{milk.collectedFrom}</Table.Cell>
               <Table.Cell>{milk.AddedBy}</Table.Cell> {/* Render the AddedBy field */}
               <Table.Cell>
                 <div className="flex items-center">
@@ -115,6 +135,11 @@ const MilkList = ({
           ))}
         </Table.Body>
       </Table>
+      <Pagination
+        totalItems={currentMilks.length}
+        defaultItemsPerPage={itemsPerPage}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };

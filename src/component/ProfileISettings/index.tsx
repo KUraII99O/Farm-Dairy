@@ -9,7 +9,7 @@ interface FormErrors {
   company?: string;
 }
 
-const SignUpForm: React.FC = () => {
+const ProfileForm: React.FC = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -175,4 +175,4 @@ const SignUpForm: React.FC = () => {
   );
 };
 
-export default SignUpForm;
+export default ProfileForm;

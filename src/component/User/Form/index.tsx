@@ -76,7 +76,7 @@ const EditUser = () => {
       } else {
         await addUser(formData);
       }
-      navigate("/User");
+      navigate("/User?result=success");
     } catch (error) {
       console.error("Error submitting form:", error);
       // Handle error

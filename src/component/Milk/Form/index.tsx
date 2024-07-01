@@ -65,7 +65,7 @@ const EditMilk = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+  
     try {
       if (id) {
         await editMilkRecord(id, formData);
@@ -73,10 +73,8 @@ const EditMilk = () => {
         await addMilkRecord(formData);
       }
       setSuccessPopup(true);
-      setTimeout(() => {
-        setSuccessPopup(false);
-        navigate("/milk");
-      }, 1000); // Close the popup and navigate after 1 second
+      setSuccessPopup(false); // Immediately close the popup
+      navigate("/milk?result=success"); // Navigate immediately
     } catch (error) {
       console.error("Error:", error);
       setLoading(false);

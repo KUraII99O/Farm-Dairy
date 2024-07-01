@@ -1,153 +1,82 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
-import { toast } from "react-toastify";
-import { useTranslation } from "../../Translator/Provider";
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { Calf, CalfService } from "../CalfService"; // Assuming CalfService and Calf interface are defined
 
 export const ManageCowCalfContext = createContext<any>(null);
 
-interface CowCalf {
-  id: number;
-  image: File; // Add image property
-  gender: string;
-  animalType: string;
-  buyDate: Date;
-  buyingPrice: number;
-  milkPerDay: string;
-  status: boolean;
-  stallNumber: string;
-  dateOfBirth: Date;
-  animalAgeDays: string;
-  weight: string;
-  height: string;
-  color: string;
-  numOfPregnant: string;
-  buyFrom: string;
-  prevVaccineDone: string;
-  note: string;
-  CreatedBy: string;
-}
-
-export const ManageCowCalfProvider = ({ children }) => {
-  const [cowCalves, setCowCalves] = useState<CowCalf[]>([]);
-  const { translate } = useTranslation();
+export const ManageCowCalfProvider: React.FC = ({ children }) => {
+  const [calves, setCalves] = useState<Calf[]>([]);
 
   useEffect(() => {
-    const fetchCowCalves = async () => {
+    const fetchCalfData = async () => {
       try {
-        const response = await fetch('http://localhost:3000/calfs');
-        if (!response.ok) {
-          throw new Error('Failed to fetch CowCalf data');
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (!loggedInUser) {
+          throw new Error("User not logged in or user data not found");
         }
-        const data = await response.json();
-        setCowCalves(data);
+        const user = JSON.parse(loggedInUser);
+  
+        const data = await CalfService.fetchCalves(user.id);
+        setCalves(data || []);
       } catch (error) {
-        console.error('Error fetching CowCalf data:', error.message);
+        console.error("Error fetching calves:", error);
       }
     };
-
-    fetchCowCalves();
+  
+    fetchCalfData();
   }, []);
 
-  const addCowCalf = async (newCowCalf: Omit<CowCalf, 'id'>) => {
+  const addCalf = async (newCalf: Omit<Calf, 'id'>) => {
+    console.log("Adding calf:", newCalf);
+
     try {
-      const id = cowCalves.length + 1;
-      const cowCalfWithId: CowCalf = { id, ...newCowCalf };
+      const data = await CalfService.addCalf(newCalf);
+      setCalves(prevCalves => [...prevCalves, data]);
+      return null; // Return null if there's no error
 
-      const response = await fetch('http://localhost:3000/calfs', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(cowCalfWithId),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to add cow calf');
-      }
-
-      setCowCalves([...cowCalves, cowCalfWithId]);
     } catch (error) {
-      console.error('Error:', error.message);
+      console.error("Error adding calf:", error);
+      return error; // Return the error if there is one
+
     }
   };
 
-  const editCowCalf = async (id: number, updatedCowCalf: Partial<CowCalf>) => {
+  const editCalf = async (id: string, updatedCalf: Omit<Calf, 'id'>) => {
     try {
-      const response = await fetch(`http://localhost:3000/calfs/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedCowCalf),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to edit cow calf');
-      }
-
-      const updatedCowCalves = cowCalves.map((cowCalf) =>
-        cowCalf.id === id ? { ...cowCalf, ...updatedCowCalf } : cowCalf
+      await CalfService.editCalf(id, updatedCalf);
+      setCalves(prevCalves =>
+        prevCalves.map(calf => (calf.id === id ? { ...calf, ...updatedCalf } : calf))
       );
-
-      setCowCalves(updatedCowCalves);
     } catch (error) {
-      console.error('Error:', error.message);
+      console.error("Error editing calf:", error);
     }
   };
 
-  const deleteCowCalf = async (id: number) => {
+  const toggleCalfStatus = async (id: string) => {
     try {
-      const response = await fetch(`http://localhost:3000/calfs/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete cow calf');
-      }
-
-      const updatedCowCalves = cowCalves.filter((cowCalf) => cowCalf.id !== id);
-      setCowCalves(updatedCowCalves);
-    } catch (error) {
-      console.error('Error:', error.message);
-    }
-  };
-
-  const toggleStatus = async (id: number) => {
-    try {
-      const response = await fetch(`http://localhost:3000/calfs/${id}/toggle-status`, {
-        method: "PUT",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to toggle cow calf status");
-      }
-
-      const updatedCowCalves = cowCalves.map((cowCalf) =>
-        cowCalf.id === id ? { ...cowCalf, status: !cowCalf.status } : cowCalf
+      await CalfService.toggleCalfStatus(id);
+      setCalves(prevCalves =>
+        prevCalves.map(calf => (calf.id === id ? { ...calf, status: !calf.status } : calf))
       );
-
-      setCowCalves(updatedCowCalves);
-
-      toast.info(translate("Cow calf status updated successfully"), { autoClose: 1000, hideProgressBar: true });
     } catch (error) {
-      console.error("Error:", error.message);
-      toast.error("Failed to toggle cow calf status", { autoClose: 2000, hideProgressBar: true });
+      console.error("Error toggling calf status:", error);
     }
   };
 
-  const getCowCalfById = (id: number) => {
-    // Find and return the cow calf with the given ID
-    return cowCalves.find((cowCalf) => cowCalf.id === id);
+  const deleteCalf = async (id: string) => {
+    try {
+      await CalfService.deleteCalf(id);
+      setCalves(prevCalves => prevCalves.filter(calf => calf.id !== id));
+    } catch (error) {
+      console.error("Error deleting calf:", error);
+    }
   };
 
   const value = {
-    cowCalves,
-    setCowCalves,
-    
-    addCowCalf,
-    editCowCalf,
-    deleteCowCalf,
-    getCowCalfById,
-    toggleStatus
+    calves,
+    addCalf,
+    editCalf,
+    deleteCalf,
+    toggleCalfStatus
   };
 
   return (
@@ -157,10 +86,10 @@ export const ManageCowCalfProvider = ({ children }) => {
   );
 };
 
-export const useManageCowCalf = () => {
+export const useManageCalves = () => {
   const context = useContext(ManageCowCalfContext);
   if (!context) {
-    throw new Error("useManageCowCalf must be used within a ManageCowCalfProvider");
+    throw new Error("useManageCalves must be used within a ManageCowProvider");
   }
   return context;
 };

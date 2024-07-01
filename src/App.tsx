@@ -104,7 +104,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 const App: React.FC = () => {
   return (
-    
+
     <ManageUserProvider>
       <ManageStaffProvider>
         <ManageEmployeeProvider>
@@ -426,10 +426,18 @@ const App: React.FC = () => {
                                                               }
                                                             />
                                                             <Route
-                                                              path="/profile"
+                                                              path="/settings"
                                                               element={
                                                                 <RequireAuthentication>
-                                                                  <ProfileSettingPage />
+                                                                  <SettingPage />
+                                                                </RequireAuthentication>
+                                                              }
+                                                            />
+                                                            <Route
+                                                              path="/Profile"
+                                                              element={
+                                                                <RequireAuthentication>
+                                                                  <SettingPage />
                                                                 </RequireAuthentication>
                                                               }
                                                             />

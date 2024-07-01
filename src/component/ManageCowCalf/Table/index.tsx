@@ -6,38 +6,39 @@ import { Link } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
 import Pagination from "../../Pagination";
 
-
-
-
-interface CowListProps {
-  currentCows: any[]; // Update with actual type of cow data
+interface CalvesListProps {
+  currentCalves: any[]; // Update with actual type of calf data
   handleSort: (fieldName: string) => void;
   sortIcon: (fieldName: string) => React.ReactNode;
-  handleToggleStatus: (id: number, newStatus: string) => void; // Assuming cow status is toggled similarly
+  handleToggleStatus: (id: string, newStatus: string) => void; // Assuming calf status is toggled similarly
   handleDeleteConfirmation: (id: number) => void;
+  handleViewDetails: (calf: any) => void; // Adjust if `calf` data type is different
   translate: (key: string) => string;
   formClass: string;
   itemsPerPage: number; // If pagination is involved
 }
 
-const CowList: React.FC<CowListProps> = ({
-  currentCows,
+const CalvesList: React.FC<CalvesListProps> = ({
+  currentCalves,
   handleSort,
   sortIcon,
   handleDeleteConfirmation,
   handleViewDetails,
-  toggleCowStatus,
+  handleToggleStatus,
   translate,
   formClass,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
-  const indexOfLastCow = currentPage * itemsPerPage;
-  const indexOfFirstCow = indexOfLastCow - itemsPerPage;
-  const currentCowsPage = currentCows.slice(indexOfFirstCow, indexOfLastCow);
+  const indexOfLastCalf = currentPage * itemsPerPage;
+  const indexOfFirstCalf = indexOfLastCalf - itemsPerPage;
+  const currentCalvesPage = currentCalves.slice(
+    indexOfFirstCalf,
+    indexOfLastCalf
+  );
 
-  const handlePageChange = (page:number, itemsPerPage:number) => {
+  const handlePageChange = (page: number, itemsPerPage: number) => {
     setCurrentPage(page);
     setItemsPerPage(itemsPerPage);
   };
@@ -55,10 +56,10 @@ const CowList: React.FC<CowListProps> = ({
               {sortIcon("image")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("gender")}>
+          <Table.HeadCell onClick={() => handleSort("motherId")}>
             <div className="flex items-center">
-              {translate("Gender")}
-              {sortIcon("gender")}
+              {translate("Mother ID")}
+              {sortIcon("motherId")}
             </div>
           </Table.HeadCell>
           <Table.HeadCell onClick={() => handleSort("animalType")}>
@@ -79,43 +80,29 @@ const CowList: React.FC<CowListProps> = ({
               {sortIcon("buyingPrice")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("pregnantStatus")}>
+          <Table.HeadCell onClick={() => handleSort("status")}>
             <div className="flex items-center">
-              {translate("Pregnant Status")}
-              {sortIcon("pregnantStatus")}
-            </div>
-          </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("milkPerDay")}>
-            <div className="flex items-center">
-              {translate("Milk Per Day")}
-              {sortIcon("milkPerDay")}
-            </div>
-          </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("animalStatus")}>
-            <div className="flex items-center">
-              {translate("Animal Status")}
-              {sortIcon("animalStatus")}
+              {translate("Status")}
+              {sortIcon("status")}
             </div>
           </Table.HeadCell>
           <Table.HeadCell>{translate("Action")}</Table.HeadCell>
         </Table.Head>
         <Table.Body className="divide-y">
-          {currentCowsPage.map((cow, index) => (
-            <Table.Row key={cow.id}>
-              <Table.Cell>{indexOfFirstCow + index + 1}</Table.Cell>
+          {currentCalvesPage.map((calf, index) => (
+            <Table.Row key={calf.id}>
+              <Table.Cell>{indexOfFirstCalf + index + 1}</Table.Cell>
               <Table.Cell>
                 <img
-                  src={cow.image}
+                  src={calf.image}
                   alt="Profile"
                   className="h-12 w-12 rounded-full"
                 />
               </Table.Cell>
-              <Table.Cell>{cow.gender}</Table.Cell>
-              <Table.Cell>{cow.animalType}</Table.Cell>
-              <Table.Cell>{cow.buyDate}</Table.Cell>
-              <Table.Cell>{cow.buyingPrice}</Table.Cell>
-              <Table.Cell>{cow.pregnantStatus}</Table.Cell>
-              <Table.Cell>{cow.milkPerDay}</Table.Cell>
+              <Table.Cell>{calf.motherId}</Table.Cell>
+              <Table.Cell>{calf.animalType}</Table.Cell>
+              <Table.Cell>{calf.buyDate}</Table.Cell>
+              <Table.Cell>{calf.buyingPrice}</Table.Cell>
               <Table.Cell className="px-4 py-2">
                 <label
                   className={`inline-flex items-center cursor-pointer ${
@@ -125,46 +112,48 @@ const CowList: React.FC<CowListProps> = ({
                   <input
                     type="checkbox"
                     className="sr-only peer"
-                    checked={cow.status}
-                    onChange={() => toggleCowStatus(cow.id, !cow.status)} // Toggle the status directly
+                    checked={calf.status}
+                    onChange={() => handleToggleStatus(calf.id, !calf.status)} // Toggle the status directly
                   />
                   <div
-                    className={`relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 ${
-                      formClass === "ltr"
+                    className={`relative w-11 h-6 rounded-full  ${
+                      formClass === "rtl"
                         ? "peer-checked:after:-translate-x-full"
                         : "peer-checked:before:translate-x-full"
                     } peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 ${
                       formClass === "rtl"
                         ? "peer-checked:after:-translate-x-full"
                         : "peer-checked:after:translate-x-full"
-                    } after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-transform duration-200 ease-in-out dark:border-gray-600 peer-checked:bg-green-600`}
+                    } after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-transform duration-200 ease-in-out dark:border-gray-600`}
+                    style={{
+                      backgroundColor: calf.status ? "#EF4444" : "#34D399", // Red when sold, green when available
+                    }}
                   ></div>
                   <span
-                    className={`ms-3 text-sm font-medium text-gray-900 dark:text-gray-300 ${
-                      formClass === "rtl" ? "me-3" : "ms-3"
-                    }`}
+                    className={`ms-3 text-sm font-medium ${
+                      calf.status ? "text-red-600" : "text-green-600"
+                    } ${formClass === "rtl" ? "me-3" : "ms-3"}`}
                   >
-                    {cow.status ? translate("active") : translate("inactive")}{" "}
-                    {/* Use cow.status directly */}
+                    {calf.status ? translate("Sold") : translate("Available")}
                   </span>
                 </label>
               </Table.Cell>
               <Table.Cell>
                 <div className="flex items-center">
                   <button
-                    onClick={() => handleViewDetails(cow)}
+                    onClick={() => handleViewDetails(calf)}
                     className="text-secondary hover:text-primary focus:outline-none flex mr-4"
                   >
                     <FaEye className="w-5 h-5 mr-1" />
                   </button>
                   <Link
-                    to={`/Edit-Cow/${cow.id}`}
+                    to={`/Edit-Calf/${calf.id}`}
                     className="text-blue-500 hover:underline flex items-center mr-4"
                   >
                     <BsPencil className="w-5 h-5 mr-1" />
                   </Link>
                   <button
-                    onClick={() => handleDeleteConfirmation(cow.id)}
+                    onClick={() => handleDeleteConfirmation(calf.id)}
                     className="text-red-500 hover:text-red-700 focus:outline-none flex items-center"
                   >
                     <AiOutlineDelete className="w-5 h-5 mr-1" />
@@ -176,7 +165,7 @@ const CowList: React.FC<CowListProps> = ({
         </Table.Body>
       </Table>
       <Pagination
-        totalItems={currentCows.length}
+        totalItems={currentCalves.length}
         defaultItemsPerPage={itemsPerPage}
         onPageChange={handlePageChange}
       />
@@ -184,4 +173,4 @@ const CowList: React.FC<CowListProps> = ({
   );
 };
 
-export default CowList;
+export default CalvesList;
