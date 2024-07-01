@@ -6,12 +6,22 @@ const EditExpenseForm = ({ expense, onSubmit, onClose }) => {
   const formRef = useRef(null);
 
   const [formData, setFormData] = useState({
-    date: "",
+    Date: "",
     purposeName: "",
     details: "",
     totalAmount: "", // Make sure totalAmount field is included
-    addedBy: "",
+    AddedBy: "",
   });
+
+
+  useEffect(() => {
+    const date = new Date();
+    const formattedDate = date.toLocaleDateString(); // Adjust the date format as needed
+    setFormData(prevState => ({
+      ...prevState,
+      Date: formattedDate,
+    }));
+  }, []);
 
   useEffect(() => {
     if (expense) {
@@ -26,6 +36,17 @@ const EditExpenseForm = ({ expense, onSubmit, onClose }) => {
       [name]: value,
     });
   };
+useEffect(() => {
+    const storedUser = localStorage.getItem('loggedInUser');
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);
+      const { username } = userData;
+      setFormData(prevState => ({
+        ...prevState,
+        AddedBy: username,
+      }));
+    }
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();

@@ -7,8 +7,10 @@ import { BiListUl } from "react-icons/bi";
 import { ExpenseContext } from "../Provider";
 import { toast, ToastContainer } from "react-toastify";
 import EditExpenseForm from "../Form";
+import ExpenseList from "../Table";
+import { useTranslation } from "../../Translator/Provider";
 
-const ExpenseList: React.FC = () => {
+const ExpenseTable: React.FC = () => {
   const { expenses, deleteExpense, addExpense, editExpense } =
     useContext(ExpenseContext);
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,7 +20,9 @@ const ExpenseList: React.FC = () => {
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState(null);
-
+  const { translate, language } = useTranslation();
+  const isArabic = language === "ar";
+  const formClass = isArabic ? "rtl" : "ltr";
   const handleSort = (fieldName: string) => {
     if (sortBy === fieldName) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -102,17 +106,6 @@ const ExpenseList: React.FC = () => {
       })
     : filteredExpenses;
 
-  const handlePageChange = (page: number, itemsPerPage: number) => {
-    setCurrentPage(page);
-    setItemsPerPage(itemsPerPage);
-  };
-
-  const indexOfLastExpense = currentPage * itemsPerPage;
-  const indexOfFirstExpense = indexOfLastExpense - itemsPerPage;
-  const currentExpenses = sortedExpenses.slice(
-    indexOfFirstExpense,
-    indexOfLastExpense
-  );
 
   return (
     <>
@@ -146,117 +139,21 @@ const ExpenseList: React.FC = () => {
           <BiListUl className="inline-block mr-2" />
           Expense List
         </h1>
-        <table className="min-w-full bg-white border-collapse">
-          <thead>
-            <tr>
-              <th
-                className="border border-gray-300 px-4 py-2 cursor-pointer"
-                onClick={() => handleSort("id")}
-              >
-                <div className="flex items-center">
-                  #
-                  {sortIcon("id")}
-                </div>
-              </th>
-              <th
-                className="border border-gray-300 px-4 py-2 cursor-pointer"
-                onClick={() => handleSort("date")}
-              >
-                <div className="flex items-center">
-                  Date
-                  {sortIcon("date")}
-                </div>
-              </th>
-              <th
-                className="border border-gray-300 px-4 py-2 cursor-pointer"
-                onClick={() => handleSort("purposeName")}
-              >
-                <div className="flex items-center">
-                  Purpose Name
-                  {sortIcon("purposeName")}
-                </div>
-              </th>
-              <th
-                className="border border-gray-300 px-4 py-2 cursor-pointer"
-                onClick={() => handleSort("details")}
-              >
-                <div className="flex items-center">
-                  Details
-                  {sortIcon("details")}
-                </div>
-              </th>
-              <th
-                className="border border-gray-300 px-4 py-2 cursor-pointer"
-                onClick={() => handleSort("totalAmount")}
-              >
-                <div className="flex items-center">
-                  Total Amount
-                  {sortIcon("totalAmount")}
-                </div>
-              </th>
-              <th
-                className="border border-gray-300 px-4 py-2 cursor-pointer"
-                onClick={() => handleSort("addedBy")}
-              >
-                <div className="flex items-center">
-                  Added By
-                  {sortIcon("addedBy")}
-                </div>
-              </th>
-              <th className="border border-gray-300 px-4 py-2">Action</th>
-            </tr>
-          </thead>
+        <ExpenseList
+          currentExpenses={sortedExpenses}
+          handleSort={handleSort}
+          sortIcon={sortIcon}
+          handleEditDrawerOpen={handleEditDrawerOpen}
+          handleDeleteConfirmation={handleDeleteConfirmation}
+          translate={translate}
+          formClass={formClass} 
+          
+          />
 
-          <tbody>
-            {currentExpenses.map((expense) => (
-              <tr key={expense.id}>
-                <td className="border border-gray-300 px-4 py-2">
-                  {expense.id}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {expense.date}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {expense.purposeName}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {expense.details}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                {expense.totalAmount}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {expense.addedBy}
-                </td>
-                <td className="border border-gray-300 px-2 py-2">
-                  <div className="flex items-center">
-                    <button
-                      onClick={() => handleEditDrawerOpen(expense)}
-                      className="text-blue-500 hover:underline flex items-center mr-4 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-110"
-                    >
-                      <BsPencil className="w-5 h-5 mr-1" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteConfirmation(expense.id)}
-                      className="text-red-500 hover:hover:underline flex items-center mr-4 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-110"
-                    >
-                      <AiOutlineDelete className="w-5 h-5 mr-1" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <Pagination
-          totalItems={sortedExpenses.length}
-          defaultItemsPerPage={itemsPerPage}
-          onPageChange={handlePageChange}
-        />
         <ToastContainer />
       </div>
     </>
   );
 };
 
-export default ExpenseList;
+export default ExpenseTable;

@@ -1,69 +1,82 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { Expense, ExpenseService } from "../FarmExpenseService";
 
-export const ExpenseContext = createContext();
+export const ExpenseContext = createContext<any>(null);
 
-export const ExpenseProvider = ({ children }) => {
-  const [expenses, setExpenses] = useState([
-    {
-      id: 1,
-      date: "2024-03-01",
-      purposeName: "Seeds",
-      details: "Purchased seeds for spring planting",
-      totalAmount: 200, // Make sure totalAmount is included
-      addedBy: "John Doe",
-    },
-    {
-      id: 2,
-      date: "2024-03-05",
-      purposeName: "Equipment Maintenance",
-      details: "Serviced tractor and other farm equipment",
-      totalAmount: 150, // Example amount in dollars
-      addedBy: "Jane Smith",
-    },
-    // Add more expenses as needed
-  ]);
+export const ExpenseProvider: React.FC = ({ children }) => {
+  const [expenses, setExpenses] = useState<Expense[]>([]);
 
-  const addExpense = (newExpense) => {
-    const maxId = Math.max(...expenses.map((expense) => expense.id), 0);
-    const newExpenseWithId = { ...newExpense, id: maxId + 1 };
-    setExpenses([...expenses, newExpenseWithId]);
+  useEffect(() => {
+    const fetchExpensesData = async () => {
+      try {
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (!loggedInUser) {
+          throw new Error("User not logged in or user data not found");
+        }
+        const user = JSON.parse(loggedInUser);
+        console.log("User ID:", user.id); // Log user ID
+  
+        const data = await ExpenseService.fetchExpenses();
+        console.log("Expenses data:", data); // Log expenses data
+        setExpenses(data || []);
+      } catch (error) {
+        console.error("Error fetching expenses:", error);
+      }
+    };
+  
+    fetchExpensesData();
+  }, []);
+
+  const addExpense = async (newExpense: Omit<Expense, 'id'>) => {
+    console.log("Adding expense:", newExpense);
+    try {
+      const data = await ExpenseService.addExpense(newExpense);
+      console.log("Expense added successfully:", data);
+      setExpenses(prevExpenses => [...prevExpenses, data]);
+    } catch (error) {
+      console.error("Error adding expense:", error);
+    }
   };
 
-  const editExpense = (id, updatedExpense) => {
-    setExpenses((prevExpenses) =>
-      prevExpenses.map((expense) =>
-        expense.id === id ? { ...expense, ...updatedExpense } : expense
-      )
-    );
+  const editExpense = async (id: string, updatedExpense: Omit<Expense, 'id'>) => {
+    try {
+      await ExpenseService.editExpense(id, updatedExpense);
+      setExpenses(prevExpenses =>
+        prevExpenses.map(expense => (expense.id === id ? { ...expense, ...updatedExpense } : expense))
+      );
+    } catch (error) {
+      console.error("Error editing expense:", error);
+    }
   };
 
-  const deleteExpense = (id) => {
-    const updatedExpenses = expenses.filter((expense) => expense.id !== id);
-    setExpenses(updatedExpenses);
+  const deleteExpense = async (id: string) => {
+    try {
+      await ExpenseService.deleteExpense(id);
+      setExpenses(prevExpenses => prevExpenses.filter(expense => expense.id !== id));
+    } catch (error) {
+      console.error("Error deleting expense:", error);
+    }
   };
 
-  const getExpenseById = (id) => {
-    // Find and return the expense with the given ID
-    return expenses.find((expense) => expense.id === id);
-  };
 
   const value = {
     expenses,
     addExpense,
     editExpense,
     deleteExpense,
-    getExpenseById,
   };
 
   return (
-    <ExpenseContext.Provider value={value}>{children}</ExpenseContext.Provider>
+    <ExpenseContext.Provider value={value}>
+      {children}
+    </ExpenseContext.Provider>
   );
 };
 
-export const useExpense = () => {
+export const useManageExpenses = () => {
   const context = useContext(ExpenseContext);
   if (!context) {
-    throw new Error("useExpense must be used within an ExpenseProvider");
+    throw new Error("useManageExpenses must be used within a ManageExpensesProvider");
   }
   return context;
 };
