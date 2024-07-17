@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { format } from "date-fns";
 
 interface Invoice {
   id: number;
   user: string;
   plan: string;
   price: string;
-  features: string;
+  features: {
+    description: string;
+    limitations: {
+      [key: string]: number;
+    };
+  };
   startDate: string;
   dueDate: string;
   paymentStatus: string;
@@ -62,15 +68,32 @@ const Details: React.FC = () => {
           </div>
           <div>
             <p className="text-lg font-semibold">Features:</p>
-            <p className="text-gray-800">{invoice.features}</p>
+            <p className="text-gray-800">
+              Description: {invoice.features.description}
+              <br />
+              Limitations:
+              <ul className="list-disc ml-4">
+                {Object.entries(invoice.features.limitations).map(
+                  ([key, value]) => (
+                    <li key={key}>
+                      {key}: {value}
+                    </li>
+                  )
+                )}
+              </ul>
+            </p>
           </div>
           <div>
             <p className="text-lg font-semibold">Start Date:</p>
-            <p className="text-gray-800">{invoice.startDate}</p>
+            <p className="text-gray-800">
+              {format(new Date(invoice.startDate), "yyyy/MM/dd")}
+            </p>
           </div>
           <div>
             <p className="text-lg font-semibold">Due Date:</p>
-            <p className="text-gray-800">{invoice.dueDate}</p>
+            <p className="text-gray-800">
+              {format(new Date(invoice.dueDate), "yyyy/MM/dd")}
+            </p>
           </div>
           <div>
             <p className="text-lg font-semibold">Payment Status:</p>
@@ -81,7 +104,7 @@ const Details: React.FC = () => {
                   : "text-red-600"
               }`}
             >
-              {invoice.paymentStatus} 
+              {invoice.paymentStatus}
             </p>
           </div>
         </div>

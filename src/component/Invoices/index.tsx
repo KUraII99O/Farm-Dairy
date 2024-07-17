@@ -25,11 +25,37 @@ const Invoice: React.FC = () => {
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<number | null>(
     null
   );
+  const [userPlan, setUserPlan] = useState<string | null>(null);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
 
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), "yyyy/MM/dd");
+  };
+
+  const fetchUserPlan = async () => {
+    try {
+      const loggedInUser = localStorage.getItem("loggedInUser");
+      if (!loggedInUser) {
+        throw new Error("User not logged in");
+      }
+
+      const user = JSON.parse(loggedInUser);
+      if (!user || !user.id) {
+        throw new Error("User ID not found");
+      }
+
+      console.log(`Fetching plan for user ID: ${user.id}`);
+      const response = await fetch(`http://localhost:3000/users/${user.id}/plan`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch user plan");
+      }
+      const planData = await response.json();
+      console.log("Fetched plan:", planData);
+      setUserPlan(planData.plan); // Assuming the plan is returned in this structure
+    } catch (error) {
+      console.error("Error fetching user plan:", error);
+    }
   };
 
   const fetchInvoices = async () => {
@@ -45,9 +71,7 @@ const Invoice: React.FC = () => {
       }
 
       console.log(`Fetching invoices for user ID: ${user.id}`);
-      const response = await fetch(
-        `http://localhost:3000/users/${user.id}/invoices`
-      );
+      const response = await fetch(`http://localhost:3000/users/${user.id}/invoices`);
       if (!response.ok) {
         throw new Error("Failed to fetch invoices");
       }
@@ -62,7 +86,12 @@ const Invoice: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchInvoices();
+    const fetchData = async () => {
+      await fetchUserPlan();
+      await fetchInvoices();
+    };
+
+    fetchData();
   }, []);
 
   const handleDetails = (invoiceId: number) => {
@@ -79,8 +108,12 @@ const Invoice: React.FC = () => {
     setSelectedInvoiceId(null);
   };
 
-  if (invoices.length === 0) {
+  if (isLoading) {
     return <div>Loading...</div>; // Handle initial loading state
+  }
+
+  if (userPlan === "free" && invoices.length === 0) {
+    return <div>You have a free plan. No invoice available.</div>;
   }
 
   return (

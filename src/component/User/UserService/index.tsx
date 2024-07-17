@@ -112,7 +112,7 @@ async function toggleUserStatus(id: string): Promise<User> {
     throw new Error("User not logged in");
   }
 
-  const user = JSON.parse(loggedInUser);
+  const user: User = JSON.parse(loggedInUser);
   if (!user || !user.id) {
     throw new Error("User ID not found");
   }
@@ -120,11 +120,18 @@ async function toggleUserStatus(id: string): Promise<User> {
   try {
     const response = await fetch(`http://localhost:3000/users/${id}/toggle-status`, {
       method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
+
     if (!response.ok) {
-      throw new Error('Failed to toggle user status');
+      const errorText = await response.text();
+      throw new Error(`Failed to toggle user status: ${errorText}`);
     }
-    return await response.json();
+
+    const updatedUser: User = await response.json();
+    return updatedUser;
   } catch (error) {
     console.error('Error toggling user status:', error.message);
     throw error;

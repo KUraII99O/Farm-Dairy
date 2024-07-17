@@ -10,7 +10,6 @@ const EditCowFeedForm = () => {
   const { id } = useParams<{ id: string }>();
   const { cowFeedRecords, addCowFeedRecord, editCowFeedRecord } = useContext(ManageCowFeedContext);
   const navigate = useNavigate();
-  const [currentDate, setCurrentDate] = useState<string>("");
   const { translate, language } = useTranslation();
 
   const isEditMode = !!id;
@@ -18,7 +17,7 @@ const EditCowFeedForm = () => {
   const [formData, setFormData] = useState({
     stallNo: "",
     cowNumber: "",
-    date: currentDate,
+    date: "",
     note: "",
     informations: Array.from({ length: 3 }, () => ({
       foodItem: "",
@@ -34,7 +33,6 @@ const EditCowFeedForm = () => {
   useEffect(() => {
     const date = new Date();
     const formattedDate = date.toISOString().split("T")[0]; // Adjust the date format as needed
-    setCurrentDate(formattedDate);
     setFormData((prevFormData) => ({ ...prevFormData, date: formattedDate }));
   }, []);
 
@@ -43,9 +41,9 @@ const EditCowFeedForm = () => {
       const selectedCowFeed = cowFeedRecords.find((cowFeed) => cowFeed.id === id);
       if (selectedCowFeed) {
         setFormData({
-          stallNo: selectedCowFeed.stallNo  ,
+          stallNo: selectedCowFeed.stallNo,
           cowNumber: selectedCowFeed.cowNumber,
-          date: selectedCowFeed.formattedDate,
+          date: selectedCowFeed.date, // Ensure this is the correct field name
           note: selectedCowFeed.note,
           informations: selectedCowFeed.informations,
         });
@@ -96,7 +94,7 @@ const EditCowFeedForm = () => {
     setTimeout(() => {
       setSuccessPopup(false);
       navigate("/Cow-Feed");
-    }, 1000);
+    },0);
   };
 
   const handleRemoveRow = (indexToRemove) => {
@@ -184,7 +182,7 @@ const EditCowFeedForm = () => {
               <tr key={index}>
                 <td className="border border-gray-400 px-3 py-2">
                   <input
-                    type="string"
+                    type="text"
                     placeholder={translate("fooditem")}
                     name="foodItem"
                     value={info.foodItem}
@@ -194,7 +192,7 @@ const EditCowFeedForm = () => {
                 </td>
                 <td className="border border-gray-400 px-3 py-2">
                   <input
-                    type="string"
+                    type="text"
                     placeholder={translate("itemquantity")}
                     name="quantity"
                     value={info.quantity}
@@ -223,7 +221,7 @@ const EditCowFeedForm = () => {
                     <TiMinus />
                   </button>
                   <input
-                    type="string"
+                    type="text"
                     placeholder={translate("feedingtime")}
                     name="feedingTime"
                     value={info.feedingTime}

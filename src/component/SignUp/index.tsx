@@ -50,35 +50,35 @@ const SignUpForm: React.FC<{ planId?: number }> = ({ planId }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-
       try {
         const response = await fetch("http://localhost:3000/register", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ mobile, username, email, password, planId: plan?.id, }),
+          body: JSON.stringify({ mobile, username, email, password, planId: plan?.id }),
         });
-
+  
         if (!response.ok) {
           const errorMessage = await response.json();
           throw new Error(errorMessage.error);
         }
-
+  
         const data = await response.json();
-        console.log(data.message); // Print success message
-
-
-        // Navigate to the dashboard after 3 seconds
+        console.log(data.message); // Print success message or handle it as needed
+  
+        // Navigate to the login page after registration
         setTimeout(() => {
           navigate("/login");
         }, 1000);
       } catch (error) {
         console.error("Registration failed:", error.message);
+        // Handle error state or display error to the user
       }
     }
   };
 
+  
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };

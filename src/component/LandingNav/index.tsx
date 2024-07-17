@@ -17,7 +17,11 @@ interface LandingNavProps {
   onContactClick?: () => void;
 }
 
-const LandingNav: React.FC<LandingNavProps> = ({ onPricingClick, onServiceClick, onContactClick }) => {
+const LandingNav: React.FC<LandingNavProps> = ({
+  onPricingClick,
+  onServiceClick,
+  onContactClick,
+}) => {
   const { translate, setLanguage, language } = useTranslation();
   const navigate = useNavigate();
 
@@ -60,7 +64,7 @@ const LandingNav: React.FC<LandingNavProps> = ({ onPricingClick, onServiceClick,
           >
             <img
               src="https://sakosys.com/envato/dairy-farm-management-system/storage/app/public/uploads/751280420015239.png"
-              className="h-8 w-auto sm:h-12 sm:w-auto ml-24"
+              className="h-8 w-auto sm:h-12 sm:w-auto ml-2 sm:ml-24"
               alt="Your Company"
             />
             <h3 className="text-lg sm:text-xl font-bold ml-2 text-primary">
@@ -68,8 +72,8 @@ const LandingNav: React.FC<LandingNavProps> = ({ onPricingClick, onServiceClick,
             </h3>
           </Link>
         </NavbarBrand>
-        <div className="flex md:order-2">
-          <Button className="bg-primary mr-24">
+        <div className="flex items-center justify-end md:order-2">
+          <Button className="bg-primary mr-4 sm:mr-8">
             {translate("getstarted")}
           </Button>
           <div className="flex items-center ">
@@ -98,9 +102,24 @@ const LandingNav: React.FC<LandingNavProps> = ({ onPricingClick, onServiceClick,
               <Link to="/solutions/desktop">{translate("desktop")}</Link>
             </Dropdown.Item>
           </Dropdown>
-          <NavbarLink className="cursor-pointer" onClick={handleServiceClick}>{translate("services")}</NavbarLink>
-          <NavbarLink className="cursor-pointer" onClick={handlePricingClick}>{translate("pricing")}</NavbarLink>
-          <NavbarLink className="cursor-pointer" onClick={handleContactClick}>{translate("contact")}</NavbarLink>
+          <NavbarLink
+            className="cursor-pointer"
+            onClick={handleServiceClick}
+          >
+            {translate("services")}
+          </NavbarLink>
+          <NavbarLink
+            className="cursor-pointer"
+            onClick={handlePricingClick}
+          >
+            {translate("pricing")}
+          </NavbarLink>
+          <NavbarLink
+            className="cursor-pointer"
+            onClick={handleContactClick}
+          >
+            {translate("contact")}
+          </NavbarLink>
         </NavbarCollapse>
       </Navbar>
     </div>

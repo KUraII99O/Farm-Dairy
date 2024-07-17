@@ -138,6 +138,7 @@ const SubscriptionDetails: React.FC = () => {
         loggedInUser.plan = result.user.plan;
         localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
         setShowCancelConfirmation(false); // Close confirmation dialog after successful cancellation
+        alert('Your subscription has been canceled. Some data is now read-only.');
       } else {
         const errorMessage = await response.text();
         if (response.status === 404 && errorMessage === 'User not found') {

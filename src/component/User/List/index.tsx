@@ -9,7 +9,7 @@ import { useTranslation } from "../../Translator/Provider";
 import UserList from "../Table";
 
 const UserTable: React.FC = () => {
-  const { users, toggleStatus, deleteUser } = useContext(ManageUserContext);
+  const { users, toggleUserStatus, deleteUser } = useContext(ManageUserContext);
   const { translate, language } = useTranslation();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -110,7 +110,7 @@ const UserTable: React.FC = () => {
           currentUser={sortedUsers}
           handleSort={handleSort}
           sortIcon={sortIcon}
-          handleToggleStatus={toggleStatus} // Assuming toggleStatus is provided by ManageUserContext
+          handleToggleStatus={toggleUserStatus} // Assuming toggleStatus is provided by ManageUserContext
           handleDeleteConfirmation={handleDeleteConfirmation}
           translate={translate}
           formClass={formClass}

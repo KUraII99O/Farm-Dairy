@@ -104,8 +104,8 @@ const EmployeeList: React.FC<EmployeeListProps> = ({
               <Table.Cell>{employee.payDate}</Table.Cell>
               <Table.Cell>{employee.month}</Table.Cell>
               <Table.Cell>{employee.year}</Table.Cell>
-              <Table.Cell>{employee.salaryAmount}</Table.Cell>
-              <Table.Cell>{employee.additionAmount}</Table.Cell>
+              <Table.Cell>{employee.monthlySalary}</Table.Cell>
+              <Table.Cell>{employee.additionMoney}</Table.Cell>
               <Table.Cell>{employee.total}</Table.Cell>
               <Table.Cell>
                 <div className="flex items-center">

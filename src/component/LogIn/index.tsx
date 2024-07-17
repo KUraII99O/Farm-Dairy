@@ -20,24 +20,24 @@ const LogIn = ({ onLogin }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
       const response = await fetch("http://localhost:3000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password,username, planId: plan?.id }),
+        body: JSON.stringify({ email, password }),
       });
-
+  
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error);
+        throw new Error(error.error || "Login failed");
       }
-
+  
       const responseBody = await response.json();
       localStorage.setItem("loggedInUser", JSON.stringify(responseBody.user));
-      onLogin();
+      onLogin(); // Assuming this function sets some state indicating the user is logged in
       setErrorMessage(""); // Reset error message state
       setTimeout(() => {
         navigate("/dashboard"); // Navigate to dashboard using useNavigate hook

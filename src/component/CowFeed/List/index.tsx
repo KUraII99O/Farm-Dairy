@@ -14,7 +14,7 @@ import { ManageCowFeedContext } from "../Provider";
 import { Drawer, Button } from "flowbite-react";
 
 const CowFeedTable: React.FC = () => {
-  const { cowFeedRecords, deletecowFeed } = useContext(ManageCowFeedContext);
+  const { cowFeedRecords, deleteCowFeedRecord } = useContext(ManageCowFeedContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
@@ -98,7 +98,7 @@ const CowFeedTable: React.FC = () => {
   );
 
   const handleDeleteConfirmation = (id: string) => {
-    if (
+    if ( 
       window.confirm("Are you sure you want to delete this cow feed entry?")
     ) {
       handleDelete(id);
@@ -108,7 +108,7 @@ const CowFeedTable: React.FC = () => {
   const handleDelete = async (id: string) => {
     setIsDeleting(true);
     try {
-      await deletecowFeed(id);
+      await deleteCowFeedRecord(id);
       setIsDeleting(false);
       toast.success("Cow feed entry deleted successfully!");
     } catch (error) {
