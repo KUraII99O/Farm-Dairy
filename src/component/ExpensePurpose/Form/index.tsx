@@ -1,22 +1,21 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { MdEdit } from "react-icons/md";
-import { FaUserPlus } from "react-icons/fa";
-import { ExpensePurposeContext } from "../Provider";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "../../Translator/Provider";
 
-const EditPurposeForm = ({ purpose, onSubmit, onClose }) => {
-  const navigate = useNavigate();
-  const formRef = useRef(null);
-  const { id } = useParams();
-
+const EditPurposeForm = ({ purpose, onSubmit }) => {
   const [formData, setFormData] = useState({
+    id: "",
     name: "",
   });
+  const { translate } = useTranslation();
 
   useEffect(() => {
     if (purpose) {
+      setFormData(purpose);
+    } else {
+      // If purpose is not provided (i.e., adding a new purpose), reset formData
       setFormData({
-        name: purpose.name,
+        id: "",
+        name: "",
       });
     }
   }, [purpose]);
@@ -31,95 +30,42 @@ const EditPurposeForm = ({ purpose, onSubmit, onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData); // Call onSubmit function passed from parent component
+    onSubmit(formData);
   };
-
-  const handleCloseDrawer = () => {
-    onClose(); // Call the onClose function passed from the parent component
-    navigate("/Purpose-List");
-  };
-
-  const handleOutsideClick = (e) => {
-    if (formRef.current && !formRef.current.contains(e.target)) {
-      handleCloseDrawer();
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, []);
 
   return (
-    <>
-      {/* Semi-transparent overlay */}
-      <div
-        className="fixed inset-0 bg-gray-500 bg-opacity-70 z-40"
-        onClick={handleCloseDrawer}
-      ></div>
-      {/* Edit purpose form */}
-      <div className="fixed inset-0  z-50 flex justify-end ">
-        <div className="w-full max-w-md bg-white shadow-lg p-6" ref={formRef}>
-          <button
-            className="absolute top-0 right-0 m-2 text-gray-600 hover:text-gray-900 focus:outline-none"
-            onClick={handleCloseDrawer}
+    <div className="flex justify-end"> {/* Move the form container to the right */}
+      <form onSubmit={handleSubmit} className="w-96"> {/* Set a width for the form */}
+        <h2 className="text-xl font-bold mb-4">
+          {purpose ? translate("editPurpose") : translate("addNewPurpose")}
+        </h2>
+        <div className="mb-4">
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-          <div className="flex items-center justify-center mb-4">
-            <h2 className="text-2xl font-bold flex items-center">
-              {purpose ? (
-                <>
-                  <MdEdit className="mr-2" /> Edit Purpose
-                </>
-              ) : (
-                <>
-                  <FaUserPlus className="mr-2" /> Add Purpose
-                </>
-              )}
-            </h2>
-          </div>
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Purpose Name *:
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div className="flex ">
-              <button
-                type="submit"
-                className="bg-secondary hover:primary text-white font-bold py-2 px-4 rounded"
-              >
-                {purpose ? "Update Purpose" : "Add Purpose"}
-              </button>
-            </div>
-          </form>
+            {translate("purposeName")}:
+          </label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
         </div>
-      </div>
-    </>
+        
+
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className="bg-secondary hover:bg-primary text-white font-bold py-2 px-4 rounded"
+          >
+            {purpose ? translate("updatePurpose") : translate("addPurpose")}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 

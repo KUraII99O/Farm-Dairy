@@ -13,11 +13,12 @@ interface CowListProps {
   currentCows: any[]; // Update with actual type of cow data
   handleSort: (fieldName: string) => void;
   sortIcon: (fieldName: string) => React.ReactNode;
-  handleToggleStatus: (id: number, newStatus: string) => void; // Assuming cow status is toggled similarly
+  handleToggleStatus: (id: string, newStatus: string) => void; // Assuming cow status is toggled similarly
   handleDeleteConfirmation: (id: number) => void;
   translate: (key: string) => string;
   formClass: string;
   itemsPerPage: number; // If pagination is involved
+  handleViewDetails: (id: string) => void;
 }
 
 const CowList: React.FC<CowListProps> = ({

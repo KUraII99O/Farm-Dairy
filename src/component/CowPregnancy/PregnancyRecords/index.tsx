@@ -1,20 +1,22 @@
 import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
-import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
+import { AiOutlineDelete } from "react-icons/ai";
 import { useTranslation } from "../../Translator/Provider";
 import { ManagePregnancyContext } from "../Provider";
 import { toast } from "react-toastify";
 import EditPregnancyForm from "../Drawer";
+import { Table } from "flowbite-react";
+import { BsPencil } from "react-icons/bs";
 
 const PregnancyRecordsTable: React.FC = () => {
   const { pregnancies, addPregnancy, deletePregnancy, editPregnancy } =
     useContext(ManagePregnancyContext);
-  const { translate } = useTranslation();
+  const { translate,language } = useTranslation();
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false); // State to manage edit drawer visibility
   const [selectedPregnancy, setSelectedPregnancy] = useState(null); // State to store selected pregnancy for editing
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleDeleteConfirmation = (id: number) => {
+  const handleDeleteConfirmation = (id: string) => {
     if (window.confirm("Are you sure you want to delete this pregnancy?")) {
       handleDelete(id);
     }
@@ -66,80 +68,72 @@ const PregnancyRecordsTable: React.FC = () => {
         {translate("pregnancyRecords")}
       </h1>
 
-      <table className="min-w-full bg-white border-collapse mb-6 ">
-        {/* Table header */}
-        <thead>
-          <tr>
-            <th className="border border-gray-300 px-4 py-2">
-              {translate("stallNo")}
-            </th>
-            <th className="border border-gray-300 px-4 py-2">
-              {translate("pregnancytype")}
-            </th>
-            <th className="border border-gray-300 px-4 py-2">
-              {translate("sementype")}
-            </th>
-            <th className="border border-gray-300 px-4 py-2">
-              {translate("semenpushdate")}
-            </th>
-            <th className="border border-gray-300 px-4 py-2">
-              {translate("pregnancystartdate")}
-            </th>
-            <th className="border border-gray-300 px-4 py-2">
-              {translate("pregnantStatus")}
-            </th>
-            <th className="border border-gray-300 px-4 py-2">
-              {translate("action")}
-            </th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {pregnancies
-            .filter((pregnancy) =>
-              Object.values(pregnancy).some((value) => value !== "")
-            )
-            .map((pregnancy) => (
-              <tr key={pregnancy.id}>
-                {/* Render each field accordingly */}
-                <td className="border border-gray-300 px-4 py-2">
-                  {pregnancy.stallNo}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {pregnancy.pregnancyType}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {pregnancy.semenType}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {pregnancy.semenPushDate}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {pregnancy.pregnancyStartDate}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {pregnancy.pregnancyStatus}
-                </td>
-                <td className="border border-gray-300 px-2 py-2">
-                  <div className="flex items-center">
-                    <button
-                      onClick={() => handleEditDrawerOpen(pregnancy)}
-                      className="text-blue-500 hover:underline flex items-center mr-4"
-                    >
-                      <AiOutlineEdit className="w-5 h-5 mr-1" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteConfirmation(pregnancy.id)}
-                      className="text-red-500 hover:text-red-700 focus:outline-none flex items-center"
-                    >
-                      <AiOutlineDelete className="w-5 h-5 mr-1" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
+      <Table>
+      <Table.Head>
+        <Table.HeadCell >
+          <div className="flex items-center">{translate("stallNo")}</div>
+        </Table.HeadCell>
+        <Table.HeadCell >
+          <div className="flex items-center">
+            {translate("pregnancyType")}
+           
+          </div>
+        </Table.HeadCell>
+        <Table.HeadCell >
+          <div className="flex items-center">
+            {translate("semenType")}
+          
+          </div>
+        </Table.HeadCell>
+        <Table.HeadCell >
+          <div className="flex items-center">
+            {translate("semenPushDate")}
+           
+          </div>
+        </Table.HeadCell>
+        <Table.HeadCell >
+          <div className="flex items-center">
+            {translate("pregnancyStartDate")}
+           
+          </div>
+        </Table.HeadCell>
+        <Table.HeadCell>
+          <div className="flex items-center">
+            {translate("pregnancyStatus")}
+           
+          </div>
+        </Table.HeadCell>
+        <Table.HeadCell>{translate("action")}</Table.HeadCell>
+      </Table.Head>
+      <Table.Body className="divide-y">
+        {pregnancies.map((pregnancy) => (
+          <Table.Row key={pregnancy.id}>
+            <Table.Cell>{pregnancy.stallNumber}</Table.Cell>
+            <Table.Cell>{pregnancy.pregnancyType}</Table.Cell>
+            <Table.Cell>{pregnancy.semenType}</Table.Cell>
+            <Table.Cell>{pregnancy.semenPushDate}</Table.Cell>
+            <Table.Cell>{pregnancy.pregnancyStartDate}</Table.Cell>
+            <Table.Cell>{pregnancy.pregnancyStatus}</Table.Cell>
+            <Table.Cell>
+              <div className="flex items-center">
+                <Link
+                  to={`/edit-pregnancy/${String(pregnancy.id)}`}
+                  className="text-blue-500 hover:underline flex items-center mr-2"
+                >
+                  <BsPencil className="w-5 h-5 mr-1" />
+                </Link>
+                <button
+                  onClick={() => handleDeleteConfirmation(pregnancy.id)}
+                  className="text-red-500 hover:text-red-700 focus:outline-none flex items-center"
+                >
+                  <AiOutlineDelete className="w-5 h-5 mr-1" />
+                </button>
+              </div>
+            </Table.Cell>
+          </Table.Row>
+        ))}
+      </Table.Body>
+    </Table>
       {isEditDrawerOpen && (
         <EditPregnancyForm
           pregnancy={selectedPregnancy}

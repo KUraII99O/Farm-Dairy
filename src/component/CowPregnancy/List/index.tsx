@@ -6,12 +6,14 @@ const CowDetails = ({ formData, cowList }) => {
   const { translate } = useTranslation();
 
   useEffect(() => {
-    
+    console.log("formData.animalId:", formData.animalId);
+    console.log("cowList:", cowList);
+
     // Filter the cow from the cowList based on the selected animalID
     const cow = cowList.find(cow => {
-      // Convert formData.animalID to a number for comparison
-      const animalId = parseInt(formData.animalId);
-      return cow.id === animalId;
+      // Convert both IDs to the same type for comparison
+      const animalId = formData.animalId.toString();
+      return cow.id.toString() === animalId;
     });
 
     console.log("Selected Cow:", cow); // Debugging
@@ -22,6 +24,7 @@ const CowDetails = ({ formData, cowList }) => {
   if (!selectedCow) {
     return <p>No cow selected</p>;
   }
+
   return (
     <>
       <div className="text-xl font-bold text-center mt-6 mb-6">{translate("cowdetails")}</div>
@@ -41,7 +44,7 @@ const CowDetails = ({ formData, cowList }) => {
             <tbody>
               <tr>
                 <td className="font-normal text-gray-800 border border-gray-300 px-4 py-2 w-60">
-                {translate("dateofbirth")}
+                  {translate("dateofbirth")}
                 </td>
                 <td className="border border-gray-300 px-4 py-2 w-60">
                   {selectedCow.informations.dateOfBirth}
@@ -49,7 +52,7 @@ const CowDetails = ({ formData, cowList }) => {
               </tr>
               <tr>
                 <td className="font-normal text-gray-800 border border-gray-300 px-4 py-2 w-60">
-                {translate("animalage")}
+                  {translate("animalage")}
                 </td>
                 <td className="border border-gray-300 px-4 py-2 w-60">
                   {selectedCow.informations.animalAgeDays}
@@ -65,7 +68,7 @@ const CowDetails = ({ formData, cowList }) => {
               </tr>
               <tr>
                 <td className="font-normal text-gray-800 border border-gray-300 px-4 py-2 w-60">
-              {translate("animalgender")}
+                  {translate("animalgender")}
                 </td>
                 <td className="border border-gray-300 px-4 py-2 w-60">
                   {selectedCow.gender}
@@ -73,20 +76,19 @@ const CowDetails = ({ formData, cowList }) => {
               </tr>
               <tr>
                 <td className="font-normal text-gray-800 border border-gray-300 px-4 py-2">
-                 {translate("animaltype")}
+                  {translate("animaltype")}
                 </td>
                 <td className="border border-gray-300 px-4 py-2 w-60">
                   {selectedCow.animalType}
                 </td>
               </tr>
               <tr>
-              <td className="font-normal text-gray-800 border border-gray-300 px-4 py-2 w-60">
-              {translate("vaccinestatus")}
+                <td className="font-normal text-gray-800 border border-gray-300 px-4 py-2 w-60">
+                  {translate("vaccinestatus")}
                 </td>
                 <td className="border border-gray-300 px-4 py-2 w-60">
                   {selectedCow.vaccinations ? "Vaccinated" : "Not Vaccinated"}
                 </td>
-
               </tr>
             </tbody>
           </table>

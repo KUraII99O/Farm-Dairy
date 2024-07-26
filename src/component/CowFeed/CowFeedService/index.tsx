@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-export interface CowFeed {
+export type CowFeed = {
   id: string;
   date: string; 
   StallNo: string;
@@ -11,7 +11,7 @@ export interface CowFeed {
   userId: string;
   unit: string;
   feedingTime: string;
-}
+};
 
 const CowFeedService = {
   fetchCowFeedRecords,
@@ -38,13 +38,17 @@ async function fetchCowFeedRecords(): Promise<CowFeed[]> {
     }
     const cowFeedRecordsData: CowFeed[] = await response.json();
     return cowFeedRecordsData;
-  } catch (error) {
-    console.error('Error fetching cow feed records data:', error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error fetching cow feed records data:', error.message);
+    } else {
+      console.error('Unknown error fetching cow feed records data');
+    }
     return [];
   }
 }
 
-async function addCowFeedRecord(newCowFeedRecord: Omit<CowFeed, 'id'>): Promise<CowFeed> {
+async function addCowFeedRecord(newCowFeedRecord: Omit<CowFeed, 'id'| 'userId'>): Promise<CowFeed> {
   const loggedInUser = localStorage.getItem('loggedInUser');
   if (!loggedInUser) {
     throw new Error("User not logged in or user data not found");
@@ -71,8 +75,12 @@ async function addCowFeedRecord(newCowFeedRecord: Omit<CowFeed, 'id'>): Promise<
     }
 
     return cowFeedRecordWithId;
-  } catch (error) {
-    console.error('Error adding cow feed record:', error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error adding cow feed record:', error.message);
+    } else {
+      console.error('Unknown error adding cow feed record');
+    }
     throw error;
   }
 }
@@ -94,13 +102,17 @@ async function editCowFeedRecord(id: string, updatedCowFeedRecord: Omit<CowFeed,
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({...updatedCowFeedRecord, userId: user.id}), // Ensure userId is included
+      body: JSON.stringify({...updatedCowFeedRecord, userId: user.id}),
     });
     if (!response.ok) {
       throw new Error('Failed to update cow feed record');
     }
-  } catch (error) {
-    console.error('Error updating cow feed record:', error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error updating cow feed record:', error.message);
+    } else {
+      console.error('Unknown error updating cow feed record');
+    }
     throw error;
   }
 }
@@ -123,10 +135,14 @@ async function deleteCowFeedRecord(id: string): Promise<void> {
     if (!response.ok) {
       throw new Error('Failed to delete cow feed record');
     }
-  } catch (error) {
-    console.error('Error deleting cow feed record:', error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error deleting cow feed record:', error.message);
+    } else {
+      console.error('Unknown error deleting cow feed record');
+    }
     throw error;
   }
 }
 
-export { CowFeedService, CowFeed };
+export { CowFeedService };

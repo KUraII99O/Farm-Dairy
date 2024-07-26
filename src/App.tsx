@@ -1,23 +1,21 @@
-import React from "react";
+import React, { ReactNode } from 'react';
 import {
   BrowserRouter as Router,
   Route,
   Routes,
   Navigate,
+
 } from "react-router-dom";
 import DashboardPage from "./Pages/DashboardPage";
 import SettingPage from "./Pages/SettingPage";
-import ProfileSettingPage from "./Pages/ProfileSettingPage";
 import Layout from "./component/Layout";
 import {
-  ManageUserContext,
   ManageUserProvider,
 } from "./component/User/Provider";
 import {
-  EmployeeProvider,
   ManageEmployeeProvider,
 } from "./component/Employee/Provider";
-import { ManageMilkProvider, MilkProvider } from "./component/Milk/Provider";
+import { ManageMilkProvider } from "./component/Milk/Provider";
 import EditStaffPage from "./Pages/EditStaffPage";
 import StaffListPage from "./Pages/StaffListPage";
 import UserListPage from "./Pages/UserListPage";
@@ -29,7 +27,6 @@ import EditMilkPage from "./Pages/EditMilkPage";
 import MilkSaleListPage from "./Pages/MilkSaleListPage";
 import {
   ManageMilkSaleProvider,
-  MilkSaleProvider,
 } from "./component/MilkSale/Provider";
 import EditMilkSalePage from "./Pages/EditMilkSalePage";
 import MilkSaleInvoicePage from "./Pages/MilkSaleInvoicePage";
@@ -60,7 +57,6 @@ import EditCowCalfPage from "./Pages/EditCowCalfPage";
 import CowSaleListPage from "./Pages/CowSaleListPage";
 import {
   ManageSalesProvider,
-  SaleListProvider,
 } from "./component/CowSale/provider";
 import EditCowSalePage from "./Pages/EditCowSalePage";
 import { ExpenseProvider } from "./component/FarmExpense/Provider";
@@ -100,7 +96,6 @@ import CreditCardPage from "./Pages/CreditCardPage";
 import PaypalPage from "./Pages/PaypalPage";
 import BankTransferPage from "./Pages/BankTransferPage";
 import AddPaymentMethodPage from "./Pages/AddPaymentMethodPage";
-import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 const App: React.FC = () => {
   return (
@@ -708,7 +703,11 @@ const App: React.FC = () => {
   );
 };
 
-const RequireAuthentication = ({ children }) => {
+type RequireAuthenticationProps = {
+  children: ReactNode;
+};
+
+const RequireAuthentication = ({ children }: RequireAuthenticationProps) => {
   // Check if user is authenticated, if not redirect to login
   const isAuthenticated = true; // Replace with your authentication logic
 

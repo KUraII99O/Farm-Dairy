@@ -1,54 +1,63 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { permissionCategories } from "../Permissions/permissions";
 
 const EditUserTypeForm = ({ userType, onSubmit, onClose }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const formRef = useRef(null);
 
-  // Retrieve logged-in user data from local storage
-  const loggedInUserData = JSON.parse(localStorage.getItem("loggedInUser"));
-  const { saveAccess, updateAccess, deleteAccess } = loggedInUserData || {};
+  // Initialize form data
+  const initializeFormData = () => {
+    const initialFormData = { typeName: "" };
 
-  const [formData, setFormData] = useState({
-    typeName: "",
-    "Animal Type List": false,
-    "Animal Type Save Access": saveAccess || false,
-    "Animal Type Update Access": updateAccess || false,
-    "Animal Type Delete Access": deleteAccess || false
-  });
+    permissionCategories.forEach(category => {
+      category.permissions.forEach(perm => {
+        const key = perm
+          .toLowerCase()
+          .replace(/ /g, '')
+          .replace(/(?:^\w|[A-Z]|\b\w)/g, (match, index) => index === 0 ? match.toLowerCase() : match.toUpperCase());
+
+        initialFormData[key] = false;
+      });
+    });
+
+    return initialFormData;
+  };
+
+  const [formData, setFormData] = useState(initializeFormData);
 
   useEffect(() => {
     if (userType) {
-      setFormData(userType);
+      setFormData(prevData => ({
+        ...prevData,
+        ...userType
+      }));
+    } else {
+      resetForm();
     }
   }, [userType]);
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+  const resetForm = () => {
+    setFormData(initializeFormData());
+  };
 
-    // For checkbox inputs, handle checked state
-    if (type === "checkbox") {
-      setFormData({
-        ...formData,
-        [name]: checked,
-      });
-    } else {
-      // For non-checkbox inputs (like the type name input), handle value
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
-    }
+  const handleChange = (e) => {
+    const { name, type, checked, value } = e.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(formData);
+    resetForm();
   };
 
   const handleCloseDrawer = () => {
-    onClose(); // Call the onClose function passed from the parent component
+    onClose();
     navigate("/User-Type-List");
   };
 
@@ -67,14 +76,12 @@ const EditUserTypeForm = ({ userType, onSubmit, onClose }) => {
 
   return (
     <>
-      {/* Semi-transparent overlay */}
       <div
         className="fixed inset-0 bg-gray-200 bg-opacity-50 z-40"
         onClick={handleCloseDrawer}
       ></div>
-      {/* Edit user type form */}
-      <div className="fixed inset-0 overflow-y-auto z-50 flex justify-end">
-        <div className="w-96 bg-white h-full shadow-lg p-6" ref={formRef}>
+      <div className="fixed inset-0 overflow-y-auto z-50 flex justify-center items-center p-4 sm:justify-end sm:p-0">
+        <div className="w-full sm:w-96 bg-white h-full sm:h-auto shadow-lg p-6" ref={formRef}>
           <button
             className="absolute top-0 right-0 m-2 text-gray-600 hover:text-gray-900 focus:outline-none"
             onClick={handleCloseDrawer}
@@ -106,54 +113,33 @@ const EditUserTypeForm = ({ userType, onSubmit, onClose }) => {
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">Access Permissions:</label>
-              <div className="mt-2">
-                <label className="inline-flex items-center">
-                  <input
-                    type="checkbox"
-                    name="Animal Type List"
-                    checked={formData["Animal Type List"]}
-                    onChange={handleChange}
-                    className="form-checkbox h-5 w-5 text-blue-500"
-                  />
-                  <span className="ml-2">Animal Type List</span>
-                </label>
-              </div>
-              <div className="mt-2">
-                <label className="inline-flex items-center">
-                  <input
-                    type="checkbox"
-                    name="Animal Type Save Access"
-                    checked={formData["Animal Type Save Access"]}
-                    onChange={handleChange}
-                    className="form-checkbox h-5 w-5 text-blue-500"
-                  />
-                  <span className="ml-2">Animal Type Save Access</span>
-                </label>
-              </div>
-              <div className="mt-2">
-                <label className="inline-flex items-center">
-                  <input
-                    type="checkbox"
-                    name="Animal Type Update Access"
-                    checked={formData["Animal Type Update Access"]}
-                    onChange={handleChange}
-                    className="form-checkbox h-5 w-5 text-blue-500"
-                  />
-                  <span className="ml-2">Animal Type Update Access</span>
-                </label>
-              </div>
-              <div className="mt-2">
-                <label className="inline-flex items-center">
-                  <input
-                    type="checkbox"
-                    name="Animal Type Delete Access"
-                    checked={formData["Animal Type Delete Access"]}
-                    onChange={handleChange}
-                    className="form-checkbox h-5 w-5 text-blue-500"
-                  />
-                  <span className="ml-2">Animal Type Delete Access</span>
-                </label>
-              </div>
+              {permissionCategories.map((category) => (
+                <div key={category.category} className="mt-4">
+                  <h3 className="font-semibold text-lg">{category.category}</h3>
+                  {category.permissions.map((perm) => {
+                    // Convert permission names to match the keys in formData
+                    const key = perm
+                      .toLowerCase()
+                      .replace(/ /g, '')
+                      .replace(/(?:^\w|[A-Z]|\b\w)/g, (match, index) => index === 0 ? match.toLowerCase() : match.toUpperCase());
+
+                    return (
+                      <div className="mt-2" key={perm}>
+                        <label className="inline-flex items-center">
+                          <input
+                            type="checkbox"
+                            name={key}
+                            checked={formData[key]}
+                            onChange={handleChange}
+                            className="form-checkbox h-5 w-5 text-blue-500"
+                          />
+                          <span className="ml-2">{perm}</span>
+                        </label>
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
             </div>
             <div className="flex justify-end">
               <button

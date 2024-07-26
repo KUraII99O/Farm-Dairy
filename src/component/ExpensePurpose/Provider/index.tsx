@@ -1,64 +1,60 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { ExpensePurpose, ExpensePurposeService } from "../ExpensePurposeService";
 
-export const ExpensePurposeContext = createContext();
+export const ExpensePurposeContext = createContext<any>(null);
 
 export const ExpensePurposeProvider = ({ children }) => {
-  const [expensePurposes, setExpensePurposes] = useState([
-    {
-      id: 1,
-      name: "Bucket",
-    },
-    // Add more purposes as needed
-    {
-      id: 2,
-      name: "Share Profit",
-    },
-    {
-      id: 3,
-      name: "Office Rent",
-    },
-    {
-      id: 4,
-      name: "Materials",
-    },
-    {
-      id: 5,
-      name: "Paper",
-    },
-    {
-      id: 6,
-      name: "Snacks",
-    },
-  ]);
+  const [expensePurposes, setExpensePurposes] = useState<ExpensePurpose[]>([]);
 
-  const addExpensePurpose = (newPurpose) => {
-    const maxId = Math.max(...expensePurposes.map((purpose) => purpose.id), 0);
-    const newPurposeWithId = { ...newPurpose, id: maxId + 1 };
-    setExpensePurposes([...expensePurposes, newPurposeWithId]);
+  useEffect(() => {
+    const fetchExpensePurposesData = async () => {
+      try {
+        const data = await ExpensePurposeService.fetchExpensePurposes();
+        setExpensePurposes(data || []);
+      } catch (error) {
+        console.error("Error fetching expense purposes:", (error as Error).message);
+      }
+    };
+
+    fetchExpensePurposesData();
+  }, []);
+
+  const addExpensePurpose = async (newExpensePurpose: Omit<ExpensePurpose, 'id'>) => {
+    try {
+      const data = await ExpensePurposeService.addExpensePurpose(newExpensePurpose);
+      setExpensePurposes(prevExpensePurposes => [...prevExpensePurposes, data]);
+    } catch (error) {
+      console.error("Error adding expense purpose:", (error as Error).message);
+    }
   };
 
-  const editExpensePurpose = (id, updatedPurpose) => {
-    setExpensePurposes((prevPurposes) =>
-      prevPurposes.map((purpose) => (purpose.id === id ? { ...purpose, ...updatedPurpose } : purpose))
-    );
+  const editExpensePurpose = async (id: string, updatedExpensePurpose: Omit<ExpensePurpose, 'id' | 'userId'>) => {
+    try {
+      await ExpensePurposeService.editExpensePurpose(id, updatedExpensePurpose);
+      setExpensePurposes(prevExpensePurposes =>
+        prevExpensePurposes.map(expensePurpose =>
+          expensePurpose.id === id ? { ...expensePurpose, ...updatedExpensePurpose } : expensePurpose
+        )
+      );
+    } catch (error) {
+      console.error("Error editing expense purpose:", (error as Error).message);
+    }
   };
 
-  const deleteExpensePurpose = (id) => {
-    const updatedPurposes = expensePurposes.filter((purpose) => purpose.id !== id);
-    setExpensePurposes(updatedPurposes);
-  };
-
-  const getPurposeById = (id) => {
-    // Find and return the purpose with the given ID
-    return expensePurposes.find((purpose) => purpose.id === id);
+  const deleteExpensePurpose = async (id: string) => {
+    try {
+      await ExpensePurposeService.deleteExpensePurpose(id);
+      setExpensePurposes(prevExpensePurposes => prevExpensePurposes.filter(expensePurpose => expensePurpose.id !== id));
+    } catch (error) {
+      console.error("Error deleting expense purpose:", (error as Error).message);
+    }
   };
 
   const value = {
     expensePurposes,
     addExpensePurpose,
     editExpensePurpose,
-    deleteExpensePurpose,
-    getPurposeById,
+    deleteExpensePurpose
   };
 
   return (

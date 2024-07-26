@@ -1,44 +1,62 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { Designation, DesignationService } from "../DesignationService";
 
-export const ManageDesignationContext = createContext();
+export const ManageDesignationContext = createContext<any>(null);
 
 export const ManageDesignationProvider = ({ children }) => {
-  const [designations, setDesignations] = useState([
-    {
-      id: 1,
-      name: "Manager",
-    },
-    {
-      id: 2,
-      name: "Developer",
-    },
-    {
-      id: 3,
-      name: "Designer",
-    },
-    // Add more designations as needed
-  ]);
+  const [designations, setDesignations] = useState<Designation[]>([]);
 
-  const addDesignation = (newDesignation) => {
-    const maxId = Math.max(...designations.map((designation) => designation.id), 0);
-    const newDesignationWithId = { ...newDesignation, id: maxId + 1 };
-    setDesignations([...designations, newDesignationWithId]);
+  useEffect(() => {
+    const fetchDesignationsData = async () => {
+      try {
+        const data = await DesignationService.fetchDesignations();
+        setDesignations(data || []);
+      } catch (error) {
+        console.error("Error fetching designations:", error);
+      }
+    };
+
+    fetchDesignationsData();
+  }, []);
+
+  const addDesignation = async (newDesignation: Omit<Designation, 'id'>) => {
+    try {
+      const data = await DesignationService.addDesignation(newDesignation);
+      setDesignations(prevDesignations => [...prevDesignations, data]);
+    } catch (error) {
+      console.error("Error adding designation:", error);
+    }
   };
 
-  const editDesignation = (id, updatedDesignation) => {
-    setDesignations((prevDesignations) =>
-      prevDesignations.map((designation) => (designation.id === id ? { ...designation, ...updatedDesignation } : designation))
-    );
+  const editDesignation = async (id: string, updatedDesignation: Omit<Designation, 'id'>) => {
+    try {
+      await DesignationService.editDesignation(id, updatedDesignation);
+      setDesignations(prevDesignations =>
+        prevDesignations.map(designation => (designation.id === id ? { ...designation, ...updatedDesignation } : designation))
+      );
+    } catch (error) {
+      console.error("Error editing designation:", error);
+    }
   };
 
-  const deleteDesignation = (id) => {
-    const updatedDesignations = designations.filter((designation) => designation.id !== id);
-    setDesignations(updatedDesignations);
+  const toggleDesignationStatus = async (id: string) => {
+    try {
+      const data = await DesignationService.toggleDesignationStatus(id);
+      setDesignations(prevDesignations =>
+        prevDesignations.map(designation => (designation.id === id ? { ...designation, status: !designation.status } : designation))
+      );
+    } catch (error) {
+      console.error("Error toggling designation status:", error);
+    }
   };
 
-  const getDesignationById = (id) => {
-    // Find and return the designation with the given ID
-    return designations.find((designation) => designation.id === id);
+  const deleteDesignation = async (id: string) => {
+    try {
+      await DesignationService.deleteDesignation(id);
+      setDesignations(prevDesignations => prevDesignations.filter(designation => designation.id !== id));
+    } catch (error) {
+      console.error("Error deleting designation:", error);
+    }
   };
 
   const value = {
@@ -46,7 +64,7 @@ export const ManageDesignationProvider = ({ children }) => {
     addDesignation,
     editDesignation,
     deleteDesignation,
-    getDesignationById,
+    toggleDesignationStatus
   };
 
   return (

@@ -1,9 +1,13 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext, ReactNode } from "react";
 import { Expense, ExpenseService } from "../FarmExpenseService";
 
 export const ExpenseContext = createContext<any>(null);
 
-export const ExpenseProvider: React.FC = ({ children }) => {
+type ProviderProps = {
+  children: ReactNode;
+};
+
+export const ExpenseProvider: React.FC<ProviderProps> = ({ children }) => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
 
   useEffect(() => {
@@ -58,7 +62,6 @@ export const ExpenseProvider: React.FC = ({ children }) => {
     }
   };
 
-
   const value = {
     expenses,
     addExpense,
@@ -73,10 +76,10 @@ export const ExpenseProvider: React.FC = ({ children }) => {
   );
 };
 
-export const useManageExpenses = () => {
+export const useExpense = () => {
   const context = useContext(ExpenseContext);
   if (!context) {
-    throw new Error("useManageExpenses must be used within a ManageExpensesProvider");
+    throw new Error("useExpense must be used within an ExpenseProvider");
   }
   return context;
 };

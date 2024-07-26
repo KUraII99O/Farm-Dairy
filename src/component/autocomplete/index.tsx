@@ -1,11 +1,16 @@
 import React, { useState } from "react";
 
-const AutocompleteInput = ({ options, onSelect }) => {
-  const [inputValue, setInputValue] = useState('');
-  const [filteredOptions, setFilteredOptions] = useState([]);
-  const [showOptions, setShowOptions] = useState(false);
+interface AutocompleteInputProps {
+  options: string[];
+  onSelect: (option: string) => void;
+}
 
-  const handleChange = (e) => {
+const AutocompleteInput: React.FC<AutocompleteInputProps> = ({ options, onSelect }) => {
+  const [inputValue, setInputValue] = useState<string>('');
+  const [filteredOptions, setFilteredOptions] = useState<string[]>([]);
+  const [showOptions, setShowOptions] = useState<boolean>(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
     setInputValue(inputValue);
 
@@ -16,7 +21,7 @@ const AutocompleteInput = ({ options, onSelect }) => {
     setFilteredOptions(filteredOptions);
   };
 
-  const handleSelectOption = (option) => {
+  const handleSelectOption = (option: string) => {
     setInputValue(option);
     setFilteredOptions([]);
     onSelect(option); // Notify parent component about the selected option

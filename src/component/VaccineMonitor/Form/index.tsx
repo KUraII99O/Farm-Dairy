@@ -8,14 +8,14 @@ import { PiMonitor } from "react-icons/pi";
 import { ManageVaccineMonitorContext } from "../Provider";
 
 const EditVaccineMonitorForm = () => {
-  const { id } = useParams<{ id: string }>();
   const { vaccineRecords, addVaccineRecord, editVaccineRecord } = useContext(ManageVaccineMonitorContext);
+  const { id } = useParams<{ id: string }>();
   const { translate, language } = useTranslation();
   const navigate = useNavigate();
 
   const isEditMode = !!id;
 
-  const [currentDate, setCurrentDate] = useState<string>("");
+  const [, setCurrentDate] = useState<string>("");
   const [formData, setFormData] = useState({
     stallNo: "",
     CowNumber: "",
@@ -31,7 +31,7 @@ const EditVaccineMonitorForm = () => {
     })),
   });
   const [loading, setLoading] = useState(false);
-  const [successPopup, setSuccessPopup] = useState(false);
+  const [, setSuccessPopup] = useState(false);
 
   useEffect(() => {
     const date = new Date();
@@ -42,7 +42,7 @@ const EditVaccineMonitorForm = () => {
 
   useEffect(() => {
     if (isEditMode) {
-      const selectedVaccineMonitor = vaccineRecords.find((vaccineMonitor) => vaccineMonitor.id === id);
+      const selectedVaccineMonitor = vaccineRecords.find((vaccineMonitor: { id: string; }) => vaccineMonitor.id === id);
       if (selectedVaccineMonitor) {
         setFormData({
           stallNo: selectedVaccineMonitor.stallNo,
@@ -68,7 +68,7 @@ const EditVaccineMonitorForm = () => {
     }
   }, []);
 
-  const handleChange = (e, index) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const { name, value } = e.target;
     if (index === -1) {
       setFormData({
@@ -98,7 +98,7 @@ const EditVaccineMonitorForm = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     setLoading(true);
     if (isEditMode) {
@@ -114,7 +114,7 @@ const EditVaccineMonitorForm = () => {
     }, 2000);
   };
 
-  const handleRemoveRow = (indexToRemove) => {
+  const handleRemoveRow = (indexToRemove: number) => {
     setFormData({
       ...formData,
       informations: formData.informations.filter((_, index) => index !== indexToRemove),

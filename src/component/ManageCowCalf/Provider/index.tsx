@@ -1,9 +1,14 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext,ReactNode } from "react";
 import { Calf, CalfService } from "../CalfService"; // Assuming CalfService and Calf interface are defined
 
 export const ManageCowCalfContext = createContext<any>(null);
 
-export const ManageCowCalfProvider: React.FC = ({ children }) => {
+type ProviderProps = {
+  children: ReactNode;
+};
+
+
+export const ManageCowCalfProvider: React.FC<ProviderProps> = ({ children }) => {
   const [calves, setCalves] = useState<Calf[]>([]);
 
   useEffect(() => {

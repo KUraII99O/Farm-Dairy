@@ -1,9 +1,13 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext,ReactNode } from "react";
 import { RoutineMonitor, RoutineService } from "../RoutineMonitorService";
 
 export const ManageRoutineContext = createContext<any>(null);
 
-export const ManageRoutineProvider: React.FC = ({ children }) => {
+type ProviderProps = {
+  children: ReactNode;
+};
+
+export const ManageRoutineProvider: React.FC <ProviderProps> = ({ children }) => {
   const [routineRecords, setRoutineRecords] = useState<RoutineMonitor[]>([]);
 
   useEffect(() => {

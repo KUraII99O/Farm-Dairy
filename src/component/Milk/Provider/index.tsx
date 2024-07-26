@@ -1,9 +1,14 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext, ReactNode } from "react";
 import { MilkRecord, MilkService } from "../MilkService";
+
+
+type ProviderProps = {
+  children: ReactNode;
+};
 
 export const ManageMilkContext = createContext<any>(null);
 
-export const ManageMilkProvider: React.FC = ({ children }) => {
+export const ManageMilkProvider: React.FC<ProviderProps> = ({ children }) => {
   const [milkRecords, setMilkRecords] = useState<MilkRecord[]>([]);
 
   useEffect(() => {
@@ -15,7 +20,7 @@ export const ManageMilkProvider: React.FC = ({ children }) => {
         }
         const user = JSON.parse(loggedInUser);
         console.log("User ID:", user.id); // Log user ID
-  
+
         const data = await MilkService.fetchMilkRecords();
         console.log("Milk records data:", data); // Log milk records data
         setMilkRecords(data || []);
@@ -23,7 +28,7 @@ export const ManageMilkProvider: React.FC = ({ children }) => {
         console.error("Error fetching milk records:", error);
       }
     };
-  
+
     fetchMilkRecordsData();
   }, []);
 

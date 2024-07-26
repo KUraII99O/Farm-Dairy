@@ -1,9 +1,15 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext, ReactNode } from "react";
 import { Cow, CowService } from "../CowService";
 
 export const ManageCowContext = createContext<any>(null);
 
-export const ManageCowProvider: React.FC = ({ children }) => {
+
+type ProviderProps = {
+  children: ReactNode;
+};
+
+
+export const ManageCowProvider: React.FC <ProviderProps> = ({ children }) => {
   const [cows, setCows] = useState<Cow[]>([]);
 
   useEffect(() => {

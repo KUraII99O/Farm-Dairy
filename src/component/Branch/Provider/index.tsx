@@ -1,69 +1,73 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { Branch, BranchService } from "../BranchService"; // Updated import
 
-export const ManageBranchContext = createContext();
+export const ManageBranchContext = createContext<any>(null); // Updated context name
 
 export const ManageBranchProvider = ({ children }) => {
-  const [branches, setBranches] = useState([
-    {
-      id: 1,
-      setupDate: "2024-03-12",
-      branchName: "Branch A",
-      builderName: "Builder X",
-      phoneNumber: "123-456-7890",
-      email: "brancha@example.com",
-    },
-    {
-      id: 2,
-      setupDate: "2024-03-12",
-      branchName: "Branch B",
-      builderName: "Builder Y",
-      phoneNumber: "987-654-3210",
-      email: "branchb@example.com",
-    },
-    // Add more branches as needed
-  ]);
+  const [branches, setBranches] = useState<Branch[]>([]);
 
-  const addBranch = (newBranch) => {
-    const maxId = Math.max(...branches.map((branch) => branch.id), 0);
-    const newBranchWithId = { ...newBranch, id: maxId + 1 };
-    setBranches([...branches, newBranchWithId]);
+  useEffect(() => {
+    const fetchBranchesData = async () => {
+      try {
+        const data = await BranchService.fetchBranches(); // Updated service call
+        setBranches(data || []);
+      } catch (error) {
+        console.error("Error fetching branches:", (error as Error).message);
+      }
+    };
+
+    fetchBranchesData();
+  }, []);
+
+  const addBranch = async (newBranch: Omit<Branch, 'id'>) => {
+    try {
+      const data = await BranchService.addBranch(newBranch); // Updated service call
+      setBranches(prevBranches => [...prevBranches, data]);
+    } catch (error) {
+      console.error("Error adding branch:", (error as Error).message);
+    }
   };
 
-  const editBranch = (id, updatedBranch) => {
-    setBranches((prevBranches) =>
-      prevBranches.map((branch) => (branch.id === id ? { ...branch, ...updatedBranch } : branch))
-    );
+  const editBranch = async (id: string, updatedBranch: Omit<Branch, 'id' | 'userId'>) => {
+    try {
+      await BranchService.editBranch(id, updatedBranch); // Updated service call
+      setBranches(prevBranches =>
+        prevBranches.map(branch =>
+          branch.id === id ? { ...branch, ...updatedBranch } : branch
+        )
+      );
+    } catch (error) {
+      console.error("Error editing branch:", (error as Error).message);
+    }
   };
 
-  const deleteBranch = (id) => {
-    const updatedBranches = branches.filter((branch) => branch.id !== id);
-    setBranches(updatedBranches);
-  };
-
-  const getBranchById = (id) => {
-    // Find and return the branch with the given ID
-    return branches.find((branch) => branch.id === id);
+  const deleteBranch = async (id: string) => {
+    try {
+      await BranchService.deleteBranch(id); // Updated service call
+      setBranches(prevBranches => prevBranches.filter(branch => branch.id !== id));
+    } catch (error) {
+      console.error("Error deleting branch:", (error as Error).message);
+    }
   };
 
   const value = {
     branches,
     addBranch,
     editBranch,
-    deleteBranch,
-    getBranchById,
+    deleteBranch
   };
 
   return (
-    <ManageBranchContext.Provider value={value}>
+    <ManageBranchContext.Provider value={value}> {/* Updated context name */}
       {children}
     </ManageBranchContext.Provider>
   );
 };
 
-export const useManageBranch = () => {
+export const useBranch = () => { // Updated hook name
   const context = useContext(ManageBranchContext);
   if (!context) {
-    throw new Error("useManageBranch must be used within a ManageBranchProvider");
+    throw new Error("useBranch must be used within a BranchProvider"); // Updated error message
   }
   return context;
 };

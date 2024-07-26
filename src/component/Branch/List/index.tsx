@@ -1,16 +1,17 @@
 import React, { useState, useContext } from "react";
-import { AiOutlineDelete } from "react-icons/ai";
-import { ManageBranchContext } from "../Provider"; // Importing the ManageBranchContext instead
+import { ManageBranchContext } from "../Provider"; // Importing the ManageBranchContext
 import Pagination from "../../Pagination";
 import { ToastContainer, toast } from "react-toastify";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import { BiListUl } from "react-icons/bi";
-import { BsPencil } from "react-icons/bs";
+import { useTranslation } from "../../Translator/Provider";
+import { Drawer } from "flowbite-react";
+import BranchTable from "../Table";
 import EditBranchForm from "../Form";
 
-const BranchList: React.FC = () => { // Renaming the component to BranchList
-  const { branches, deleteBranch, addBranch, editBranch } = // Using branches and related functions
-    useContext(ManageBranchContext); // Switching to ManageBranchContext
+const BranchList: React.FC = () => {
+  const { branches, deleteBranch, addBranch, editBranch } =
+    useContext(ManageBranchContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
@@ -18,14 +19,18 @@ const BranchList: React.FC = () => { // Renaming the component to BranchList
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState(null);
+  const { translate, language } = useTranslation();
 
-  const handleDeleteConfirmation = (id: number) => {
+  const isArabic = language === "ar";
+  const formClass = isArabic ? "rtl" : "ltr";
+
+  const handleDeleteConfirmation = (id: string) => {
     if (window.confirm("Are you sure you want to delete this branch?")) {
       handleDelete(id);
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
       await deleteBranch(id);
       toast.success("Branch deleted successfully!");
@@ -75,6 +80,11 @@ const BranchList: React.FC = () => { // Renaming the component to BranchList
     }
   };
 
+  const handleCloseDrawer = () => {
+    setIsEditDrawerOpen(false);
+    setSelectedBranch(null);
+  };
+
   const handlePageChange = (page: number, itemsPerPage: number) => {
     setCurrentPage(page);
     setItemsPerPage(itemsPerPage);
@@ -106,7 +116,7 @@ const BranchList: React.FC = () => { // Renaming the component to BranchList
             placeholder="Search..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="p-2 rounded border border-gray-300 "
+            className="p-2 rounded border border-gray-300"
           />
           <button
             onClick={() => handleEditDrawerOpen(null)}
@@ -120,123 +130,31 @@ const BranchList: React.FC = () => { // Renaming the component to BranchList
         <BiListUl className="inline-block mr-2" />
         Branch List
       </h1>
-      <table className="min-w-full bg-white border-collapse">
-        <thead>
-          <tr>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("id")}
-            >
-              <div className="flex items-center">
-                #ID
-                {sortIcon("id")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("branchName")}
-            >
-              <div className="flex items-center">
-                Branch Name
-                {sortIcon("branchName")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("setupDate")}
-            >
-              <div className="flex items-center">
-                Setup Date
-                {sortIcon("setupDate")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("builderName")}
-            >
-              <div className="flex items-center">
-                Builder Name
-                {sortIcon("builderName")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("phoneNumber")}
-            >
-              <div className="flex items-center">
-                Phone Number
-                {sortIcon("phoneNumber")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("email")}
-            >
-              <div className="flex items-center">
-                Email
-                {sortIcon("email")}
-              </div>
-            </th>
-            <th className="border border-gray-300 px-4 py-2">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedBranches
-            .filter((branch) =>
-              branch.branchName.toLowerCase().includes(searchTerm.toLowerCase())
-            )
-            .map((branch) => (
-              <tr key={branch.id}>
-                <td className="border border-gray-300 px-4 py-2">{branch.id}</td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {branch.branchName}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {branch.setupDate}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {branch.builderName}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {branch.phoneNumber}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {branch.email}
-                </td>
-                <td className="border border-gray-300 px-2 py-2">
-                  <div className="flex items-center">
-                    <button
-                      onClick={() => handleEditDrawerOpen(branch)}
-                      className="text-blue-500 hover:underline flex items-center mr-4 focus:outline-none"
-                    >
-                      <BsPencil className="w-5 h-5 mr-1" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteConfirmation(branch.id)}
-                      className="text-red-500 hover:text-red-700 focus:outline-none flex items-center"
-                    >
-                      <AiOutlineDelete className="w-5 h-5 mr-1" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
-      {isEditDrawerOpen && (
-        <div className="fixed inset-0 overflow-y-auto z-50 flex justify-end">
-          <div className="w-96 bg-white h-full shadow-lg p-6">
-            <h2 className="text-xl font-bold mb-4">
-              {selectedBranch ? "Edit Branch" : "Add New Branch"}
-            </h2>
-            <EditBranchForm
-              branch={selectedBranch}
-              onSubmit={selectedBranch ? handleUpdateBranch : handleAddNewBranch}
-              onClose={() => setIsEditDrawerOpen(false)} // Assuming setIsEditDrawerOpen is the function to close the drawer
-            />
-          </div>
-        </div>
-      )}
+      <BranchTable
+        sortedBranches={sortedBranches}
+        handleSort={handleSort}
+        sortIcon={sortIcon}
+        handleEditDrawerOpen={handleEditDrawerOpen}
+        handleDeleteConfirmation={handleDeleteConfirmation}
+        formClass={formClass}
+        translate={translate}
+      />
+      <Drawer
+        open={isEditDrawerOpen}
+        onClose={handleCloseDrawer}
+        position="right" // Set the position to "right"
+      >
+        <Drawer.Header>
+          <h2 className="text-xl font-bold">
+            {selectedBranch ? translate("editBranch") : translate("addNewBranch")}
+          </h2>
+        </Drawer.Header>
+        <Drawer.Items>
+          <EditBranchForm
+            branch={selectedBranch}
+            onSubmit={selectedBranch ? handleUpdateBranch : handleAddNewBranch} onClose={undefined}          />
+        </Drawer.Items>
+      </Drawer>
       <Pagination
         totalItems={branches.length}
         defaultItemsPerPage={itemsPerPage}

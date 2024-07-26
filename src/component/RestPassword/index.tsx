@@ -23,7 +23,7 @@ const ResetPassword: React.FC = () => {
           throw new Error("Failed to reset password");
         }
         // If the request is successful, redirect the user to the phone verification page
-        navigate("/phone-verification", { state: { email } });
+        navigate("/email-verification", { state: { email } });
       } catch (error) {
         console.error("Error:", error);
       }

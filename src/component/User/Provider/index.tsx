@@ -1,9 +1,14 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext, ReactNode } from "react";
 import { User, UserService } from "../UserService";
+
+// Define the prop type for children
+type ProviderProps = {
+  children: ReactNode;
+};
 
 export const ManageUserContext = createContext<any>(null);
 
-export const ManageUserProvider: React.FC = ({ children }) => {
+export const ManageUserProvider: React.FC<ProviderProps> = ({ children }) => {
   const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {

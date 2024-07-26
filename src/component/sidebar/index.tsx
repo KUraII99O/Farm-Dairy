@@ -153,7 +153,7 @@ const Sidebar: React.FC = () => {
       return true; // Admin can see all menu items
     } else if (type === "user") {
       // Hide "Catalog", "Suppliers", and "Reports" for regular users
-      return ![translate("catalog"), translate("suppliers"), translate("reports")].includes(item.name);
+      return ![translate(""), translate(""), translate("")].includes(item.name);
     } else if (type === "staff") {
       // Hide "Catalog", "Suppliers", "Reports", and "Farm Expense" for staff
       return ![translate("catalog"), translate("suppliers"), translate("reports"), translate("farmExpense")].includes(

@@ -13,7 +13,7 @@ const AnimalList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [, setIsDeleting] = useState(false);
   const [selectedCow, setSelectedCow] = useState(null);
   const { translate, language } = useTranslation();
   const isArabic = language === "ar";
@@ -88,7 +88,6 @@ const AnimalList: React.FC = () => {
 
   const handleViewDetails = (cow) => {
     setSelectedCow(cow);
-    console.log(cow.image);
   };
 
   const handleDrawerClose = () => {

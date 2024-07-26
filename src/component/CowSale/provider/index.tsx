@@ -1,9 +1,13 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext, ReactNode } from "react";
 import { CowSales, CowSalesService } from "../CowSaleService";
 
 export const ManageSalesContext = createContext<any>(null);
 
-export const ManageSalesProvider: React.FC = ({ children }) => {
+type ProviderProps = {
+  children: ReactNode;
+};
+
+export const ManageSalesProvider: React.FC<ProviderProps> = ({ children }) => {
   const [sales, setSales] = useState<CowSales[]>([]);
 
   useEffect(() => {
@@ -40,7 +44,6 @@ export const ManageSalesProvider: React.FC = ({ children }) => {
 
   const editSale = async (id: string, updatedSale: Omit<CowSales, 'id'>) => {
     try {
-      const data = await CowSalesService.editSale(id, updatedSale);
       setSales(prevSales =>
         prevSales.map(sale => (sale.id === id ? { ...sale, ...updatedSale } : sale))
       );
@@ -60,7 +63,6 @@ export const ManageSalesProvider: React.FC = ({ children }) => {
 
   const toggleSaleStatus = async (id: string) => {
     try {
-      const data = await CowSalesService.toggleSaleStatus(id);
       setSales(prevSales =>
         prevSales.map(sale => (sale.id === id ? { ...sale, status: !sale.status } : sale))
       );

@@ -291,6 +291,12 @@ export const TranslationProvider: React.FC = ({ children }) => {
      welcometo:" Welcome to ",
      ElevatingFarmManagement:"Elevating Farm Management",
      subscription:"Subscription",
+     stallNumber: "Stall No",
+    pregnancyType: "Pregnancy Type",
+    semenType: "Semen Type",
+    semenPushDate: "Semen Push Date",
+    pregnancyStartDate: "Pregnancy Start Date",
+    pregnancyStatus: "Pregnancy Status"
     },
     fr: {
       adminDashboard: "Tableau de bord de l'administrateur",
@@ -581,6 +587,12 @@ export const TranslationProvider: React.FC = ({ children }) => {
         ElevatingFarmManagement:"Élever la Gestion Agricole",
         welcometo:"Bienvenue à",
         subscription:"Abonnement",
+        stallNumber: "Numéro de stand",
+        pregnancyType: "Type de grossesse",
+        semenType: "Type de sperme",
+        semenPushDate: "Date d'injection de sperme",
+        pregnancyStartDate: "Date de début de grossesse",
+        pregnancyStatus: "Statut de grossesse"
 
     },
     ar: {
@@ -869,6 +881,12 @@ export const TranslationProvider: React.FC = ({ children }) => {
         "في جيسكو، نكرس جهودنا لتحديث إدارة المزارع. فريقنا الموهوب قد وضع حلاً شاملاً لتبسيط إدارة الأبقار، وتتبع الحمل، وتنظيم العمال",
         ElevatingFarmManagement:"رفع إدارة المزارع ",
         subscription:"اشتراك ",
+        stallNumber: "رقم المقصورة",
+        pregnancyType: "نوع الحمل",
+        semenType: "نوع السائل المنوي",
+        semenPushDate: "تاريخ دفع السائل المنوي",
+        pregnancyStartDate: "تاريخ بدء الحمل",
+        pregnancyStatus: "حالة الحمل"
 
     },
   };

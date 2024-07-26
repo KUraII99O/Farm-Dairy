@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { IoInformationCircle } from "react-icons/io5";
 import { FaBriefcaseMedical, FaImage } from "react-icons/fa";
 import { useTranslation } from "../../Translator/Provider";
-import { readAndCompressImage } from 'browser-image-resizer';
+import { readAndCompressImage } from "browser-image-resizer";
 import { ManageCowContext } from "../Provider";
 import { ToastContainer, toast } from "react-toastify";
 
@@ -29,10 +29,9 @@ const Checkbox = ({
   );
 };
 
-
 const EditCowForm = () => {
   const { id } = useParams<{ id: string }>();
-  const { cows,addCow, editCow } = useContext(ManageCowContext);
+  const { cows, addCow, editCow } = useContext(ManageCowContext);
   const [selectedImage, setSelectedImage] = useState<string | null>(null); // State to store selected image path
   const navigate = useNavigate();
   const { translate, language } = useTranslation();
@@ -40,7 +39,7 @@ const EditCowForm = () => {
     name: "",
   });
 
-  const [stallList, setStallList] = useState([]); // State to store staff data
+  const [stallList, setStallList] = useState<{ id: string; stallNumber: string }[]>([]);
 
   const isEditMode = !!id;
   const isArabic = language === "ar"; // Assuming 'ar' represents Arabic language
@@ -55,10 +54,11 @@ const EditCowForm = () => {
     image: "",
     animalType: "",
     buyDate: "",
+    stallNumber: "",
     buyingPrice: "",
     pregnantStatus: "",
     milkPerDay: "",
-    animalStatus: false,
+    animalStatus: true,
     gender: "",
     informations: {
       stallNumber: "",
@@ -84,7 +84,9 @@ const EditCowForm = () => {
     },
   });
 
-  // Define setSelectedImages state setter function
+ 
+
+  // D}efine setSelectedImages state setter function
 
   async function fetchBlobData(blobURL) {
     const response = await fetch(blobURL);
@@ -106,15 +108,15 @@ const EditCowForm = () => {
   }
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
-  
+
     try {
       const compressedFile = await readAndCompressImage(file, imageConfig);
       const blobURL = URL.createObjectURL(compressedFile);
       setSelectedImage(blobURL);
-  
+
       const blob = await fetchBlobData(blobURL);
       const base64Data = await blobToBase64(blob);
-  
+
       setFormData({
         ...formData,
         image: base64Data,
@@ -130,15 +132,14 @@ const EditCowForm = () => {
     history.back();
   };
 
-  
-useEffect(() => {
-  if (isEditMode && id && cows.length > 0) {
-    const selectedCow = cows.find((item) => item.id === id); // Ensure id is of the same type as item.id
-    if (selectedCow) {
-      setFormData(selectedCow);
+  useEffect(() => {
+    if (isEditMode && id && cows.length > 0) {
+      const selectedCow = cows.find((item) => item.id === id); // Ensure id is of the same type as item.id
+      if (selectedCow) {
+        setFormData(selectedCow);
+      }
     }
-  }
-}, [id, isEditMode, cows]);
+  }, [id, isEditMode, cows]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -149,14 +150,14 @@ useEffect(() => {
           const { username } = userData;
           setUser({ name: username });
           console.log("Username fetched successfully:", username);
-  
+
           // Update the formData with the logged-in user's username
-          setFormData(prevFormData => ({
+          setFormData((prevFormData) => ({
             ...prevFormData,
             informations: {
               ...prevFormData.informations,
-              CreatedBy: username
-            }
+              CreatedBy: username,
+            },
           }));
         } else {
           console.error("No user data found in local storage");
@@ -165,7 +166,7 @@ useEffect(() => {
         console.error("Error fetching user data from local storage:", error);
       }
     };
-  
+
     fetchUserData();
   }, []);
 
@@ -188,31 +189,25 @@ useEffect(() => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    if (name in formData.informations) {
-      setFormData({
-        ...formData,
-        informations: {
-          ...formData.informations,
-          [name]: value,
-        },
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
-    }
+  
+    setFormData(prevState => ({
+      ...prevState,
+      stallNumber: value,
+      informations: {
+        ...prevState.informations,
+        stallNumber: value,
+      },
+    }));
   };
 
-  const handleCheckboxChange = (name: string, isChecked: boolean) => {
-    setFormData({
-      ...formData,
+  const handleCheckboxChange = (vaccination, isChecked) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
       vaccinations: {
-        ...formData.vaccinations,
-        [name]: isChecked,
+        ...prevFormData.vaccinations,
+        [vaccination]: isChecked,
       },
-    });
+    }));
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -228,19 +223,21 @@ useEffect(() => {
         await editCow(id, formData);
       } else {
         await addCow(formData);
-
       }
 
       navigate("/manage-cow?result=success");
-
     } catch (error) {
       console.error("Error submitting form:", error);
       // Handle error
     }
   };
+
+ 
+
+
   return (
     <div>
-            <ToastContainer />
+      <ToastContainer />
 
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-3 gap-4  ">
@@ -387,12 +384,11 @@ useEffect(() => {
             />
           </div>
 
-          <div className="col-span-1">
-            <h2 className="text-sm  mb-4">{translate("stallNo")}* :</h2>
+          {stallList && stallList.length > 0 && (
             <select
               style={{ height: "2.5rem" }}
               name="stallNumber"
-              value={formData.informations.stallNumber}
+              value={formData.stallNumber}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 -md focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
               required
@@ -404,7 +400,7 @@ useEffect(() => {
                 </option>
               ))}
             </select>
-          </div>
+          )}
 
           <div className="col-span-1">
             <h2 className="text-sm mb-4">{translate("prevVaccineDone")} :</h2>

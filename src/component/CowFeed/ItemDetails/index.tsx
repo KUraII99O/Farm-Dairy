@@ -1,18 +1,35 @@
 import React, { useRef, useEffect } from "react";
 import { useTranslation } from "../../Translator/Provider";
 
-const ItemDetailDrawer = ({ isOpen, onClose, cowFeed }) => {
-  const { translate } = useTranslation();
-  const ref = useRef(null);
+interface CowFeedInfo {
+  foodItem: string;
+  quantity: string;
+  feedingTime: string;
+  unit: string;
+}
 
-  const handleClickOutside = (event) => {
-    if (ref.current && !ref.current.contains(event.target)) {
+interface CowFeed {
+  informations: CowFeedInfo[];
+}
+
+interface ItemDetailDrawerProps {
+  isOpen: boolean;
+  onClose: () => void;
+  cowFeed: CowFeed;
+}
+
+const ItemDetailDrawer: React.FC<ItemDetailDrawerProps> = ({ isOpen, onClose, cowFeed }) => {
+  const { translate } = useTranslation();
+  const ref = useRef<HTMLDivElement>(null);
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (ref.current && !ref.current.contains(event.target as Node)) {
       onClose();
     }
   };
 
   useEffect(() => {
-    const handleEscapeKey = (event) => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         onClose();
       }
@@ -25,14 +42,14 @@ const ItemDetailDrawer = ({ isOpen, onClose, cowFeed }) => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscapeKey);
     };
-  }, []);
+  }, [onClose]);
 
   return (
     <>
       {isOpen && (
-        <div >
-          <div >
-          <div ref={ref} className="w-full max-w-md bg-white  p-6">
+        <div>
+          <div>
+            <div ref={ref} className="w-full max-w-md bg-white p-6">
               <h2>{translate("itemdetails")}</h2>
               <button
                 className="absolute top-0 right-0 m-2 text-gray-600 hover:text-gray-900 focus:outline-none"

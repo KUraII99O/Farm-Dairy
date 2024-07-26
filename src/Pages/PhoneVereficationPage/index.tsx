@@ -1,15 +1,15 @@
-import React from 'react'
-import PhoneVerification from '../../component/OTP'
+import React from 'react';
 import { useLocation } from 'react-router-dom';
+import EmailVerification from '../../component/OTP';
 
 const PhoneVereficationPage = () => {
   const location = useLocation();
-  const phoneNumber = location.state?.phoneNumber || ''; // Get phone number from location state
-  const hiddenPhoneNumber = phoneNumber.replace(/^\d{5}/, '*****'); // Replace the first five digits with *****
+  const email = location.state?.email || ''; // Get email from location state
+  const hiddenEmail = email.replace(/(.{2})(.*)(@.*)/, '$1****$3'); // Replace part of the email with ****
 
   return (
     <div>
-      <PhoneVerification phoneNumber={hiddenPhoneNumber} />
+      <EmailVerification email={hiddenEmail} /> {/* Pass email prop */}
     </div>
   )
 }

@@ -1,132 +1,72 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
-import { toast } from "react-toastify";
-import { v4 as uuidv4 } from 'uuid';
+import React, { createContext, useState, useEffect, useContext, ReactNode } from "react";
+import { Pregnancy, PregnancyService } from "../CowPregnancyService";
 
 export const ManagePregnancyContext = createContext<any>(null);
 
-interface Pregnancy {
-  id: string;
-  stallNumber: string;
-  pregnancyType: string;
-  semenType: string;
-  semenPushDate: string;
-  pregnancyStartDate: string;
-  pregnancyStatus: string;
-  semenCost: string;
-  otherCost: string;
-  note: string;
-}
+type ProviderProps = {
+  children: ReactNode;
+};
 
-export const ManagePregnancyProvider = ({ children }) => {
+export const ManagePregnancyProvider: React.FC<ProviderProps> = ({ children }) => {
   const [pregnancies, setPregnancies] = useState<Pregnancy[]>([]);
 
-  const fetchPregnancies = async (animalId) => {
-    try {
-      const response = await fetch(
-        "http://localhost:3000/pregnancies?animalId=" + animalId
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch Pregnancy data");
+  useEffect(() => {
+    const fetchPregnanciesData = async () => {
+      try {
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (!loggedInUser) {
+          throw new Error("User not logged in or user data not found");
+        }
+        const user = JSON.parse(loggedInUser);
+        console.log("User ID:", user.id); // Log user ID
+  
+        const data = await PregnancyService.fetchPregnancies();
+        console.log("Pregnancies data:", data); // Log pregnancies data
+        setPregnancies(data || []);
+      } catch (error) {
+        console.error("Error fetching pregnancies:", error);
       }
-      const data = await response.json();
-      setPregnancies(data);
-    } catch (error) {
-      console.error("Error fetching Pregnancy data:", error.message);
-    }
-  };
-  const addPregnancy = async (newPregnancy: Pregnancy) => {
+    };
+
+    fetchPregnanciesData();
+  }, []);
+
+  const addPregnancy = async (newPregnancy: Omit<Pregnancy, 'id'>) => {
+    console.log("Adding pregnancy:", newPregnancy);
     try {
-      const id = uuidv4();
-      newPregnancy.id = id;
-      
-      const response = await fetch("http://localhost:3000/pregnancies", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-
-        body: JSON.stringify(newPregnancy),
-      });
-      pregnancies.push(newPregnancy);
-
-      if (!response.ok) {
-        throw new Error("Failed to add pregnancy record");
-      }
-
-      // Get the newly added pregnancy from the response
-      const addedPregnancy = await response.json();
-
-      // Update the local state with the newly added pregnancy
-      setPregnancies([...pregnancies, addedPregnancy]);
-
-      // Optionally, you can show a success message
-      toast.success("Pregnancy record added successfully!");
+      const data = await PregnancyService.addPregnancy(newPregnancy);
+      console.log("Pregnancy added successfully:", data);
+      setPregnancies(prevPregnancies => [...prevPregnancies, data]);
     } catch (error) {
-      console.error("Error:", error.message);
-      // Optionally, you can show an error message
-      toast.error("An error occurred while adding new pregnancy record.");
+      console.error("Error adding pregnancy:", error);
     }
   };
 
-  const editPregnancy = async (
-    id: number,
-    updatedPregnancy: Omit<Pregnancy, "id">
-  ) => {
-    console.log(updatedPregnancy);
+  const editPregnancy = async (id: string, updatedPregnancy: Omit<Pregnancy, 'id'>) => {
     try {
-      const response = await fetch(`http://localhost:3000/pregnancies/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedPregnancy),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update pregnancy record");
-      }
-
-      setPregnancies((prevPregnancies) =>
-        prevPregnancies.map((pregnancy) =>
-          pregnancy.id === id
-            ? { ...pregnancy, ...updatedPregnancy }
-            : pregnancy
-        )
+      await PregnancyService.editPregnancy(id, updatedPregnancy);
+      setPregnancies(prevPregnancies =>
+        prevPregnancies.map(pregnancy => (pregnancy.id === id ? { ...pregnancy, ...updatedPregnancy } : pregnancy))
       );
     } catch (error) {
-      console.error("Error:", error.message);
+      console.error("Error editing pregnancy:", error);
     }
   };
 
-  const deletePregnancy = async (id: number) => {
+  const deletePregnancy = async (id: string) => {
     try {
-      const response = await fetch(`http://localhost:3000/pregnancies/${id}`, {
-        method: 'DELETE',
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to delete pregnancy');
-      }
-  
-      const updatedPregnancies = pregnancies.filter((pregnancy) => pregnancy.id !== id);
-      setPregnancies(updatedPregnancies);
+      await PregnancyService.deletePregnancy(id);
+      setPregnancies(prevPregnancies => prevPregnancies.filter(pregnancy => pregnancy.id !== id));
     } catch (error) {
-      console.error('Error deleting pregnancy:', error.message);
+      console.error("Error deleting pregnancy:", error);
     }
-  };
-
-  const getPregnancyById = (id) => {
-    // Find and return the pregnancy with the given ID
-    return pregnancies.find((pregnancy) => pregnancy.id === id);
   };
 
   const value = {
     pregnancies,
     addPregnancy,
     editPregnancy,
-    deletePregnancy,
-    getPregnancyById,
-    fetchPregnancies,
+    deletePregnancy
   };
 
   return (
@@ -139,9 +79,7 @@ export const ManagePregnancyProvider = ({ children }) => {
 export const useManagePregnancy = () => {
   const context = useContext(ManagePregnancyContext);
   if (!context) {
-    throw new Error(
-      "useManagePregnancy must be used within a ManagePregnancyProvider"
-    );
+    throw new Error("useManagePregnancy must be used within a ManagePregnancyProvider");
   }
   return context;
 };

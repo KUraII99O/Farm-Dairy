@@ -1,28 +1,30 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { BsPencil } from "react-icons/bs";
-import { AiOutlineDelete } from "react-icons/ai";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import Pagination from "../../Pagination";
 import { BiListUl } from "react-icons/bi";
-import { FaEye } from "react-icons/fa";
 import VaccineMonitorDetailsDrawer from "../ItemDetails";
 import { useTranslation } from "../../Translator/Provider";
 import VaccineMonitorList from "../Table";
 import { toast } from "react-toastify";
 import {  ManageVaccineMonitorContext } from "../Provider";
+import { VaccineMonitor } from "../VaccineMonitorService";
 
 const VaccineMonitorTable: React.FC = () => {
-  const { vaccineRecords, deleteVaccineRecord } = useContext(ManageVaccineMonitorContext);
+  const context = useContext(ManageVaccineMonitorContext);
+  if (!context) {
+    throw new Error("VaccineMonitorTable must be used within a ManageVaccineMonitorProvider");
+  }  const { vaccineRecords, deleteVaccineRecord } = context;
+
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [selectedVaccineMonitor, setSelectedVaccineMonitor] = useState(null);
+  const [, setIsDeleting] = useState(false);
+  const [selectedVaccineMonitor, setSelectedVaccineMonitor] = useState<VaccineMonitor | null>(null);
   const [isDetailsDrawerOpen, setIsDetailsDrawerOpen] = useState(false);
-  const [user, setUser] = useState<{ username: string }>({ username: "" });
+  const [, setUser] = useState<{ username: string }>({ username: "" });
 
   const [currentDate, setCurrentDate] = useState<string>("");
   const { translate, language } = useTranslation();
@@ -97,9 +99,9 @@ const VaccineMonitorTable: React.FC = () => {
     )
   ) : [];
 
-  const dynamicSort = (property: string) => {
-    let sortOrderValue = sortOrder === "asc" ? 1 : -1;
-    return function (a: any, b: any) {
+  const dynamicSort = (property: keyof VaccineMonitor) => {
+    const sortOrderValue = sortOrder === "asc" ? 1 : -1;
+    return function (a: VaccineMonitor, b: VaccineMonitor) {
       if (a[property] < b[property]) {
         return -1 * sortOrderValue;
       } else if (a[property] > b[property]) {
@@ -111,8 +113,8 @@ const VaccineMonitorTable: React.FC = () => {
   };
 
   const sortedVaccineMonitors = sortBy
-    ? filteredVaccineMonitors.slice().sort(dynamicSort(sortBy))
-    : filteredVaccineMonitors;
+  ? filteredVaccineMonitors.slice().sort(dynamicSort(sortBy as keyof VaccineMonitor))
+  : filteredVaccineMonitors;
 
   const handlePageChange = (page: number, itemsPerPage: number) => {
     setCurrentPage(page);
@@ -147,8 +149,7 @@ const VaccineMonitorTable: React.FC = () => {
       toast.error("An error occurred while deleting vaccine monitor entry.");
     }
   };
-
-  const handleViewDetails = (vaccineMonitor) => {
+  const handleViewDetails = (vaccineMonitor: VaccineMonitor) => {
     setSelectedVaccineMonitor(vaccineMonitor);
     setIsDetailsDrawerOpen(true);
   };

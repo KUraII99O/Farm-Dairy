@@ -1,9 +1,13 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext,ReactNode } from "react";
 import { MilkSaleRecord, MilkSaleService } from "../MilkSaleService";
 
 export const ManageMilkSaleContext = createContext<any>(null);
 
-export const ManageMilkSaleProvider: React.FC = ({ children }) => {
+type ProviderProps = {
+  children: ReactNode;
+};
+
+export const ManageMilkSaleProvider: React.FC <ProviderProps>= ({ children }) => {
   const [milkSaleRecords, setMilkSaleRecords] = useState<MilkSaleRecord[]>([]);
 
   useEffect(() => {
@@ -40,7 +44,6 @@ export const ManageMilkSaleProvider: React.FC = ({ children }) => {
 
   const editMilkSaleRecord = async (id: string, updatedMilkSaleRecord: Omit<MilkSaleRecord, 'id'>) => {
     try {
-      const data = await MilkSaleService.editMilkSaleRecord(id, updatedMilkSaleRecord);
       setMilkSaleRecords(prevMilkSaleRecords =>
         prevMilkSaleRecords.map(record => (record.id === id ? { ...record, ...updatedMilkSaleRecord } : record))
       );

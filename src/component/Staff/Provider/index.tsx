@@ -1,9 +1,13 @@
-import React, { createContext, useState, useEffect, useContext, } from "react";
+import React, { createContext, useState, useEffect, useContext, ReactNode } from "react";
 import { Staff, StaffService } from "../StaffService";
 
 export const ManageStaffContext = createContext<any>(null);
 
-export const ManageStaffProvider: React.FC = ({ children }) => {
+type ProviderProps = {
+  children: ReactNode;
+};
+
+export const ManageStaffProvider: React.FC<ProviderProps> = ({ children }) => {
   const [staff, setStaff] = useState<Staff[]>([]);
 
   useEffect(() => {

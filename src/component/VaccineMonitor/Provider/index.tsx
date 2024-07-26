@@ -1,9 +1,22 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext, ReactNode } from "react";
 import { VaccineMonitor, VaccineService } from "../VaccineMonitorService";
 
-export const ManageVaccineMonitorContext = createContext<any>(null);
+// Define the context type
+interface ManageVaccineMonitorContextType {
+  vaccineRecords: VaccineMonitor[];
+  addVaccineRecord: (newVaccineRecord: Omit<VaccineMonitor, 'id'>) => Promise<void>;
+  editVaccineRecord: (id: string, updatedVaccineRecord: Omit<VaccineMonitor, 'id'>) => Promise<void>;
+  deleteVaccineRecord: (id: string) => Promise<void>;
+}
 
-export const ManageVaccineMonitorProvider: React.FC = ({ children }) => {
+// Create context with a default value of undefined
+export const ManageVaccineMonitorContext = createContext<ManageVaccineMonitorContextType | undefined>(undefined);
+
+interface ManageVaccineMonitorProviderProps {
+  children: ReactNode;
+}
+
+export const ManageVaccineMonitorProvider: React.FC<ManageVaccineMonitorProviderProps> = ({ children }) => {
   const [vaccineRecords, setVaccineRecords] = useState<VaccineMonitor[]>([]);
 
   useEffect(() => {
@@ -72,10 +85,11 @@ export const ManageVaccineMonitorProvider: React.FC = ({ children }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useManageVaccine = () => {
   const context = useContext(ManageVaccineMonitorContext);
   if (!context) {
-    throw new Error("useManageVaccine must be used within a ManageVaccineProvider");
+    throw new Error("useManageVaccine must be used within a ManageVaccineMonitorProvider");
   }
   return context;
 };

@@ -1,10 +1,10 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { PiForkKnifeBold } from "react-icons/pi";
-import { IoInformationCircle } from "react-icons/io5";
 import { TiMinus } from "react-icons/ti"; // Import TiMinus icon
 import { useTranslation } from "../../Translator/Provider";
 import { ManageCowFeedContext } from "../Provider";
+import { IoInformationCircle } from "react-icons/io5";
 
 const EditCowFeedForm = () => {
   const { id } = useParams<{ id: string }>();
@@ -28,7 +28,7 @@ const EditCowFeedForm = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [successPopup, setSuccessPopup] = useState(false);
+  const [, setSuccessPopup] = useState(false);
 
   useEffect(() => {
     const date = new Date();
@@ -38,7 +38,7 @@ const EditCowFeedForm = () => {
 
   useEffect(() => {
     if (isEditMode) {
-      const selectedCowFeed = cowFeedRecords.find((cowFeed) => cowFeed.id === id);
+      const selectedCowFeed = cowFeedRecords.find((cowFeed: { id: string; }) => cowFeed.id === id);
       if (selectedCowFeed) {
         setFormData({
           stallNo: selectedCowFeed.stallNo,
@@ -51,7 +51,7 @@ const EditCowFeedForm = () => {
     }
   }, [id, isEditMode, cowFeedRecords]);
 
-  const handleChange = (e, index) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>, index: number) => {
     const { name, value } = e.target;
     if (index === -1) {
       setFormData({
@@ -81,7 +81,7 @@ const EditCowFeedForm = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     setLoading(true);
     if (isEditMode) {
@@ -97,7 +97,7 @@ const EditCowFeedForm = () => {
     },0);
   };
 
-  const handleRemoveRow = (indexToRemove) => {
+  const handleRemoveRow = (indexToRemove: number) => {
     setFormData({
       ...formData,
       informations: formData.informations.filter((_, index) => index !== indexToRemove),

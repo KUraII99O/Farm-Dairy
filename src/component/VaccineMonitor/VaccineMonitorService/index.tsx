@@ -1,6 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 
-export interface VaccineMonitor {
+// Use export type instead of export interface
+export type VaccineMonitor = {
+  informations: { VaccineName: string; Dose: string; Repeat: string; Remarks: string; GivenTime: string; }[];
+  CowNumber: string;
   id: string;
   date: string;
   StallNo: string;
@@ -12,7 +15,7 @@ export interface VaccineMonitor {
   ServiceName: string;
   Result: string;
   MonitoringTime: string;
-}
+};
 
 const VaccineService = {
   fetchVaccineRecords,
@@ -39,8 +42,12 @@ async function fetchVaccineRecords(): Promise<VaccineMonitor[]> {
     }
     const vaccineRecordsData: VaccineMonitor[] = await response.json();
     return vaccineRecordsData;
-  } catch (error) {
-    console.error('Error fetching vaccine records data:', error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error fetching vaccine records data:', error.message);
+    } else {
+      console.error('Unknown error fetching vaccine records data');
+    }
     return [];
   }
 }
@@ -72,8 +79,12 @@ async function addVaccineRecord(newVaccineRecord: Omit<VaccineMonitor, 'id' | 'u
     }
 
     return vaccineRecordWithId;
-  } catch (error) {
-    console.error('Error adding vaccine record:', error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error adding vaccine record:', error.message);
+    } else {
+      console.error('Unknown error adding vaccine record');
+    }
     throw error;
   }
 }
@@ -100,8 +111,12 @@ async function editVaccineRecord(id: string, updatedVaccineRecord: Omit<VaccineM
     if (!response.ok) {
       throw new Error('Failed to update vaccine record');
     }
-  } catch (error) {
-    console.error('Error updating vaccine record:', error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error updating vaccine record:', error.message);
+    } else {
+      console.error('Unknown error updating vaccine record');
+    }
     throw error;
   }
 }
@@ -124,10 +139,14 @@ async function deleteVaccineRecord(id: string): Promise<void> {
     if (!response.ok) {
       throw new Error('Failed to delete vaccine record');
     }
-  } catch (error) {
-    console.error('Error deleting vaccine record:', error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error deleting vaccine record:', error.message);
+    } else {
+      console.error('Unknown error deleting vaccine record');
+    }
     throw error;
   }
 }
 
-export { VaccineService, VaccineMonitor };
+export { VaccineService };

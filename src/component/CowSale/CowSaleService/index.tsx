@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 interface CowSales {
+  status: boolean;
   id: string;
   customerName: string;
   customerPhone: string;
@@ -45,8 +46,12 @@ async function fetchSales(): Promise<CowSales[]> {
     }
     const salesData: CowSales[] = await response.json();
     return salesData;
-  } catch (error) {
-    console.error('Error fetching sales data:', error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error fetching sales data:', error.message);
+    } else {
+      console.error('Unknown error fetching sales data');
+    }
     return [];
   }
 }
@@ -78,8 +83,12 @@ async function addSale(newSale: Omit<CowSales, 'id' | 'userId'>): Promise<CowSal
     }
 
     return saleWithId;
-  } catch (error) {
-    console.error('Error adding sale:', error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error adding sale:', error.message);
+    } else {
+      console.error('Unknown error adding sale');
+    }
     throw error;
   }
 }
@@ -106,8 +115,12 @@ async function editSale(id: string, updatedSale: Omit<CowSales, 'id' | 'userId'>
     if (!response.ok) {
       throw new Error('Failed to update sale');
     }
-  } catch (error) {
-    console.error('Error updating sale:', error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error updating sale:', error.message);
+    } else {
+      console.error('Unknown error updating sale');
+    }
     throw error;
   }
 }
@@ -130,10 +143,15 @@ async function deleteSale(id: string): Promise<void> {
     if (!response.ok) {
       throw new Error('Failed to delete sale');
     }
-  } catch (error) {
-    console.error('Error deleting sale:', error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error deleting sale:', error.message);
+    } else {
+      console.error('Unknown error deleting sale');
+    }
     throw error;
   }
 }
 
-export { CowSalesService, CowSales };
+export { CowSalesService };  export type { CowSales };
+

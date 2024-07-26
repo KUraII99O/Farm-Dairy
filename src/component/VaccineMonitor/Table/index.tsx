@@ -5,18 +5,35 @@ import { Table } from "flowbite-react";
 import { Link } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
 
-const VaccineMonitorList = ({
+// Define types for props
+interface VaccineMonitor {
+  id: string;
+  date: string;
+  StallNo: string;
+  CowNumber: string;
+  note: string;
+  reportedby: string;
+}
+
+interface VaccineMonitorListProps {
+  currentVaccineMonitors: VaccineMonitor[];
+  handleSort: (key: keyof VaccineMonitor) => void;
+  sortIcon: (key: keyof VaccineMonitor) => JSX.Element;
+  handleDeleteConfirmation: (id: string) => void;
+  translate: (key: string) => string;
+  formClass: string; // If formClass is not used in the component, you can remove this
+  reportedbyuser: string; // If reportedbyuser is not used in the component, you can remove this
+  handleViewDetails: (vaccine: VaccineMonitor) => void;
+}
+
+const VaccineMonitorList: React.FC<VaccineMonitorListProps> = ({
   currentVaccineMonitors,
   handleSort,
   sortIcon,
   handleDeleteConfirmation,
   translate,
-  formClass,
-  reportedbyuser,
   handleViewDetails,
 }) => {
-  // Get user name from localStorage
-
   return (
     <div className="rtl:mirror-x">
       <Table>
@@ -39,17 +56,17 @@ const VaccineMonitorList = ({
               {sortIcon("CowNumber")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("Note")}>
+          <Table.HeadCell onClick={() => handleSort("note")}>
             <div className="flex items-center">
               {translate("Note")}
-              {sortIcon("Note")}
+              {sortIcon("note")}
             </div>
           </Table.HeadCell>
 
-          <Table.HeadCell onClick={() => handleSort("ReportedBy")}>
+          <Table.HeadCell onClick={() => handleSort("reportedby")}>
             <div className="flex items-center">
               {translate("Reported by")}
-              {sortIcon("ReportedBy")}
+              {sortIcon("reportedby")}
             </div>
           </Table.HeadCell>
           <Table.HeadCell>{translate("Action")}</Table.HeadCell>
@@ -58,7 +75,7 @@ const VaccineMonitorList = ({
           {currentVaccineMonitors.map((vaccine) => (
             <Table.Row key={vaccine.id}>
               <Table.Cell>{vaccine.date}</Table.Cell>
-              <Table.Cell>{vaccine.stallNo}</Table.Cell>
+              <Table.Cell>{vaccine.StallNo}</Table.Cell>
               <Table.Cell>{vaccine.CowNumber}</Table.Cell>
               <Table.Cell>{vaccine.note}</Table.Cell>
               <Table.Cell>{vaccine.reportedby}</Table.Cell>

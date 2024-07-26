@@ -1,7 +1,13 @@
 import React, { useEffect } from "react";
 import { FaSpinner } from "react-icons/fa";
 
-const WelcomeMessage = ({ username, onLogin }) => {
+// Define the props interface
+interface WelcomeMessageProps {
+  username: string;
+  onLogin: () => void;
+}
+
+const WelcomeMessage: React.FC<WelcomeMessageProps> = ({ username, onLogin }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       onLogin();

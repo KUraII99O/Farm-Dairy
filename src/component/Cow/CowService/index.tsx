@@ -10,6 +10,8 @@ interface Cow {
   pregnantStatus: string;
   gender: string;
   image: string;
+  stallNumber: string ;
+
 }
 
 const CowService = {
@@ -48,6 +50,9 @@ async function addCow(newCow: Omit<Cow, 'id' | 'userId'>): Promise<Cow> {
   try {
     const cowWithId: Cow = { id: uuidv4(), userId: user.id, ...newCow };
 
+    // Log the cow data being sent for debugging
+    console.log("Adding cow with data:", cowWithId);
+
     const response = await fetch('http://localhost:3000/cows', {
       method: 'POST',
       headers: {
@@ -57,7 +62,7 @@ async function addCow(newCow: Omit<Cow, 'id' | 'userId'>): Promise<Cow> {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to add cow');
+      throw new Error(`Failed to add cow. Status: ${response.status}`);
     }
 
     return cowWithId;

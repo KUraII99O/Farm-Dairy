@@ -1,22 +1,28 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "../../Translator/Provider";
 
 const EditBranchForm = ({ branch, onSubmit, onClose }) => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const formRef = useRef(null);
-
   const [formData, setFormData] = useState({
-    branchName: "",
+    name: "",
     setupDate: "",
     builderName: "",
     phoneNumber: "",
     email: "",
   });
+  const { translate } = useTranslation();
 
   useEffect(() => {
     if (branch) {
       setFormData(branch);
+    } else {
+      // If branch is not provided (i.e., adding a new branch), reset formData
+      setFormData({
+        name: "",
+        setupDate: "",
+        builderName: "",
+        phoneNumber: "",
+        email: "",
+      });
     }
   }, [branch]);
 
@@ -31,143 +37,106 @@ const EditBranchForm = ({ branch, onSubmit, onClose }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(formData);
-    onClose(); // Close the drawer after submitting
-    navigate("/Branch-List"); // Navigate back to the branch management page
   };
-
-  const handleOutsideClick = (e) => {
-    if (formRef.current && !formRef.current.contains(e.target)) {
-      onClose(); // Close the drawer if clicked outside
-      navigate("/manage-branch"); // Navigate back to the branch management page
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, []);
 
   return (
-    <>
-      {/* Semi-transparent overlay */}
-      <div
-        className="fixed inset-0 bg-gray-200 bg-opacity-50 z-40"
-        onClick={handleOutsideClick}
-      ></div>
-      {/* Edit branch form */}
-      <div className="fixed inset-0 overflow-y-auto z-50 flex justify-end">
-        <div className="w-96 bg-white h-full shadow-lg p-6" ref={formRef}>
-          <button
-            className="absolute top-0 right-0 m-2 text-gray-600 hover:text-gray-900 focus:outline-none"
-            onClick={handleOutsideClick}
+    <div className="flex justify-end"> {/* Move the form container to the right */}
+      <form onSubmit={handleSubmit} className="w-96"> {/* Set a width for the form */}
+        <h2 className="text-xl font-bold mb-4">
+          {branch ? translate("editBranch") : translate("addNewBranch")}
+        </h2>
+        <div className="mb-4">
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-          <form onSubmit={handleSubmit}>
-            <h2 className="text-xl font-bold mb-4">
-              {branch ? "Edit Branch" : "Add New Branch"}
-            </h2>
-            <div className="mb-4">
-              <label
-                htmlFor="branchName"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Branch Name *:
-              </label>
-              <input
-                type="text"
-                name="branchName"
-                value={formData.branchName}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label
-                htmlFor="setupDate"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Setup Date *:
-              </label>
-              <input
-                type="date"
-                name="setupDate"
-                value={formData.setupDate}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label
-                htmlFor="builderName"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Builder Name:
-              </label>
-              <input
-                type="text"
-                name="builderName"
-                value={formData.builderName}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            <div className="mb-4">
-              <label
-                htmlFor="phoneNumber"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Phone Number:
-              </label>
-              <input
-                type="tel"
-                name="phoneNumber"
-                value={formData.phoneNumber}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            <div className="mb-4">
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email:
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                className="bg-secondary hover:bg-primary text-white font-bold py-2 px-4 rounded"
-              >
-                {branch ? "Update Branch" : "Add Branch"}
-              </button>
-            </div>
-          </form>
+            {translate("branchName")}:
+          </label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
         </div>
-      </div>
-    </>
+        <div className="mb-4">
+          <label
+            htmlFor="setupDate"
+            className="block text-sm font-medium text-gray-700"
+          >
+            {translate("setupDate")}:
+          </label>
+          <input
+            type="date"
+            name="setupDate"
+            value={formData.setupDate}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
+        </div>
+        <div className="mb-4">
+          <label
+            htmlFor="builderName"
+            className="block text-sm font-medium text-gray-700"
+          >
+            {translate("builderName")}:
+          </label>
+          <input
+            type="text"
+            name="builderName"
+            value={formData.builderName}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
+        </div>
+        <div className="mb-4">
+          <label
+            htmlFor="phoneNumber"
+            className="block text-sm font-medium text-gray-700"
+          >
+            {translate("phoneNumber")}:
+          </label>
+          <input
+            type="text"
+            name="phoneNumber"
+            value={formData.phoneNumber}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
+        </div>
+        <div className="mb-4">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700"
+          >
+            {translate("email")}:
+          </label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
+        </div>
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className="bg-secondary hover:bg-primary text-white font-bold py-2 px-4 rounded mr-2"
+          >
+            {branch ? translate("updateBranch") : translate("addBranch")}
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded"
+          >
+            {translate("cancel")}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 

@@ -1,11 +1,21 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-const EditAnimalTypeForm = ({ animalType, onSubmit, onClose }) => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const formRef = useRef(null);
+import { useNavigate } from "react-router-dom";
 
-  const [formData, setFormData] = useState({
+interface AnimalType {
+  name: string;
+}
+
+interface EditAnimalTypeFormProps {
+  animalType?: AnimalType;
+  onSubmit: (formData: AnimalType) => void;
+  onClose: () => void;
+}
+
+const EditAnimalTypeForm: React.FC<EditAnimalTypeFormProps> = ({ animalType, onSubmit, onClose }) => {
+  const navigate = useNavigate();
+  const formRef = useRef<HTMLDivElement>(null);
+
+  const [formData, setFormData] = useState<AnimalType>({
     name: "",
   });
 
@@ -15,7 +25,7 @@ const EditAnimalTypeForm = ({ animalType, onSubmit, onClose }) => {
     }
   }, [animalType]);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -23,7 +33,7 @@ const EditAnimalTypeForm = ({ animalType, onSubmit, onClose }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
   };
@@ -33,8 +43,8 @@ const EditAnimalTypeForm = ({ animalType, onSubmit, onClose }) => {
     navigate("/Animal-Type");
   };
 
-  const handleOutsideClick = (e) => {
-    if (formRef.current && !formRef.current.contains(e.target)) {
+  const handleOutsideClick = (e: MouseEvent) => {
+    if (formRef.current && !formRef.current.contains(e.target as Node)) {
       handleCloseDrawer();
     }
   };
@@ -44,7 +54,7 @@ const EditAnimalTypeForm = ({ animalType, onSubmit, onClose }) => {
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
-  }, []);
+  }, );
 
   return (
     <>

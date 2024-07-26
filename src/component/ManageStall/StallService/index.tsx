@@ -1,8 +1,13 @@
+import { v4 as uuidv4 } from 'uuid';
+
+
 interface Stall {
     id: string;
     stallNumber: string;
     status: boolean;
     details: string;
+    userId: string;
+
   }
   
   const StallService = {
@@ -26,17 +31,20 @@ interface Stall {
     }
   }
   
-  async function addStall(newStall: Omit<Stall, 'id'>): Promise<Stall> {
+  async function addStall(newStall: Omit<Stall, 'id' | 'userId'>): Promise<Stall> {
+    const loggedInUser = localStorage.getItem('loggedInUser');
+    if (!loggedInUser) {
+      throw new Error("User not logged in or user data not found");
+    }
+  
+    const user = JSON.parse(loggedInUser);
+    if (!user || !user.id) {
+      throw new Error("User ID not found in user data");
+    }
+  
     try {
-      // Fetch the current stalls to determine the next ID
-      const currentStalls = await fetchStalls();
-      const maxId = currentStalls.length > 0 ? Math.max(...currentStalls.map(stall => stall.id)) : 0;
-      const nextId = maxId + 1;
+      const stallWithId: Stall = { id: uuidv4(), userId: user.id, ...newStall };
   
-      // Assign the next ID to the new stall
-      const stallWithId: Stall = { id: nextId, ...newStall };
-  
-      // Send the request to add the stall with the assigned ID
       const response = await fetch('http://localhost:3000/stalls', {
         method: 'POST',
         headers: {
@@ -46,35 +54,35 @@ interface Stall {
       });
   
       if (!response.ok) {
-        throw new Error('Failed to add stall');
+        throw new Error('Failed to add cow');
       }
   
-      return stallWithId; // Return the added stall with the assigned ID
+      return stallWithId;
     } catch (error) {
       console.error('Error adding stall:', error.message);
       throw error;
     }
   }
   
-  async function editStall(id: number, updatedStall: Omit<Stall, 'id'>): Promise<void> {
+  async function editStall(id: string, updatedStall: Omit<Stall, 'id' | 'userId'>): Promise<void> {
     try {
       const response = await fetch(`http://localhost:3000/stalls/${id}`, {
-        method: "PUT",
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(updatedStall),
       });
       if (!response.ok) {
-        throw new Error("Failed to update stall record");
+        throw new Error('Failed to update stall');
       }
     } catch (error) {
-      console.error("Error updating stall:", error.message);
+      console.error('Error updating stall:', error.message);
       throw error;
     }
   }
   
-  async function toggleStallStatus(id: number): Promise<Stall> {
+  async function toggleStallStatus(id: string): Promise<Stall> {
     try {
       const response = await fetch(`http://localhost:3000/stalls/${id}/toggle-status`, {
         method: "PUT",
@@ -89,7 +97,7 @@ interface Stall {
     }
   }
   
-  async function deleteStall(id: number): Promise<void> {
+  async function deleteStall(id: string): Promise<void> {
     try {
       const response = await fetch(`http://localhost:3000/stalls/${id}`, {
         method: "DELETE",

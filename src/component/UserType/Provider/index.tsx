@@ -1,68 +1,58 @@
-// UserTypeProvider.js
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { UserType, UserTypeService } from "../UserTypeService";
 
-export const UserTypeContext = createContext();
+export const UserTypeContext = createContext<any>(null);
 
 export const UserTypeProvider = ({ children }) => {
-  const [userTypes, setUserTypes] = useState([
-    {
-      id: 1,
-      typeName: "Admin",
-    },
-    {
-      id: 2,
-      typeName: "User",
-    },
-    {
-      id: 3,
-      typeName: "Staff",
-    },
-  ]);
+  const [userTypes, setUserTypes] = useState<UserType[]>([]);
 
-  const [loggedInUser, setLoggedInUser] = useState(null); // Add loggedInUser state
+  useEffect(() => {
+    const fetchUserTypesData = async () => {
+      try {
+        const data = await UserTypeService.fetchUserTypes();
+        setUserTypes(data || []);
+      } catch (error) {
+        console.error("Error fetching user types:", error);
+      }
+    };
 
-  const addUserType = (newType) => {
-    const maxId = Math.max(...userTypes.map((type) => type.id), 0);
-    const newTypeWithId = { ...newType, id: maxId + 1 };
-    setUserTypes([...userTypes, newTypeWithId]);
+    fetchUserTypesData();
+  }, []);
+
+  const addUserType = async (newUserType: Omit<UserType, 'id'>) => {
+    try {
+      const data = await UserTypeService.addUserType(newUserType);
+      setUserTypes(prevUserTypes => [...prevUserTypes, data]);
+    } catch (error) {
+      console.error("Error adding user type:", error);
+    }
   };
 
-  const editUserType = (id, updatedType) => {
-    setUserTypes((prevTypes) =>
-      prevTypes.map((type) => (type.id === id ? { ...type, ...updatedType } : type))
-    );
+  const editUserType = async (id: string, updatedUserType: Omit<UserType, 'id'>) => {
+    try {
+      await UserTypeService.editUserType(id, updatedUserType);
+      setUserTypes(prevUserTypes =>
+        prevUserTypes.map(userType => (userType.id === id ? { ...userType, ...updatedUserType } : userType))
+      );
+    } catch (error) {
+      console.error("Error editing user type:", error);
+    }
   };
 
-  const deleteUserType = (id) => {
-    const updatedTypes = userTypes.filter((type) => type.id !== id);
-    setUserTypes(updatedTypes);
+  const deleteUserType = async (id: string) => {
+    try {
+      await UserTypeService.deleteUserType(id);
+      setUserTypes(prevUserTypes => prevUserTypes.filter(userType => userType.id !== id));
+    } catch (error) {
+      console.error("Error deleting user type:", error);
+    }
   };
 
-  const getUserTypeById = (id) => {
-    // Find and return the user type with the given ID
-    return userTypes.find((type) => type.id === id);
-  };
-
-  const setUserAndLocalStorage = (user) => {
-    setLoggedInUser(user);
-    localStorage.setItem("loggedInUser", JSON.stringify(user));
-  };
-
-  // Here's where you should implement your login logic
-  const handleLogin = (user) => {
-    setUserAndLocalStorage(user);
-    // Additional logic related to login, if any
-  };
-
-  // Update your context value to include the login function
   const value = {
     userTypes,
     addUserType,
     editUserType,
-    deleteUserType,
-    getUserTypeById,
-    loggedInUser,
-    handleLogin, // Add the login function to the context value
+    deleteUserType
   };
 
   return (
@@ -72,10 +62,10 @@ export const UserTypeProvider = ({ children }) => {
   );
 };
 
-export const useUserType = () => {
+export const useManageUserType = () => {
   const context = useContext(UserTypeContext);
   if (!context) {
-    throw new Error("useUserType must be used within a UserTypeProvider");
+    throw new Error("useManageUserType must be used within a ManageUserTypeProvider");
   }
   return context;
 };

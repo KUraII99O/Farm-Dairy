@@ -1,9 +1,13 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext, ReactNode } from "react";
 import { Employee, EmployeeService } from "../EmployeeService";
 
 export const ManageEmployeeContext = createContext<any>(null);
 
-export const ManageEmployeeProvider: React.FC = ({ children }) => {
+type ProviderProps = {
+  children: ReactNode;
+};
+
+export const ManageEmployeeProvider: React.FC<ProviderProps> = ({ children }) => {
   const [employees, setEmployees] = useState<Employee[]>([]);
 
   useEffect(() => {
@@ -15,7 +19,7 @@ export const ManageEmployeeProvider: React.FC = ({ children }) => {
         }
         const user = JSON.parse(loggedInUser);
         console.log("User ID:", user.id); // Log user ID
-  
+
         const data = await EmployeeService.fetchEmployees();
         console.log("Employee data:", data); // Log employee data
         setEmployees(data || []);
@@ -23,7 +27,7 @@ export const ManageEmployeeProvider: React.FC = ({ children }) => {
         console.error("Error fetching employees:", error);
       }
     };
-  
+
     fetchEmployeeData();
   }, []);
 

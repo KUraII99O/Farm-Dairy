@@ -1,8 +1,25 @@
 import React, { useState } from 'react';
 
+interface CreditCardDetails {
+  cardNumber: string;
+  expiryDate: string;
+  cvv: string;
+}
+
+interface PayPalDetails {
+  email: string;
+}
+
+interface BankDetails {
+  accountNumber: string;
+  bankName: string;
+}
+
+type PaymentMethodDetails = CreditCardDetails | PayPalDetails | BankDetails;
+
 const AddPaymentMethod: React.FC = () => {
   const [selectedMethod, setSelectedMethod] = useState<string>('');
-  const [methodDetails, setMethodDetails] = useState<any>({});
+  const [methodDetails, setMethodDetails] = useState<Partial<PaymentMethodDetails>>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -13,7 +30,7 @@ const AddPaymentMethod: React.FC = () => {
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    setMethodDetails((prevDetails: any) => ({
+    setMethodDetails((prevDetails) => ({
       ...prevDetails,
       [name]: value,
     }));
@@ -64,8 +81,12 @@ const AddPaymentMethod: React.FC = () => {
 
       // Redirect to payment methods page or display success message
       window.location.href = '/settings'; // Adjust this as needed
-    } catch (error) {
-      setError(error.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred");
+      }
     } finally {
       setLoading(false);
     }

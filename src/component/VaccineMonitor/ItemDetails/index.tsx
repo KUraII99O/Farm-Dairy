@@ -1,30 +1,35 @@
 import React, { useRef, useEffect } from "react";
 import { useTranslation } from "../../Translator/Provider";
 
+// Define the types for the props
+interface VaccineMonitorInfo {
+  VaccineName: string;
+  Remarks: string;
+  GivenTime: string;
+}
+
+interface VaccineMonitor {
+  date: string;
+  stallNo: string;
+  animalID: string;
+  note: string;
+  healthStatus: string;
+  reportedBy: string;
+  informations: VaccineMonitorInfo[];
+}
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  vaccineMonitor: {
-    date: string;
-    stallNo: string;
-    animalID: string;
-    note: string;
-    healthStatus: string;
-    reportedBy: string;
-    informations: {
-      VaccineName: string;
-      Remarks: string;
-      GivenTime: string;
-    }[];
-  };
+  vaccineMonitor: VaccineMonitor;
 }
 
-const VaccineMonitorDetailsDrawer = ({ isOpen, onClose, vaccineMonitor   }) => {
+const VaccineMonitorDetailsDrawer: React.FC<Props> = ({ isOpen, onClose, vaccineMonitor }) => {
   const { translate } = useTranslation();
-  const ref = useRef(null);
+  const ref = useRef<HTMLDivElement | null>(null);
 
-  const handleClickOutside = (event) => {
-    if (ref.current && !ref.current.contains(event.target)) {
+  const handleClickOutside = (event: MouseEvent) => {
+    if (ref.current && !ref.current.contains(event.target as Node)) {
       onClose();
     }
   };
@@ -39,14 +44,10 @@ const VaccineMonitorDetailsDrawer = ({ isOpen, onClose, vaccineMonitor   }) => {
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-70 z-40" >
-          <div className="fixed inset-0  z-50 flex justify-end ">
-
-            <div ref={ref}  className="w-full max-w-md bg-white shadow-lg p-6">
-
-            <h1 className=" inline-block text-xl font-bold mb-4">
-
-                
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-70 z-40">
+          <div className="fixed inset-0 z-50 flex justify-end">
+            <div ref={ref} className="w-full max-w-md bg-white shadow-lg p-6">
+              <h1 className="inline-block text-xl font-bold mb-4">
                 {translate("itemdetails")}
               </h1>
               <button
@@ -86,7 +87,7 @@ const VaccineMonitorDetailsDrawer = ({ isOpen, onClose, vaccineMonitor   }) => {
                         {info.VaccineName}
                       </td>
                       <td className="border border-gray-400 px-3 py-2">
-                        {info.Remarks} 
+                        {info.Remarks}
                       </td>
                       <td className="border border-gray-400 px-3 py-2">
                         {info.GivenTime}
@@ -110,4 +111,3 @@ const VaccineMonitorDetailsDrawer = ({ isOpen, onClose, vaccineMonitor   }) => {
 };
 
 export default VaccineMonitorDetailsDrawer;
-

@@ -72,7 +72,7 @@ const SupplierList: React.FC = () => {
   };
 
   const dynamicSort = (property: string) => {
-    let sortOrderValue = sortOrder === "asc" ? 1 : -1;
+    const sortOrderValue = sortOrder === "asc" ? 1 : -1;
     return function (a: any, b: any) {
       if (a[property] < b[property]) {
         return -1 * sortOrderValue;
