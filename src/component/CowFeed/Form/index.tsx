@@ -1,10 +1,10 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { PiForkKnifeBold } from "react-icons/pi";
-import { TiMinus } from "react-icons/ti"; // Import TiMinus icon
+import { IoInformationCircle } from "react-icons/io5";
 import { useTranslation } from "../../Translator/Provider";
 import { ManageCowFeedContext } from "../Provider";
-import { IoInformationCircle } from "react-icons/io5";
+import FormTable from "../FormTable";
 
 const EditCowFeedForm = () => {
   const { id } = useParams<{ id: string }>();
@@ -19,12 +19,11 @@ const EditCowFeedForm = () => {
     cowNumber: "",
     date: "",
     note: "",
-    informations: Array.from({ length: 3 }, () => ({
-      foodItem: "",
-      quantity: "",
-      feedingTime: "",
-      unit: "",
-    })),
+    informations: [
+      { foodItem: "", quantity: "", unit: "", feedingTime: "" },
+      { foodItem: "", quantity: "", unit: "", feedingTime: "" },
+      { foodItem: "", quantity: "", unit: "", feedingTime: "" },
+    ],
   });
 
   const [loading, setLoading] = useState(false);
@@ -45,7 +44,11 @@ const EditCowFeedForm = () => {
           cowNumber: selectedCowFeed.cowNumber,
           date: selectedCowFeed.date, // Ensure this is the correct field name
           note: selectedCowFeed.note,
-          informations: selectedCowFeed.informations,
+          informations: selectedCowFeed.informations || [
+            { foodItem: "", quantity: "", unit: "", feedingTime: "" },
+            { foodItem: "", quantity: "", unit: "", feedingTime: "" },
+            { foodItem: "", quantity: "", unit: "", feedingTime: "" },
+          ], // Ensure informations is an array
         });
       }
     }
@@ -126,9 +129,8 @@ const EditCowFeedForm = () => {
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
-
         <div className="flex flex-col space-y-1">
-          <label className="text-sm font-medium text-gray-700">{translate("cownumber")}</label>
+          <label className="text-sm font-medium text-gray-700">{translate("cownumber")}:</label>
           <input
             type="text"
             placeholder={translate("cownumber")}
@@ -138,19 +140,16 @@ const EditCowFeedForm = () => {
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
-
         <div className="flex flex-col space-y-1">
           <label className="text-sm font-medium text-gray-700">{translate("date")}:</label>
           <input
             type="date"
-            placeholder={translate("date")}
             name="date"
             value={formData.date}
             onChange={(e) => handleChange(e, -1)}
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
-
         <div className="flex flex-col space-y-1">
           <label className="text-sm font-medium text-gray-700">{translate("note")}:</label>
           <input
@@ -162,97 +161,29 @@ const EditCowFeedForm = () => {
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
-
-        <h2 className="text-xl font-bold mt-2 mb-4 flex items-center">
-          <IoInformationCircle className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
-          <span>{translate("feedinformation")} :</span>
-        </h2>
-
-        <table className="border-collapse w-full">
-          <thead>
-            <tr>
-              <th className="border border-gray-400 px-3 py-2">{translate("fooditem")}</th>
-              <th className="border border-gray-400 px-3 py-2">{translate("itemquantity")}</th>
-              <th className="border border-gray-400 px-3 py-2">{translate("unit")}</th>
-              <th className="border border-gray-400 px-3 py-2">{translate("feedingtime")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {formData.informations.map((info, index) => (
-              <tr key={index}>
-                <td className="border border-gray-400 px-3 py-2">
-                  <input
-                    type="text"
-                    placeholder={translate("fooditem")}
-                    name="foodItem"
-                    value={info.foodItem}
-                    onChange={(e) => handleChange(e, index)}
-                    className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  />
-                </td>
-                <td className="border border-gray-400 px-3 py-2">
-                  <input
-                    type="text"
-                    placeholder={translate("itemquantity")}
-                    name="quantity"
-                    value={info.quantity}
-                    onChange={(e) => handleChange(e, index)}
-                    className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  />
-                </td>
-                <td className="border border-gray-400 px-3 py-2">
-                  <select
-                    name="unit"
-                    value={info.unit}
-                    onChange={(e) => handleChange(e, index)}
-                    className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  >
-                    <option value="kg">{translate("kg")}</option>
-                    <option value="gram">{translate("gram")}</option>
-                    <option value="liters">{translate("liters")}</option>
-                  </select>
-                </td>
-                <td className="border border-gray-400 px-1 py-2 text-right">
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveRow(index)}
-                    className="text-red-600 hover:text-red-800 self-end"
-                  >
-                    <TiMinus />
-                  </button>
-                  <input
-                    type="text"
-                    placeholder={translate("feedingtime")}
-                    name="feedingTime"
-                    value={info.feedingTime}
-                    onChange={(e) => handleChange(e, index)}
-                    className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        <button
-          type="button"
-          onClick={handleAddRow}
-          className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary"
-        >
-          {translate("addrow")}
-        </button>
-
-        <button
-          type="submit"
-          className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary w-full"
-          disabled={loading}
-        >
-          {loading
-            ? "Loading..."
-            : isEditMode
-            ? translate("save")
-            : translate("addcowfeed")}
-        </button>
+        <div className="mt-4 mb-4">
+          <h2 className="text-xl font-bold mb-4 flex items-center">
+            <PiForkKnifeBold className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
+            <span>{translate("feedingdetails")}</span>
+          </h2>
+          <FormTable
+            informations={formData.informations}
+            handleChange={handleChange}
+            handleRemoveRow={handleRemoveRow}
+            handleAddRow={handleAddRow}
+          />
+        </div>
+        <div className="flex justify-end ">
+          <button
+            type="submit"
+            className={`px-6 py-2 rounded text-white ${
+              loading ? "bg-gray-500 mt-6 cursor-not-allowed" : "bg-secondary hover:bg-primary mt-6"
+            }`}
+            disabled={loading}
+          >
+            {loading ? `${translate("saving")}...` : isEditMode ? translate("update") : translate("save")}
+          </button>
+        </div>
       </form>
     </div>
   );

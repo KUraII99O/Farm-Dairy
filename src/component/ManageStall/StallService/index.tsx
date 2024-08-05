@@ -19,17 +19,29 @@ interface Stall {
   };
   
   async function fetchStalls(): Promise<Stall[]> {
+    const loggedInUser = localStorage.getItem('loggedInUser');
+    if (!loggedInUser) {
+      throw new Error("User not logged in");
+    }
+  
+    const user = JSON.parse(loggedInUser);
+    if (!user || !user.id) {
+      throw new Error("User ID not found");
+    }
+  
     try {
-      const response = await fetch('http://localhost:3000/stalls');
+      const response = await fetch('http://localhost:3000/stalls?userId=' + user.id);
       if (!response.ok) {
-        throw new Error('Failed to fetch Stall data');
+        throw new Error('Failed to fetch stall data');
       }
-      return await response.json();
+      const stallData: Stall[] = await response.json();
+      return stallData;
     } catch (error) {
-      console.error('Error fetching Stall data:', error.message);
+      console.error('Error fetching stall data:', error.message);
       return [];
     }
   }
+  
   
   async function addStall(newStall: Omit<Stall, 'id' | 'userId'>): Promise<Stall> {
     const loggedInUser = localStorage.getItem('loggedInUser');

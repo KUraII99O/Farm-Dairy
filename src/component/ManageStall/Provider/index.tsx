@@ -7,17 +7,26 @@ export const ManageStallProvider = ({ children }) => {
   const [stalls, setStalls] = useState<Stall[]>([]);
 
   useEffect(() => {
-    const fetchStallsData = async () => {
+    const fetchStallData = async () => {
       try {
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (!loggedInUser) {
+          throw new Error("User not logged in or user data not found");
+        }
+        const user = JSON.parse(loggedInUser);
+        console.log("User ID:", user.id); // Log user ID
+
         const data = await StallService.fetchStalls();
+        console.log("Stall data:", data); // Log stall data
         setStalls(data || []);
       } catch (error) {
         console.error("Error fetching stalls:", error);
       }
     };
 
-    fetchStallsData();
+    fetchStallData();
   }, []);
+
 
   const addStall = async (newStall: Omit<Stall, 'id'>) => {
     try {

@@ -6,18 +6,29 @@ export const UserTypeContext = createContext<any>(null);
 export const UserTypeProvider = ({ children }) => {
   const [userTypes, setUserTypes] = useState<UserType[]>([]);
 
+ 
+
   useEffect(() => {
-    const fetchUserTypesData = async () => {
+    const UserTypeProvider = async () => {
       try {
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (!loggedInUser) {
+          throw new Error("User not logged in or user data not found");
+        }
+        const user = JSON.parse(loggedInUser);
+        console.log("User ID:", user.id); // Log user ID
+  
         const data = await UserTypeService.fetchUserTypes();
+        console.log("UserTypes data:", data); // Log staff data
         setUserTypes(data || []);
       } catch (error) {
-        console.error("Error fetching user types:", error);
+        console.error("Error fetching staff:", error);
       }
     };
-
-    fetchUserTypesData();
+  
+    UserTypeProvider();
   }, []);
+
 
   const addUserType = async (newUserType: Omit<UserType, 'id'>) => {
     try {

@@ -10,8 +10,7 @@ interface Cow {
   pregnantStatus: string;
   gender: string;
   image: string;
-  stallNumber: string ;
-
+  stallNumber: string;
 }
 
 const CowService = {
@@ -31,7 +30,11 @@ async function fetchCows(userId: string): Promise<Cow[]> {
     const cowData: Cow[] = await response.json();
     return cowData;
   } catch (error) {
-    console.error('Error fetching cow data:', error.message);
+    if (error instanceof Error) {
+      console.error('Error fetching cow data:', error.message);
+    } else {
+      console.error('Unknown error occurred while fetching cow data');
+    }
     return [];
   }
 }
@@ -67,7 +70,11 @@ async function addCow(newCow: Omit<Cow, 'id' | 'userId'>): Promise<Cow> {
 
     return cowWithId;
   } catch (error) {
-    console.error('Error adding cow:', error.message);
+    if (error instanceof Error) {
+      console.error('Error adding cow:', error.message);
+    } else {
+      console.error('Unknown error occurred while adding cow');
+    }
     throw error;
   }
 }
@@ -85,7 +92,11 @@ async function editCow(id: string, updatedCow: Omit<Cow, 'id' | 'userId'>): Prom
       throw new Error('Failed to update cow');
     }
   } catch (error) {
-    console.error('Error updating cow:', error.message);
+    if (error instanceof Error) {
+      console.error('Error updating cow:', error.message);
+    } else {
+      console.error('Unknown error occurred while updating cow');
+    }
     throw error;
   }
 }
@@ -100,7 +111,11 @@ async function toggleCowStatus(id: string): Promise<Cow> {
     }
     return await response.json();
   } catch (error) {
-    console.error('Error toggling cow status:', error.message);
+    if (error instanceof Error) {
+      console.error('Error toggling cow status:', error.message);
+    } else {
+      console.error('Unknown error occurred while toggling cow status');
+    }
     throw error;
   }
 }
@@ -114,7 +129,11 @@ async function deleteCow(id: string): Promise<void> {
       throw new Error('Failed to delete cow');
     }
   } catch (error) {
-    console.error('Error deleting cow:', error.message);
+    if (error instanceof Error) {
+      console.error('Error deleting cow:', error.message);
+    } else {
+      console.error('Unknown error occurred while deleting cow');
+    }
     throw error;
   }
 }

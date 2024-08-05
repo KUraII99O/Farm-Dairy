@@ -6,12 +6,12 @@ import { TiMinus } from "react-icons/ti"; // Import TiMinus icon
 import { FaRegEdit } from "react-icons/fa"; // Import FaRegEdit icon
 import { useTranslation } from "../../Translator/Provider";
 import { ManageRoutineContext } from "../Provider";
+import FormTable from "../TableForm";
 
 const EditRoutineMonitorForm = () => {
   const { id } = useParams<{ id: string }>();
-  const { routineRecords, addRoutineRecord, editRoutineRecord } = useContext(
-    ManageRoutineContext
-  );
+  const { routineRecords, addRoutineRecord, editRoutineRecord } =
+    useContext(ManageRoutineContext);
   const navigate = useNavigate();
   const [currentDate, setCurrentDate] = useState<string>("");
   const { translate, language } = useTranslation();
@@ -29,7 +29,6 @@ const EditRoutineMonitorForm = () => {
     setFormData((prevFormData) => ({ ...prevFormData, date: formattedDate }));
   }, []);
 
-
   const [formData, setFormData] = useState({
     stallNo: "",
     animalID: "",
@@ -37,11 +36,11 @@ const EditRoutineMonitorForm = () => {
     note: "",
     reportedby: "",
     healthStatus: 50,
-    informations: Array.from({ length: 3 }, () => ({
-      ServiceName: "",
-      Result: "",
-      MonitoringTime: "",
-    })),
+    informations: [
+      { ServiceName: "", Result: "", MonitoringTime: "" },
+      { ServiceName: "", Result: "", MonitoringTime: "" },
+      { ServiceName: "", Result: "", MonitoringTime: "" },
+    ],
     updatedWeight: "",
     updatedHeight: "",
     milkPerDay: "",
@@ -54,7 +53,9 @@ const EditRoutineMonitorForm = () => {
 
   useEffect(() => {
     if (isEditMode) {
-      const selectedRoutineRecord = routineRecords.find((routineRecord) => routineRecord.id === id);
+      const selectedRoutineRecord = routineRecords.find(
+        (routineRecord) => routineRecord.id === id
+      );
       if (selectedRoutineRecord) {
         setFormData({
           stallNo: selectedRoutineRecord.stallNo,
@@ -63,7 +64,11 @@ const EditRoutineMonitorForm = () => {
           note: selectedRoutineRecord.note,
           reportedby: selectedRoutineRecord.reportedby,
           healthStatus: selectedRoutineRecord.healthStatus,
-          informations: selectedRoutineRecord.informations,
+          informations: selectedRoutineRecord.informations ||  [
+            { ServiceName: "", Result: "", MonitoringTime: "" },
+            { ServiceName: "", Result: "", MonitoringTime: "" },
+            { ServiceName: "", Result: "", MonitoringTime: "" },
+          ],
           updatedWeight: selectedRoutineRecord.updatedWeight,
           updatedHeight: selectedRoutineRecord.updatedHeight,
           milkPerDay: selectedRoutineRecord.milkPerDay,
@@ -72,14 +77,14 @@ const EditRoutineMonitorForm = () => {
         });
       }
     }
-  }, [id, isEditMode, routineRecords]);
+  }, [id, isEditMode ,routineRecords ]);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('loggedInUser');
+    const storedUser = localStorage.getItem("loggedInUser");
     if (storedUser) {
       const userData = JSON.parse(storedUser);
       const { username } = userData;
-      setFormData(prevState => ({
+      setFormData((prevState) => ({
         ...prevState,
         reportedby: username,
       }));
@@ -317,69 +322,17 @@ const EditRoutineMonitorForm = () => {
           </div>
         </div>
 
-        <table className="border-collapse w-full">
-          <thead>
-            <tr>
-              <th className="border border-gray-400 px-3 py-2">
-                {translate("servicename")}
-              </th>
-              <th className="border border-gray-400 px-3 py-2">
-                {translate("result")}
-              </th>
-              <th className="border border-gray-400 px-3 py-2">
-                {translate("monitoringtime")}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {formData.informations.map((info, index) => (
-              <tr key={index}>
-                <td className="border border-gray-400 px-3 py-2">
-                  <input
-                    type="string"
-                    placeholder={translate("servicename")}
-                    name="ServiceName"
-                    value={info.ServiceName}
-                    onChange={(e) => handleChange(e, index)}
-                    className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  />
-                </td>
-                <td className="border border-gray-400 px-3 py-2">
-                  <input
-                    type="string"
-                    placeholder={translate("result")}
-                    name="Result"
-                    value={info.Result}
-                    onChange={(e) => handleChange(e, index)}
-                    className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  />
-                </td>
-                <td className="border border-gray-400 px-3 py-2">
-                  <input
-                    type="string"
-                    placeholder={translate("monitoringtime")}
-                    name="MonitoringTime"
-                    value={info.MonitoringTime}
-                    onChange={(e) => handleChange(e, index)}
-                    className="border border-gray-300 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveRow(index)}
-                    className="text-red-600 hover:text-red-800 ml-2  self-end"
-                  >
-                    <TiMinus />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <FormTable
+            informations={formData.informations}
+            handleChange={handleChange}
+            handleRemoveRow={handleRemoveRow}
+            handleAddRow={handleAddRow}
+          />
 
         <button
           style={{ width: "200px" }}
           type="submit"
-          className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary self-end"
+          className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary self-end "
           disabled={loading}
         >
           {loading
@@ -388,14 +341,7 @@ const EditRoutineMonitorForm = () => {
             ? translate("save")
             : translate("addroutinemonitor")}
         </button>
-        <button
-          style={{ width: "200px" }}
-          type="button"
-          onClick={handleAddRow}
-          className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary self-end"
-        >
-          {translate("addrow")}
-        </button>
+       
       </form>
       <button
         onClick={handleClick}

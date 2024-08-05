@@ -1,22 +1,41 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext, ReactNode } from "react";
 import { Branch, BranchService } from "../BranchService"; // Updated import
 
-export const ManageBranchContext = createContext<any>(null); // Updated context name
+interface ManageBranchContextProps {
+  branches: Branch[];
+  addBranch: (newBranch: Omit<Branch, 'id'>) => Promise<void>;
+  editBranch: (id: string, updatedBranch: Omit<Branch, 'id' | 'userId'>) => Promise<void>;
+  deleteBranch: (id: string) => Promise<void>;
+}
 
-export const ManageBranchProvider = ({ children }) => {
+export const ManageBranchContext = createContext<ManageBranchContextProps | undefined>(undefined);
+
+interface ManageBranchProviderProps {
+  children: ReactNode;
+}
+
+export const ManageBranchProvider: React.FC<ManageBranchProviderProps> = ({ children }) => {
   const [branches, setBranches] = useState<Branch[]>([]);
 
   useEffect(() => {
-    const fetchBranchesData = async () => {
+    const fetchBranchData = async () => {
       try {
-        const data = await BranchService.fetchBranches(); // Updated service call
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (!loggedInUser) {
+          throw new Error("User not logged in or user data not found");
+        }
+        const user = JSON.parse(loggedInUser);
+        console.log("User ID:", user.id); // Log user ID
+
+        const data = await BranchService.fetchBranches();
+        console.log("Branch data:", data); // Log branch data
         setBranches(data || []);
       } catch (error) {
-        console.error("Error fetching branches:", (error as Error).message);
+        console.error("Error fetching branches:", error);
       }
     };
 
-    fetchBranchesData();
+    fetchBranchData();
   }, []);
 
   const addBranch = async (newBranch: Omit<Branch, 'id'>) => {
@@ -58,16 +77,17 @@ export const ManageBranchProvider = ({ children }) => {
   };
 
   return (
-    <ManageBranchContext.Provider value={value}> {/* Updated context name */}
+    <ManageBranchContext.Provider value={value}>
       {children}
     </ManageBranchContext.Provider>
   );
 };
 
-export const useBranch = () => { // Updated hook name
+export const useBranch = () => {
   const context = useContext(ManageBranchContext);
   if (!context) {
-    throw new Error("useBranch must be used within a BranchProvider"); // Updated error message
+    throw new Error("useBranch must be used within a ManageBranchProvider");
   }
+  
   return context;
 };

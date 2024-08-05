@@ -1,11 +1,8 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { BsPencil } from "react-icons/bs";
-import { AiOutlineDelete } from "react-icons/ai";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import Pagination from "../../Pagination";
 import { BiListUl } from "react-icons/bi";
-import { FaEye } from "react-icons/fa";
 import ItemDetailDrawer from "../ItemDetails";
 import { toast } from "react-toastify";
 import { useTranslation } from "../../Translator/Provider";
@@ -21,7 +18,6 @@ const CowFeedTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [cowFeedToDelete, setCowFeedToDelete] = useState<number | null>(null);
   const [selectedCowFeed, setSelectedCowFeed] = useState(null);
   const [currentDate, setCurrentDate] = useState<string>("");
   const { translate, language } = useTranslation();

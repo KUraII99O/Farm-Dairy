@@ -15,7 +15,7 @@ interface CowFeed {
 interface ItemDetailDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  cowFeed: CowFeed;
+  cowFeed?: CowFeed;
 }
 
 const ItemDetailDrawer: React.FC<ItemDetailDrawerProps> = ({ isOpen, onClose, cowFeed }) => {
@@ -67,36 +67,40 @@ const ItemDetailDrawer: React.FC<ItemDetailDrawerProps> = ({ isOpen, onClose, co
                   <path d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
               </button>
-              <table className="w-full mt-4">
-                <thead>
-                  <tr>
-                    <th className="border border-gray-400 px-3 py-2">
-                      {translate("fooditem")}
-                    </th>
-                    <th className="border border-gray-400 px-3 py-2">
-                      {translate("itemquantity")}
-                    </th>
-                    <th className="border border-gray-400 px-3 py-2">
-                      {translate("feedingtime")}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {cowFeed.informations.map((info, index) => (
-                    <tr key={index}>
-                      <td className="border border-gray-400 px-3 py-2">
-                        {info.foodItem}
-                      </td>
-                      <td className="border border-gray-400 px-3 py-2">
-                        {info.quantity} {info.unit}
-                      </td>
-                      <td className="border border-gray-400 px-3 py-2">
-                        {info.feedingTime}
-                      </td>
+              {cowFeed && cowFeed.informations ? (
+                <table className="w-full mt-4">
+                  <thead>
+                    <tr>
+                      <th className="border border-gray-400 px-3 py-2">
+                        {translate("fooditem")}
+                      </th>
+                      <th className="border border-gray-400 px-3 py-2">
+                        {translate("itemquantity")}
+                      </th>
+                      <th className="border border-gray-400 px-3 py-2">
+                        {translate("feedingtime")}
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {cowFeed.informations.map((info, index) => (
+                      <tr key={index}>
+                        <td className="border border-gray-400 px-3 py-2">
+                          {info.foodItem}
+                        </td>
+                        <td className="border border-gray-400 px-3 py-2">
+                          {info.quantity} {info.unit}
+                        </td>
+                        <td className="border border-gray-400 px-3 py-2">
+                          {info.feedingTime}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <p>{translate("nodata")}</p>
+              )}
               <button
                 onClick={onClose}
                 className="mt-4 bg-secondary hover:primary text-white py-2 px-4 rounded"

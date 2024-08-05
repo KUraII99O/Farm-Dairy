@@ -1,47 +1,85 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { AnimalType, AnimalTypeService } from "../AnimaltypeService";
 
-export const ManageAnimalTypeContext = createContext();
 
-export const ManageAnimalTypeProvider = ({ children }) => {
-  const [animalTypes, setAnimalTypes] = useState([
-    { id: 1, name: "Brahman" },
-    { id: 2, name: "Friesian" },
-    { id: 3, name: "Holstein" },
-    { id: 4, name: "Holstein Friesian" },
-    { id: 5, name: "Jersey" },
-    { id: 6, name: "Mundi" },
-    { id: 7, name: "Sahiwal" },
-    { id: 8, name: "Sindi" },
-  ]);
 
-  const addAnimalType = (newAnimalType) => {
-    const maxId = Math.max(...animalTypes.map((type) => type.id), 0);
-    const newTypeWithId = { ...newAnimalType, id: maxId + 1 };
-    setAnimalTypes([...animalTypes, newTypeWithId]);
+
+interface ManageAnimalTypeContextProps {
+  animalTypes: AnimalType[];
+  addAnimalType: (newAnimalType: Omit<AnimalType, 'id'>) => Promise<void>;
+  editAnimalType: (id: string, updatedAnimalType: Partial<Omit<AnimalType, 'id'>>) => Promise<void>;
+  deleteAnimalType: (id: string) => Promise<void>;
+}
+
+interface ManageAnimalTypeProviderProps {
+  children: React.ReactNode;
+}
+
+
+
+
+export const ManageAnimalTypeContext = createContext<ManageAnimalTypeContextProps | null>(null);
+
+export const ManageAnimalTypeProvider: React.FC<ManageAnimalTypeProviderProps> = ({ children }) => {
+  const [animalTypes, setAnimalTypes] = useState<AnimalType[]>([]);
+
+  useEffect(() => {
+    const fetchAnimalTypeData = async () => {
+      try {
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (!loggedInUser) {
+          throw new Error("User not logged in or user data not found");
+        }
+        const user = JSON.parse(loggedInUser);
+        console.log("User ID:", user.id); // Log user ID
+
+        const data = await AnimalTypeService.fetchAnimalTypes();
+        console.log("Animal type data:", data); // Log animal type data
+        setAnimalTypes(data || []);
+      } catch (error) {
+        console.error("Error fetching animal types:", error);
+      }
+    };
+
+    fetchAnimalTypeData();
+  }, []);
+
+  const addAnimalType = async (newAnimalType: Omit<AnimalType, 'id'>) => {
+    try {
+      const data = await AnimalTypeService.addAnimalType(newAnimalType);
+      setAnimalTypes(prevAnimalTypes => [...prevAnimalTypes, data]);
+    } catch (error) {
+      console.error("Error adding animal type:", (error as Error).message);
+    }
   };
 
-  const editAnimalType = (id, updatedAnimalType) => {
-    setAnimalTypes((prevTypes) =>
-      prevTypes.map((type) => (type.id === id ? { ...type, ...updatedAnimalType } : type))
-    );
+  const editAnimalType = async (id: string, updatedAnimalType: Partial<Omit<AnimalType, 'id'>>) => {
+    try {
+      await AnimalTypeService.editAnimalType(id, updatedAnimalType);
+      setAnimalTypes(prevAnimalTypes =>
+        prevAnimalTypes.map(animalType =>
+          animalType.id === id ? { ...animalType, ...updatedAnimalType } : animalType
+        )
+      );
+    } catch (error) {
+      console.error("Error editing animal type:", (error as Error).message);
+    }
   };
 
-  const deleteAnimalType = (id) => {
-    const updatedTypes = animalTypes.filter((type) => type.id !== id);
-    setAnimalTypes(updatedTypes);
+  const deleteAnimalType = async (id: string) => {
+    try {
+      await AnimalTypeService.deleteAnimalType(id);
+      setAnimalTypes(prevAnimalTypes => prevAnimalTypes.filter(animalType => animalType.id !== id));
+    } catch (error) {
+      console.error("Error deleting animal type:", (error as Error).message);
+    }
   };
 
-  const getAnimalTypeById = (id) => {
-    // Find and return the animal type with the given ID
-    return animalTypes.find((type) => type.id === id);
-  };
-
-  const value = {
+  const value: ManageAnimalTypeContextProps = {
     animalTypes,
     addAnimalType,
     editAnimalType,
-    deleteAnimalType,
-    getAnimalTypeById,
+    deleteAnimalType
   };
 
   return (
@@ -51,10 +89,11 @@ export const ManageAnimalTypeProvider = ({ children }) => {
   );
 };
 
-export const useManageAnimalType = () => {
+export const useAnimalType = () => {
   const context = useContext(ManageAnimalTypeContext);
   if (!context) {
-    throw new Error("useManageAnimalType must be used within a ManageAnimalTypeProvider");
+    throw new Error("useAnimalType must be used within a ManageAnimalTypeProvider");
   }
   return context;
+
 };

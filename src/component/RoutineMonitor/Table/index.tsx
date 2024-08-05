@@ -63,7 +63,7 @@ const RoutineMonitorList = ({
         </Table.Head>
         <Table.Body className="divide-y">
           {currentMonitors.map((monitor) => (
-            <Table.Row key={monitor.id}>
+            <Table.Row key={monitor.id}> 
               <Table.Cell>{monitor.date}</Table.Cell>
               <Table.Cell>{monitor.stallNo}</Table.Cell>
               <Table.Cell>{monitor.animalID}</Table.Cell>

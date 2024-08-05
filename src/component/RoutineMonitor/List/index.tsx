@@ -226,6 +226,7 @@ const RoutineMonitorTable: React.FC = () => {
               routineMonitor={selectedRoutineRecord}
             />
           )}
+
         </Drawer.Items>
       </Drawer>
       <Pagination

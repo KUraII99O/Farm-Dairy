@@ -1,10 +1,24 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-const EditColorForm = ({ color, onSubmit, onClose }) => {
-  const { id } = useParams();
+// Define the type for the color prop
+interface Color {
+  id: string;
+  name: string;
+  userId: string;
+}
+
+// Define the props type for the component
+interface EditColorFormProps {
+  color?: Color; // Use undefined instead of null to match the expected type
+  onSubmit: (colorData: Omit<Color, "id" | "userId">) => void;
+  onClose: () => void;
+}
+
+const EditColorForm: React.FC<EditColorFormProps> = ({ color, onSubmit, onClose }) => {
+  useParams();
   const navigate = useNavigate();
-  const formRef = useRef(null);
+  const formRef = useRef<HTMLDivElement | null>(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -16,7 +30,7 @@ const EditColorForm = ({ color, onSubmit, onClose }) => {
     }
   }, [color]);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -24,7 +38,7 @@ const EditColorForm = ({ color, onSubmit, onClose }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onSubmit(formData);
   };
@@ -34,8 +48,8 @@ const EditColorForm = ({ color, onSubmit, onClose }) => {
     navigate("/Color-List");
   };
 
-  const handleOutsideClick = (e) => {
-    if (formRef.current && !formRef.current.contains(e.target)) {
+  const handleOutsideClick = (e: MouseEvent) => {
+    if (formRef.current && !formRef.current.contains(e.target as Node)) {
       handleCloseDrawer();
     }
   };

@@ -1,55 +1,66 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext, ReactNode } from "react";
+import { Color, ColorService } from "../ColorService";
 
-export const ManageColorContext = createContext();
+interface ManageColorContextType {
+  colors: Color[];
+  addColor: (newColor: Omit<Color, 'id'>) => Promise<void>;
+  editColor: (id: string, updatedColor: Omit<Color, 'id'>) => Promise<void>;
+  deleteColor: (id: string) => Promise<void>;
+}
 
-export const ManageColorProvider = ({ children }) => {
-  const [colors, setColors] = useState([
-    {
-      id: 1,
-      name: "Black",
-    },
-    {
-      id: 2,
-      name: "Black & White",
-    },
-    {
-      id: 3,
-      name: "Mixed",
-    },
-    {
-      id: 4,
-      name: "Red",
-    },
-    {
-      id: 5,
-      name: "Red & Black",
-    },
-    {
-      id: 6,
-      name: "White",
-    },
-  ]);
+export const ManageColorContext = createContext<ManageColorContextType | undefined>(undefined);
 
-  const addColor = (newColor) => {
-    const maxId = Math.max(...colors.map((color) => color.id), 0);
-    const newColorWithId = { ...newColor, id: maxId + 1 };
-    setColors([...colors, newColorWithId]);
+export const ManageColorProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [colors, setColors] = useState<Color[]>([]);
+
+  useEffect(() => {
+    const fetchColorData = async () => {
+      try {
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (!loggedInUser) {
+          throw new Error("User not logged in or user data not found");
+        }
+        const user = JSON.parse(loggedInUser);
+        console.log("User ID:", user.id); // Log user ID
+
+        const data = await ColorService.fetchColors();
+        console.log("Color data:", data); // Log color data
+        setColors(data || []);
+      } catch (error) {
+        console.error("Error fetching colors:", error);
+      }
+    };
+
+    fetchColorData();
+  }, []);
+
+  const addColor = async (newColor: Omit<Color, 'id'>) => {
+    try {
+      const data = await ColorService.addColor(newColor);
+      setColors(prevColors => [...prevColors, data]);
+    } catch (error) {
+      console.error("Error adding color:", error);
+    }
   };
 
-  const editColor = (id, updatedColor) => {
-    setColors((prevColors) =>
-      prevColors.map((color) => (color.id === id ? { ...color, ...updatedColor } : color))
-    );
+  const editColor = async (id: string, updatedColor: Omit<Color, 'id'>) => {
+    try {
+      await ColorService.editColor(id, updatedColor);
+      setColors(prevColors =>
+        prevColors.map(color => (color.id === id ? { ...color, ...updatedColor } : color))
+      );
+    } catch (error) {
+      console.error("Error editing color:", error);
+    }
   };
 
-  const deleteColor = (id) => {
-    const updatedColors = colors.filter((color) => color.id !== id);
-    setColors(updatedColors);
-  };
-
-  const getColorById = (id) => {
-    // Find and return the color with the given ID
-    return colors.find((color) => color.id === id);
+  const deleteColor = async (id: string) => {
+    try {
+      await ColorService.deleteColor(id);
+      setColors(prevColors => prevColors.filter(color => color.id !== id));
+    } catch (error) {
+      console.error("Error deleting color:", error);
+    }
   };
 
   const value = {
@@ -57,7 +68,6 @@ export const ManageColorProvider = ({ children }) => {
     addColor,
     editColor,
     deleteColor,
-    getColorById,
   };
 
   return (

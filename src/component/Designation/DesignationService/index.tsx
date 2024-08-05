@@ -14,18 +14,31 @@ const DesignationService = {
   deleteDesignation
 };
 
+
 async function fetchDesignations(): Promise<Designation[]> {
+  const loggedInUser = localStorage.getItem('loggedInUser');
+  if (!loggedInUser) {
+    throw new Error("User not logged in");
+  }
+
+  const user = JSON.parse(loggedInUser);
+  if (!user || !user.id) {
+    throw new Error("User ID not found");
+  }
+
   try {
-    const response = await fetch('http://localhost:3000/designations');
+    const response = await fetch('http://localhost:3000/designations?userId='+ user.id);
     if (!response.ok) {
       throw new Error('Failed to fetch Designation data');
     }
-    return await response.json();
+    const designationsData: Designation[] = await response.json();
+    return designationsData
   } catch (error) {
     console.error('Error fetching Designation data:', error.message);
     return [];
   }
 }
+
 
 async function addDesignation(newDesignation: Omit<Designation, 'id' | 'userId'>): Promise<Designation> {
   const loggedInUser = localStorage.getItem('loggedInUser');

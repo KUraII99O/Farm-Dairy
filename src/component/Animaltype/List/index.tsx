@@ -1,31 +1,41 @@
-import React, { useState, useContext } from "react";
-import { AiOutlineDelete } from "react-icons/ai";
-import { ManageAnimalTypeContext } from "../Provider"; // Updated import
+import React, { useState, } from "react";
+import {  useAnimalType } from "../Provider"; // Updated import
 import Pagination from "../../Pagination";
 import { ToastContainer, toast } from "react-toastify";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import { BiListUl } from "react-icons/bi";
-import { BsPencil } from "react-icons/bs";
 import EditAnimalTypeForm from "../Form"; // Updated import
+import AnimalTypeTable from "../Table";
+import { useTranslation } from "../../Translator/Provider";
+import { Drawer } from "flowbite-react";
+
+interface AnimalType {
+  id: string;
+  name: string;
+  userId: string;
+}
 
 const AnimalTypeList: React.FC = () => {
-  const { animalTypes, deleteAnimalType, addAnimalType, editAnimalType } =
-    useContext(ManageAnimalTypeContext); // Updated context import and usage
+  const { animalTypes, deleteAnimalType, addAnimalType, editAnimalType } = useAnimalType(); // Updated context import and usage
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
-  const [selectedAnimalType, setSelectedAnimalType] = useState(null); // Updated state name
+  const [selectedAnimalType, setSelectedAnimalType] = useState<AnimalType | null>(null); // Updated state type
+  const { translate, language } = useTranslation();
 
-  const handleDeleteConfirmation = (id: number) => {
+  const isArabic = language === "ar";
+  const formClass = isArabic ? "rtl" : "ltr";
+
+  const handleDeleteConfirmation = (id: string) => {
     if (window.confirm("Are you sure you want to delete this animal type?")) {
       handleDelete(id);
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
       await deleteAnimalType(id); // Updated function call
       toast.success("Animal type deleted successfully!");
@@ -34,12 +44,17 @@ const AnimalTypeList: React.FC = () => {
     }
   };
 
-  const handleEditDrawerOpen = (animalType: any) => {
+  const handleCloseDrawer = () => {
+    setIsEditDrawerOpen(false);
+    setSelectedAnimalType(null);
+  };
+
+  const handleEditDrawerOpen = (animalType: AnimalType | null) => {
     setSelectedAnimalType(animalType);
     setIsEditDrawerOpen(true);
   };
 
-  const handleAddNewAnimalType = async (newAnimalTypeData: any) => {
+  const handleAddNewAnimalType = async (newAnimalTypeData: AnimalType) => {
     try {
       await addAnimalType(newAnimalTypeData);
       setIsEditDrawerOpen(false); // Close the drawer after adding
@@ -49,11 +64,13 @@ const AnimalTypeList: React.FC = () => {
     }
   };
 
-  const handleUpdateAnimalType = async (updatedAnimalTypeData) => {
+  const handleUpdateAnimalType = async (updatedAnimalTypeData: AnimalType) => {
     try {
-      await editAnimalType(selectedAnimalType.id, updatedAnimalTypeData);
-      setIsEditDrawerOpen(false); // Close the drawer after updating
-      toast.success("Animal type updated successfully!");
+      if (selectedAnimalType) {
+        await editAnimalType(selectedAnimalType.id, updatedAnimalTypeData);
+        setIsEditDrawerOpen(false); // Close the drawer after updating
+        toast.success("Animal type updated successfully!");
+      }
     } catch (error) {
       toast.error("An error occurred while updating animal type.");
     }
@@ -82,15 +99,12 @@ const AnimalTypeList: React.FC = () => {
 
   const indexOfLastAnimalType = currentPage * itemsPerPage;
   const indexOfFirstAnimalType = indexOfLastAnimalType - itemsPerPage;
-  const currentAnimalTypes = animalTypes.slice(
-    indexOfFirstAnimalType,
-    indexOfLastAnimalType
-  );
+  const currentAnimalTypes = animalTypes.slice(indexOfFirstAnimalType, indexOfLastAnimalType);
 
   const sortedAnimalTypes = sortBy
-    ? currentAnimalTypes.slice().sort((a, b) => {
-        const aValue = a[sortBy];
-        const bValue = b[sortBy];
+    ? currentAnimalTypes.slice().sort((a: AnimalType, b: AnimalType) => {
+        const aValue = a[sortBy as keyof AnimalType];
+        const bValue = b[sortBy as keyof AnimalType];
         if (sortOrder === "asc") {
           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
         } else {
@@ -109,7 +123,7 @@ const AnimalTypeList: React.FC = () => {
             placeholder="Search..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="p-2 rounded border border-gray-300 "
+            className="p-2 rounded border border-gray-300"
           />
           <button
             onClick={() => handleEditDrawerOpen(null)}
@@ -123,77 +137,33 @@ const AnimalTypeList: React.FC = () => {
         <BiListUl className="inline-block mr-2" />
         Animal Types
       </h1>
-      <table className="min-w-full bg-white border-collapse">
-        <thead>
-          <tr>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("id")}
-            >
-              <div className="flex items-center">
-                #ID
-                {sortIcon("id")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("name")}
-            >
-              <div className="flex items-center">
-                Name
-                {sortIcon("name")}
-              </div>
-            </th>
-            <th className="border border-gray-300 px-4 py-2">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedAnimalTypes
-            .filter((animalType) =>
-              animalType.name.toLowerCase().includes(searchTerm.toLowerCase())
-            )
-            .map((animalType) => (
-              <tr key={animalType.id}>
-                <td className="border border-gray-300 px-4 py-2">
-                  {animalType.id}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {animalType.name}
-                </td>
-                <td className="border border-gray-300 px-2 py-2">
-                  <div className="flex items-center">
-                    <button
-                      onClick={() => handleEditDrawerOpen(animalType)}
-                      className="text-blue-500 hover:underline flex items-center mr-4 focus:outline-none"
-                    >
-                      <BsPencil className="w-5 h-5 mr-1" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteConfirmation(animalType.id)}
-                      className="text-red-500 hover:text-red-700 focus:outline-none flex items-center"
-                    >
-                      <AiOutlineDelete className="w-5 h-5 mr-1" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
-      {isEditDrawerOpen && (
-        <div className="fixed inset-0 overflow-y-auto z-50 flex justify-end">
-          <div className="w-96 bg-white h-full shadow-lg p-6">
-            <h2 className="text-xl font-bold mb-4">
-              {selectedAnimalType ? "Edit Animal Type" : "Add New Animal Type"}
-            </h2>
-            <EditAnimalTypeForm
-              animalType={selectedAnimalType}
-              onSubmit={selectedAnimalType ? handleUpdateAnimalType : handleAddNewAnimalType}
-              onClose={() => setIsEditDrawerOpen(false)}
-            />
-          </div>
-        </div>
-      )}
+      <AnimalTypeTable
+        sortedAnimalTypes={sortedAnimalTypes}
+        handleSort={handleSort}
+        sortIcon={sortIcon}
+        handleEditDrawerOpen={handleEditDrawerOpen}
+        handleDeleteConfirmation={handleDeleteConfirmation}
+        formClass={formClass}
+        translate={translate}
+      />
+      <Drawer
+        open={isEditDrawerOpen}
+        onClose={handleCloseDrawer}
+        position="right" // Set the position to "right"
+      >
+        <Drawer.Header>
+          <h2 className="text-xl font-bold">
+            {selectedAnimalType ? translate("editAnimalType") : translate("addNewAnimalType")}
+          </h2>
+        </Drawer.Header>
+        <Drawer.Items>
+          <EditAnimalTypeForm
+            animalType={selectedAnimalType ?? undefined} // Ensure compatibility with the type
+            onSubmit={selectedAnimalType ? handleUpdateAnimalType : handleAddNewAnimalType}
+            onClose={handleCloseDrawer}
+          />
+        </Drawer.Items>
+      </Drawer>
       <Pagination
         totalItems={animalTypes.length}
         defaultItemsPerPage={itemsPerPage}

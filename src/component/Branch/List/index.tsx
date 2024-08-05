@@ -1,5 +1,5 @@
-import React, { useState, useContext } from "react";
-import { ManageBranchContext } from "../Provider"; // Importing the ManageBranchContext
+import React, { useState, } from "react";
+import {  useBranch } from "../Provider"; // Importing the ManageBranchContext
 import Pagination from "../../Pagination";
 import { ToastContainer, toast } from "react-toastify";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
@@ -9,16 +9,27 @@ import { Drawer } from "flowbite-react";
 import BranchTable from "../Table";
 import EditBranchForm from "../Form";
 
+interface Branch {
+  id: string;
+  name: string;
+  setupDate: string;
+  builderName: string;
+  phoneNumber: string;
+  email: string;
+}
+
+
+
 const BranchList: React.FC = () => {
   const { branches, deleteBranch, addBranch, editBranch } =
-    useContext(ManageBranchContext);
+  useBranch();
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("");
-  const [sortOrder, setSortOrder] = useState("asc");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
-  const [selectedBranch, setSelectedBranch] = useState(null);
+  const [sortBy, setSortBy] = useState<string>("");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(5);
+  const [isEditDrawerOpen, setIsEditDrawerOpen] = useState<boolean>(false);
+  const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
   const { translate, language } = useTranslation();
 
   const isArabic = language === "ar";
@@ -55,12 +66,12 @@ const BranchList: React.FC = () => {
     return <FaSort />;
   };
 
-  const handleEditDrawerOpen = (branch: any) => {
+  const handleEditDrawerOpen = (branch: Branch | null) => {
     setSelectedBranch(branch);
     setIsEditDrawerOpen(true);
   };
 
-  const handleAddNewBranch = async (newBranchData: any) => {
+  const handleAddNewBranch = async (newBranchData: Branch) => {
     try {
       await addBranch(newBranchData);
       setIsEditDrawerOpen(false); // Close the drawer after adding
@@ -70,13 +81,15 @@ const BranchList: React.FC = () => {
     }
   };
 
-  const handleUpdateBranch = async (updatedBranchData) => {
-    try {
-      await editBranch(selectedBranch.id, updatedBranchData);
-      setIsEditDrawerOpen(false); // Close the drawer after updating
-      toast.success("Branch updated successfully!");
-    } catch (error) {
-      toast.error("An error occurred while updating branch.");
+  const handleUpdateBranch = async (updatedBranchData: Branch) => {
+    if (selectedBranch) {
+      try {
+        await editBranch(selectedBranch.id, updatedBranchData);
+        setIsEditDrawerOpen(false); // Close the drawer after updating
+        toast.success("Branch updated successfully!");
+      } catch (error) {
+        toast.error("An error occurred while updating branch.");
+      }
     }
   };
 
@@ -95,9 +108,9 @@ const BranchList: React.FC = () => {
   const currentBranches = branches.slice(indexOfFirstBranch, indexOfLastBranch);
 
   const sortedBranches = sortBy
-    ? currentBranches.slice().sort((a, b) => {
-        const aValue = a[sortBy];
-        const bValue = b[sortBy];
+    ? currentBranches.slice().sort((a:Branch, b:Branch) => {
+        const aValue = a[sortBy as keyof Branch];
+        const bValue = b[sortBy as keyof Branch];
         if (sortOrder === "asc") {
           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
         } else {
@@ -151,8 +164,10 @@ const BranchList: React.FC = () => {
         </Drawer.Header>
         <Drawer.Items>
           <EditBranchForm
-            branch={selectedBranch}
-            onSubmit={selectedBranch ? handleUpdateBranch : handleAddNewBranch} onClose={undefined}          />
+            branch={selectedBranch ?? undefined}
+            onSubmit={selectedBranch ? handleUpdateBranch : handleAddNewBranch}
+            onClose={handleCloseDrawer} // Provide onClose function here
+          />
         </Drawer.Items>
       </Drawer>
       <Pagination

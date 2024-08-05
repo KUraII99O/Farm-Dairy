@@ -14,15 +14,27 @@ const UserTypeService = {
   deleteUserType
 };
 
+
 async function fetchUserTypes(): Promise<UserType[]> {
+  const loggedInUser = localStorage.getItem('loggedInUser');
+  if (!loggedInUser) {
+    throw new Error("User not logged in");
+  }
+
+  const user = JSON.parse(loggedInUser);
+  if (!user || !user.id) {
+    throw new Error("User ID not found");
+  }
+
   try {
-    const response = await fetch('http://localhost:3000/userTypes');
+    const response = await fetch('http://localhost:3000/userTypes?userId='+ user.id);
     if (!response.ok) {
-      throw new Error('Failed to fetch UserType data');
+      throw new Error('Failed to fetch userTypes data');
     }
-    return await response.json();
+    const usertypeData: UserType[] = await response.json();
+    return usertypeData
   } catch (error) {
-    console.error('Error fetching UserType data:', error.message);
+    console.error('Error fetching userTypes data:', error.message);
     return [];
   }
 }

@@ -14,15 +14,28 @@ const ExpensePurposeService = {
   deleteExpensePurpose,
 };
 
+
+
 async function fetchExpensePurposes(): Promise<ExpensePurpose[]> {
+  const loggedInUser = localStorage.getItem('loggedInUser');
+  if (!loggedInUser) {
+    throw new Error("User not logged in");
+  }
+
+  const user = JSON.parse(loggedInUser);
+  if (!user || !user.id) {
+    throw new Error("User ID not found");
+  }
+
   try {
-    const response = await fetch('http://localhost:3000/expense-purposes');
+    const response = await fetch('http://localhost:3000/expense-purposes?userId='+ user.id);
     if (!response.ok) {
-      throw new Error('Failed to fetch expense purposes data');
+      throw new Error('Failed to fetch staff data');
     }
-    return await response.json();
+    const expensepurposesData: ExpensePurpose[] = await response.json();
+    return expensepurposesData
   } catch (error) {
-    console.error('Error fetching expense purposes data:', error);
+    console.error('Error fetching Expense Purpose data:', error.message);
     return [];
   }
 }

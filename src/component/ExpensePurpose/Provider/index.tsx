@@ -6,16 +6,25 @@ export const ExpensePurposeContext = createContext<any>(null);
 export const ExpensePurposeProvider = ({ children }) => {
   const [expensePurposes, setExpensePurposes] = useState<ExpensePurpose[]>([]);
 
+ 
   useEffect(() => {
     const fetchExpensePurposesData = async () => {
       try {
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (!loggedInUser) {
+          throw new Error("User not logged in or user data not found");
+        }
+        const user = JSON.parse(loggedInUser);
+        console.log("User ID:", user.id); // Log user ID
+  
         const data = await ExpensePurposeService.fetchExpensePurposes();
+        console.log("Staff data:", data); // Log staff data
         setExpensePurposes(data || []);
       } catch (error) {
-        console.error("Error fetching expense purposes:", (error as Error).message);
+        console.error("Error fetching Expense Purposes:", error);
       }
     };
-
+  
     fetchExpensePurposesData();
   }, []);
 

@@ -1,8 +1,25 @@
+// EditBranchForm.tsx
+
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "../../Translator/Provider";
 
-const EditBranchForm = ({ branch, onSubmit, onClose }) => {
-  const [formData, setFormData] = useState({
+interface Branch {
+  id?: string;
+  name: string;
+  setupDate: string;
+  builderName: string;
+  phoneNumber: string;
+  email: string;
+}
+
+interface EditBranchFormProps {
+  branch?: Branch;
+  onSubmit: (formData: Branch) => void;
+  onClose: () => void;
+}
+
+const EditBranchForm: React.FC<EditBranchFormProps> = ({ branch, onSubmit, onClose }) => {
+  const [formData, setFormData] = useState<Branch>({
     name: "",
     setupDate: "",
     builderName: "",
@@ -15,7 +32,6 @@ const EditBranchForm = ({ branch, onSubmit, onClose }) => {
     if (branch) {
       setFormData(branch);
     } else {
-      // If branch is not provided (i.e., adding a new branch), reset formData
       setFormData({
         name: "",
         setupDate: "",
@@ -26,7 +42,7 @@ const EditBranchForm = ({ branch, onSubmit, onClose }) => {
     }
   }, [branch]);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -34,7 +50,7 @@ const EditBranchForm = ({ branch, onSubmit, onClose }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
   };

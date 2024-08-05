@@ -1,20 +1,42 @@
-import React, { useRef, useEffect, useState  } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useTranslation } from "../../Translator/Provider";
 
+// Define the type for `cow` prop
+interface CowInfo {
+  informations: {
+    stallNumber: string;
+    dateOfBirth: string;
+    animalAgeDays: string;
+    weight: string;
+    height: string;
+    color: string;
+    numOfPregnant: string;
+    nextPregnancyApproxTime: string;
+    buyFrom: string;
+    prevVaccineDone: string;
+    note: string;
+  };
+}
 
-const ItemDetailDrawer = ({ isOpen, onClose, cow }) => {
+// Define the props for the component
+interface ItemDetailDrawerProps {
+  isOpen: boolean;
+  onClose: () => void;
+  cow: CowInfo;
+}
+
+const ItemDetailDrawer: React.FC<ItemDetailDrawerProps> = ({ isOpen, onClose, cow }) => {
   const { translate } = useTranslation();
-  const ref = useRef(null);
+  const ref = useRef<HTMLDivElement | null>(null); // Use specific HTML element type
 
-  const handleClickOutside = (event) => {
-    if (ref.current && !ref.current.contains(event.target)) {
+  const handleClickOutside = (event: MouseEvent) => {
+    if (ref.current && !ref.current.contains(event.target as Node)) {
       onClose();
     }
   };
-  const [user, setUser] = useState<{ name: string;  }>({
+
+  const [user, setUser] = useState<{ name: string }>({
     name: "",
-    
-    
   });
 
   useEffect(() => {
@@ -40,22 +62,17 @@ const ItemDetailDrawer = ({ isOpen, onClose, cow }) => {
         console.error("Error fetching user data from local storage:", error);
       }
     };
-  
+
     fetchUserData();
   }, []);
-  
 
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-70 z-40" >
-          <div className="fixed inset-0  z-50 flex justify-end ">
-
-            <div ref={ref}  className="w-full max-w-md bg-white shadow-lg p-6">
-
-            <h1 className=" inline-block text-xl font-bold mb-4">
-
-                
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-70 z-40">
+          <div className="fixed inset-0 z-50 flex justify-end">
+            <div ref={ref} className="w-full max-w-md bg-white shadow-lg p-6">
+              <h1 className="inline-block text-xl font-bold mb-4">
                 {translate("cowdetails")}
               </h1>
               <button
@@ -75,64 +92,63 @@ const ItemDetailDrawer = ({ isOpen, onClose, cow }) => {
                 </svg>
               </button>
               <table className="w-full border-collapse">
-            <thead>
-              <tr>
-                <th className="border border-gray-300 px-3 py-2 bg-gray-200">{translate("attribute")}</th>
-                <th className="border border-gray-300 px-3 py-2 bg-gray-200">{translate("value")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("stallnumber")}:</td>
-                <td className="border border-gray-300 px-3 py-2">{cow.informations.stallNumber}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("dateofbirth")}:</td>
-                <td className="border border-gray-300 px-3 py-2">{cow.informations.dateOfBirth}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("animalage")}:</td>
-                <td className="border border-gray-300 px-3 py-2">{cow.informations.animalAgeDays}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("weight")}:</td>
-                <td className="border border-gray-300 px-3 py-2">{cow.informations.weight}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("height")}:</td>
-                <td className="border border-gray-300 px-3 py-2">{cow.informations.height}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("color")}:</td>
-                <td className="border border-gray-300 px-3 py-2">{cow.informations.color}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("numofpregnant")}:</td>
-                <td className="border border-gray-300 px-3 py-2">{cow.informations.numOfPregnant}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("nextpregnancyapproxtime")}:</td>
-                <td className="border border-gray-300 px-3 py-2">{cow.informations.nextPregnancyApproxTime ? cow.informations.nextPregnancyApproxTime : "Not available"}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("buyfrom")}:</td>
-                <td className="border border-gray-300 px-3 py-2">{cow.informations.buyFrom}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("prevVaccineDone")}:</td>
-                <td className="border border-gray-300 px-3 py-2">{cow.informations.prevVaccineDone}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("note")}:</td>
-                <td className="border border-gray-300 px-3 py-2">{cow.informations.note}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("createdBy")}:</td>
-                <td className="border border-gray-300 px-3 py-2">{user.name}</td>
-              </tr>
-            </tbody>
-          </table>
-              
+                <thead>
+                  <tr>
+                    <th className="border border-gray-300 px-3 py-2 bg-gray-200">{translate("attribute")}</th>
+                    <th className="border border-gray-300 px-3 py-2 bg-gray-200">{translate("value")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("stallnumber")}:</td>
+                    <td className="border border-gray-300 px-3 py-2">{cow.informations.stallNumber}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("dateofbirth")}:</td>
+                    <td className="border border-gray-300 px-3 py-2">{cow.informations.dateOfBirth}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("animalage")}:</td>
+                    <td className="border border-gray-300 px-3 py-2">{cow.informations.animalAgeDays}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("weight")}:</td>
+                    <td className="border border-gray-300 px-3 py-2">{cow.informations.weight}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("height")}:</td>
+                    <td className="border border-gray-300 px-3 py-2">{cow.informations.height}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("color")}:</td>
+                    <td className="border border-gray-300 px-3 py-2">{cow.informations.color}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("numofpregnant")}:</td>
+                    <td className="border border-gray-300 px-3 py-2">{cow.informations.numOfPregnant}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("nextpregnancyapproxtime")}:</td>
+                    <td className="border border-gray-300 px-3 py-2">{cow.informations.nextPregnancyApproxTime ? cow.informations.nextPregnancyApproxTime : "Not available"}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("buyfrom")}:</td>
+                    <td className="border border-gray-300 px-3 py-2">{cow.informations.buyFrom}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("prevVaccineDone")}:</td>
+                    <td className="border border-gray-300 px-3 py-2">{cow.informations.prevVaccineDone}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("note")}:</td>
+                    <td className="border border-gray-300 px-3 py-2">{cow.informations.note}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 px-3 py-2 font-semibold">{translate("createdBy")}:</td>
+                    <td className="border border-gray-300 px-3 py-2">{user.name}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -142,4 +158,3 @@ const ItemDetailDrawer = ({ isOpen, onClose, cow }) => {
 };
 
 export default ItemDetailDrawer;
-

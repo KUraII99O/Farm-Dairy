@@ -1,31 +1,40 @@
-import React, { useState, useContext } from "react";
-import { AiOutlineDelete } from "react-icons/ai";
-import { ManageColorContext } from "../Provider"; // Import ManageColorContext
+import React, { useState } from "react";
+import { useManageColor } from "../Provider";
 import Pagination from "../../Pagination";
 import { ToastContainer, toast } from "react-toastify";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import { BiListUl } from "react-icons/bi";
-import { BsPencil } from "react-icons/bs";
-import EditColorForm from "../Form"; // Update to use EditColorForm instead of EditStallForm
+import EditColorForm from "../Form";
+import { useTranslation } from "../../Translator/Provider";
+import ColorTable from "../Table";
+
+interface Color {
+  id: string;
+  name: string;
+  userId: string; // Ensure userId is included
+}
 
 const ColorList: React.FC = () => {
-  const { colors, deleteColor, addColor, editColor } =
-    useContext(ManageColorContext); // Use ManageColorContext
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("");
-  const [sortOrder, setSortOrder] = useState("asc");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
-  const [selectedColor, setSelectedColor] = useState(null);
+  const { colors, deleteColor, addColor, editColor } = useManageColor();
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [sortBy, setSortBy] = useState<string>("");
+  const { translate, language } = useTranslation();
 
-  const handleDeleteConfirmation = (id: number) => {
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(5);
+  const [isEditDrawerOpen, setIsEditDrawerOpen] = useState<boolean>(false);
+  const [selectedColor, setSelectedColor] = useState<Color | undefined>(undefined);
+  const isArabic = language === "ar";
+  const formClass = isArabic ? "rtl" : "ltr";
+
+  const handleDeleteConfirmation = (id: string) => {
     if (window.confirm("Are you sure you want to delete this color?")) {
       handleDelete(id);
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
       await deleteColor(id);
       toast.success("Color deleted successfully!");
@@ -50,28 +59,30 @@ const ColorList: React.FC = () => {
     return <FaSort />;
   };
 
-  const handleEditDrawerOpen = (color: any) => {
+  const handleEditDrawerOpen = (color: Color | undefined) => {
     setSelectedColor(color);
     setIsEditDrawerOpen(true);
   };
 
-  const handleAddNewColor = async (newColorData: any) => {
+  const handleAddNewColor = async (newColorData: Omit<Color, 'id'>) => { // Ensure userId is included in addColor
     try {
       await addColor(newColorData);
-      setIsEditDrawerOpen(false); // Close the drawer after adding
+      setIsEditDrawerOpen(false);
       toast.success("New color added successfully!");
     } catch (error) {
       toast.error("An error occurred while adding new color.");
     }
   };
 
-  const handleUpdateColor = async (updatedColorData) => {
-    try {
-      await editColor(selectedColor.id, updatedColorData);
-      setIsEditDrawerOpen(false); // Close the drawer after updating
-      toast.success("Color updated successfully!");
-    } catch (error) {
-      toast.error("An error occurred while updating color.");
+  const handleUpdateColor = async (updatedColorData: Omit<Color, 'id'>) => { // Ensure userId is included in editColor
+    if (selectedColor) {
+      try {
+        await editColor(selectedColor.id, updatedColorData);
+        setIsEditDrawerOpen(false);
+        toast.success("Color updated successfully!");
+      } catch (error) {
+        toast.error("An error occurred while updating color.");
+      }
     }
   };
 
@@ -85,13 +96,13 @@ const ColorList: React.FC = () => {
   const currentColors = colors.slice(indexOfFirstColor, indexOfLastColor);
 
   const sortedColors = sortBy
-    ? currentColors.slice().sort((a, b) => {
-        const aValue = a[sortBy];
-        const bValue = b[sortBy];
+    ? currentColors.slice().sort((a: Color, b: Color) => {
+        const aValue = a[sortBy as keyof Color];
+        const bValue = b[sortBy as keyof Color];
         if (sortOrder === "asc") {
-          return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+          return (aValue > bValue ? 1 : aValue < bValue ? -1 : 0);
         } else {
-          return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+          return (aValue < bValue ? 1 : aValue > bValue ? -1 : 0);
         }
       })
     : currentColors;
@@ -106,10 +117,10 @@ const ColorList: React.FC = () => {
             placeholder="Search..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="p-2 rounded border border-gray-300 "
+            className="p-2 rounded border border-gray-300"
           />
           <button
-            onClick={() => handleEditDrawerOpen(null)}
+            onClick={() => handleEditDrawerOpen(undefined)} 
             className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary ml-2"
           >
             Add New
@@ -120,61 +131,17 @@ const ColorList: React.FC = () => {
         <BiListUl className="inline-block mr-2" />
         Color List
       </h1>
-      <table className="min-w-full bg-white border-collapse">
-        <thead>
-          <tr>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("id")}
-            >
-              <div className="flex items-center">
-                #ID
-                {sortIcon("id")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("name")}
-            >
-              <div className="flex items-center">
-                Color Name
-                {sortIcon("name")}
-              </div>
-            </th>
-            <th className="border border-gray-300 px-4 py-2">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedColors
-            .filter((color) =>
-              color.name.toLowerCase().includes(searchTerm.toLowerCase())
-            )
-            .map((color) => (
-              <tr key={color.id}>
-                <td className="border border-gray-300 px-4 py-2">{color.id}</td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {color.name}
-                </td>
-                <td className="border border-gray-300 px-2 py-2">
-                  <div className="flex items-center">
-                    <button
-                      onClick={() => handleEditDrawerOpen(color)}
-                      className="text-blue-500 hover:underline flex items-center mr-4 focus:outline-none"
-                    >
-                      <BsPencil className="w-5 h-5 mr-1" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteConfirmation(color.id)}
-                      className="text-red-500 hover:text-red-700 focus:outline-none flex items-center"
-                    >
-                      <AiOutlineDelete className="w-5 h-5 mr-1" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
+      <div className="rtl:mirror-x">
+        <ColorTable
+          colors={sortedColors}
+          handleSort={handleSort}
+          sortIcon={sortIcon}
+          handleDeleteConfirmation={handleDeleteConfirmation}
+          handleEditDrawerOpen={handleEditDrawerOpen}
+          translate={translate}
+          formClass={formClass}
+        />
+      </div>
       {isEditDrawerOpen && (
         <div className="fixed inset-0 overflow-y-auto z-50 flex justify-end">
           <div className="w-96 bg-white h-full shadow-lg p-6">
@@ -184,7 +151,7 @@ const ColorList: React.FC = () => {
             <EditColorForm
               color={selectedColor}
               onSubmit={selectedColor ? handleUpdateColor : handleAddNewColor}
-              onClose={() => setIsEditDrawerOpen(false)} // Assuming setIsEditDrawerOpen is the function to close the drawer
+              onClose={() => setIsEditDrawerOpen(false)}
             />
           </div>
         </div>

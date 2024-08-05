@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, ChangeEvent } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { IoInformationCircle } from "react-icons/io5";
 import { FaBriefcaseMedical, FaImage } from "react-icons/fa";
@@ -7,15 +7,20 @@ import { readAndCompressImage } from "browser-image-resizer";
 import { ManageCowContext } from "../Provider";
 import { ToastContainer, toast } from "react-toastify";
 
-const Checkbox = ({
-  label,
-  checked,
-  onChange,
-}: {
+// Define types for the component props
+interface CheckboxProps {
   label: string;
   checked: boolean;
   onChange: (checked: boolean) => void;
-}) => {
+}
+
+interface Cow {
+  id: string;
+  // Add other properties relevant to Cow
+}
+
+
+const Checkbox = ({ label, checked, onChange }: CheckboxProps) => {
   return (
     <label className="inline-flex items-center mx-2">
       <input
@@ -35,7 +40,7 @@ const EditCowForm = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null); // State to store selected image path
   const navigate = useNavigate();
   const { translate, language } = useTranslation();
-  const [user, setUser] = useState<{ name: string }>({
+  const [, setUser] = useState<{ name: string }>({
     name: "",
   });
 
@@ -84,20 +89,17 @@ const EditCowForm = () => {
     },
   });
 
- 
-
-  // D}efine setSelectedImages state setter function
-
-  async function fetchBlobData(blobURL) {
+  async function fetchBlobData(blobURL: string): Promise<Blob> {
     const response = await fetch(blobURL);
     const blob = await response.blob();
     return blob;
   }
-  async function blobToBase64(blob) {
+
+  async function blobToBase64(blob: Blob): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => {
-        const base64String = reader.result;
+        const base64String = reader.result as string;
         resolve(base64String);
       };
       reader.onerror = (error) => {
@@ -106,8 +108,10 @@ const EditCowForm = () => {
       reader.readAsDataURL(blob);
     });
   }
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
     try {
       const compressedFile = await readAndCompressImage(file, imageConfig);
@@ -122,19 +126,24 @@ const EditCowForm = () => {
         image: base64Data,
       });
     } catch (error) {
-      console.error("Error handling file change:", error);
+      if (error instanceof Error) {
+        console.error("Error handling file change:", error.message);
+      } else {
+        console.error("Unknown error occurred while handling file change");
+      }
     } finally {
-      URL.revokeObjectURL(blobURL);
+      // Revoke the object URL after use
+      URL.revokeObjectURL(selectedImage || "");
     }
   };
 
   const handleClick = () => {
-    history.back();
+    navigate(-1); // Use navigate instead of history
   };
 
   useEffect(() => {
     if (isEditMode && id && cows.length > 0) {
-      const selectedCow = cows.find((item) => item.id === id); // Ensure id is of the same type as item.id
+      const selectedCow = cows.find((item: Cow) => item.id === id);
       if (selectedCow) {
         setFormData(selectedCow);
       }
@@ -163,7 +172,11 @@ const EditCowForm = () => {
           console.error("No user data found in local storage");
         }
       } catch (error) {
-        console.error("Error fetching user data from local storage:", error);
+        if (error instanceof Error) {
+          console.error("Error fetching user data from local storage:", error.message);
+        } else {
+          console.error("Unknown error occurred while fetching user data");
+        }
       }
     };
 
@@ -180,27 +193,30 @@ const EditCowForm = () => {
         const data = await response.json();
         setStallList(data);
       } catch (error) {
-        console.error("Error fetching stall data:", error);
+        if (error instanceof Error) {
+          console.error("Error fetching stall data:", error.message);
+        } else {
+          console.error("Unknown error occurred while fetching stall data");
+        }
       }
     };
 
     fetchStallData();
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const { name, value } = e.target;
   
-    setFormData(prevState => ({
-      ...prevState,
-      stallNumber: value,
-      informations: {
-        ...prevState.informations,
-        stallNumber: value,
-      },
-    }));
-  };
-
-  const handleCheckboxChange = (vaccination, isChecked) => {
+  setFormData(prevState => ({
+    ...prevState,
+    [name]: value,
+    informations: {
+      ...prevState.informations,
+      [name]: value,
+    },
+  }));
+};
+  const handleCheckboxChange = (vaccination: keyof typeof formData.vaccinations, isChecked: boolean) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
       vaccinations: {
@@ -209,29 +225,34 @@ const EditCowForm = () => {
       },
     }));
   };
-  const handleSubmit = async (e) => {
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Include selectedImage in formData if it exists
     const formDataToSend = { ...formData };
     if (selectedImage) {
-      //formDataToSend.image = selectedImage;
+      formDataToSend.image = selectedImage;
     }
 
     try {
       if (isEditMode) {
-        await editCow(id, formData);
+        await editCow(id, formDataToSend);
       } else {
-        await addCow(formData);
+        await addCow(formDataToSend);
       }
 
       navigate("/manage-cow?result=success");
     } catch (error) {
-      console.error("Error submitting form:", error);
-      // Handle error
+      if (error instanceof Error) {
+        console.error("Error submitting form:", error.message);
+      } else {
+        console.error("Unknown error occurred while submitting form");
+      }
+      // Handle error (e.g., show a notification)
+      toast.error("An error occurred while submitting the form.");
     }
   };
-
  
 
 
