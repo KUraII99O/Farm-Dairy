@@ -7,6 +7,7 @@ import { Table } from "flowbite-react";
 interface AnimalType {
   id: string;
   name: string;
+  userId: string;
 }
 
 // Define the type for the props of AnimalTypeTable

@@ -1,13 +1,16 @@
 // src/types/types.ts
 
-export interface Branch {
-    id: string;
-    name: string;
-    setupDate: string;
-    builderName: string;
-    phoneNumber: string;
-    email: string;
-  }
+interface Branch {
+  id: string;
+  name: string;
+  userId: string;
+  setupDate: Date;
+  builderName: string;
+  phoneNumber: string;
+  branchName: string;
+  email: string;
+}
+
   
   export interface BranchTableProps {
     sortedBranches: Branch[];

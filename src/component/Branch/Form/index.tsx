@@ -1,15 +1,14 @@
-// EditBranchForm.tsx
-
 import React, { useEffect, useState } from "react";
-import { useTranslation } from "../../Translator/Provider";
 
 interface Branch {
-  id?: string;
+  id: string;
   name: string;
-  setupDate: string;
+  setupDate: Date; // Use Date type
   builderName: string;
   phoneNumber: string;
   email: string;
+  userId: string;
+  branchName: string;
 }
 
 interface EditBranchFormProps {
@@ -18,26 +17,38 @@ interface EditBranchFormProps {
   onClose: () => void;
 }
 
-const EditBranchForm: React.FC<EditBranchFormProps> = ({ branch, onSubmit, onClose }) => {
+const EditBranchForm: React.FC<EditBranchFormProps> = ({
+  branch,
+  onSubmit,
+  onClose,
+}) => {
   const [formData, setFormData] = useState<Branch>({
+    id: "",
     name: "",
-    setupDate: "",
+    setupDate: new Date(), // Initialize with current date or appropriate default
     builderName: "",
     phoneNumber: "",
     email: "",
+    userId: "",
+    branchName: "",
   });
-  const { translate } = useTranslation();
 
   useEffect(() => {
     if (branch) {
-      setFormData(branch);
+      setFormData({
+        ...branch,
+        setupDate: branch.setupDate, // Use Date object directly
+      });
     } else {
       setFormData({
+        id: "",
         name: "",
-        setupDate: "",
+        setupDate: new Date(), // Set default date
         builderName: "",
         phoneNumber: "",
         email: "",
+        userId: "",
+        branchName: "",
       });
     }
   }, [branch]);
@@ -46,7 +57,7 @@ const EditBranchForm: React.FC<EditBranchFormProps> = ({ branch, onSubmit, onClo
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: name === "setupDate" ? new Date(value) : value, // Handle date conversion
     });
   };
 
@@ -56,99 +67,109 @@ const EditBranchForm: React.FC<EditBranchFormProps> = ({ branch, onSubmit, onClo
   };
 
   return (
-    <div className="flex justify-end"> {/* Move the form container to the right */}
-      <form onSubmit={handleSubmit} className="w-96"> {/* Set a width for the form */}
+    <div className="flex justify-end">
+      <form onSubmit={handleSubmit} className="w-96">
         <h2 className="text-xl font-bold mb-4">
-          {branch ? translate("editBranch") : translate("addNewBranch")}
+          {branch ? "Edit Branch" : "Add New Branch"}
         </h2>
         <div className="mb-4">
           <label
             htmlFor="name"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-gray-700 mb-1"
           >
-            {translate("branchName")}:
+            Branch Name
           </label>
           <input
             type="text"
+            id="name"
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="p-2 rounded border border-gray-300 w-full"
+            required
           />
         </div>
         <div className="mb-4">
           <label
             htmlFor="setupDate"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-gray-700 mb-1"
           >
-            {translate("setupDate")}:
+            Setup Date
           </label>
           <input
             type="date"
+            id="setupDate"
             name="setupDate"
-            value={formData.setupDate}
+            value={formData.setupDate.toISOString().split('T')[0]} // Convert to string format
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="p-2 rounded border border-gray-300 w-full"
+            required
           />
         </div>
         <div className="mb-4">
           <label
             htmlFor="builderName"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-gray-700 mb-1"
           >
-            {translate("builderName")}:
+            Builder Name
           </label>
           <input
             type="text"
+            id="builderName"
             name="builderName"
             value={formData.builderName}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="p-2 rounded border border-gray-300 w-full"
+            required
           />
         </div>
         <div className="mb-4">
           <label
             htmlFor="phoneNumber"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-gray-700 mb-1"
           >
-            {translate("phoneNumber")}:
+            Phone Number
           </label>
           <input
             type="text"
+            id="phoneNumber"
             name="phoneNumber"
             value={formData.phoneNumber}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="p-2 rounded border border-gray-300 w-full"
+            required
           />
         </div>
         <div className="mb-4">
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-gray-700 mb-1"
           >
-            {translate("email")}:
+            Email
           </label>
           <input
             type="email"
+            id="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="p-2 rounded border border-gray-300 w-full"
+            required
           />
         </div>
         <div className="flex justify-end">
           <button
-            type="submit"
-            className="bg-secondary hover:bg-primary text-white font-bold py-2 px-4 rounded mr-2"
-          >
-            {branch ? translate("updateBranch") : translate("addBranch")}
-          </button>
-          <button
             type="button"
             onClick={onClose}
-            className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded"
+            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 mr-2"
           >
-            {translate("cancel")}
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary"
+          >
+            {branch ? "Update" : "Add"}
           </button>
         </div>
       </form>

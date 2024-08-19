@@ -1,9 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { AnimalType, AnimalTypeService } from "../AnimaltypeService";
 
-
-
-
 interface ManageAnimalTypeContextProps {
   animalTypes: AnimalType[];
   addAnimalType: (newAnimalType: Omit<AnimalType, 'id'>) => Promise<void>;
@@ -15,9 +12,6 @@ interface ManageAnimalTypeProviderProps {
   children: React.ReactNode;
 }
 
-
-
-
 export const ManageAnimalTypeContext = createContext<ManageAnimalTypeContextProps | null>(null);
 
 export const ManageAnimalTypeProvider: React.FC<ManageAnimalTypeProviderProps> = ({ children }) => {
@@ -26,15 +20,7 @@ export const ManageAnimalTypeProvider: React.FC<ManageAnimalTypeProviderProps> =
   useEffect(() => {
     const fetchAnimalTypeData = async () => {
       try {
-        const loggedInUser = localStorage.getItem('loggedInUser');
-        if (!loggedInUser) {
-          throw new Error("User not logged in or user data not found");
-        }
-        const user = JSON.parse(loggedInUser);
-        console.log("User ID:", user.id); // Log user ID
-
         const data = await AnimalTypeService.fetchAnimalTypes();
-        console.log("Animal type data:", data); // Log animal type data
         setAnimalTypes(data || []);
       } catch (error) {
         console.error("Error fetching animal types:", error);
@@ -55,10 +41,16 @@ export const ManageAnimalTypeProvider: React.FC<ManageAnimalTypeProviderProps> =
 
   const editAnimalType = async (id: string, updatedAnimalType: Partial<Omit<AnimalType, 'id'>>) => {
     try {
-      await AnimalTypeService.editAnimalType(id, updatedAnimalType);
+      const existingAnimalType = animalTypes.find(animalType => animalType.id === id);
+      if (!existingAnimalType) {
+        throw new Error("Animal type not found");
+      }
+
+      const mergedAnimalType = { ...existingAnimalType, ...updatedAnimalType };
+      await AnimalTypeService.editAnimalType(id, mergedAnimalType);
       setAnimalTypes(prevAnimalTypes =>
         prevAnimalTypes.map(animalType =>
-          animalType.id === id ? { ...animalType, ...updatedAnimalType } : animalType
+          animalType.id === id ? mergedAnimalType : animalType
         )
       );
     } catch (error) {
@@ -95,5 +87,4 @@ export const useAnimalType = () => {
     throw new Error("useAnimalType must be used within a ManageAnimalTypeProvider");
   }
   return context;
-
 };

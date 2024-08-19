@@ -1,88 +1,77 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { Vaccine, VaccineService } from "../VaccineService"; // Updated import
 
-export const ManageVaccineContext = createContext();
+interface ManageVaccineContextProps {
+  vaccines: Vaccine[];
+  addVaccine: (newVaccine: Omit<Vaccine, 'id'>) => Promise<void>;
+  editVaccine: (id: string, updatedVaccine: Partial<Omit<Vaccine, 'id'>>) => Promise<void>;
+  deleteVaccine: (id: string) => Promise<void>;
+}
 
-export const ManageVaccineProvider = ({ children }) => {
-  const [vaccines, setVaccines] = useState([
-    {
-      id: 1,
-      vaccineName: "Anthrax",
-      periodDays: 120,
-      repeatVaccine: "No",
-      dose: "Annually in endemic areas.",
-      note: "4 months and above",
-    },
-    {
-      id: 2,
-      vaccineName: "BDV",
-      periodDays: 60,
-      repeatVaccine: "No",
-      dose: "Push this after 2 Months",
-      note: "test test",
-    },
-    {
-      id: 3,
-      vaccineName: "BRSV",
-      periodDays: 365,
-      repeatVaccine: "No",
-      dose: "Once a Year Use 2.0 ml using Injection.",
-      note: "dsfdsf",
-    },
-    {
-      id: 4,
-      vaccineName: "BVD",
-      periodDays: 90,
-      repeatVaccine: "Yes",
-      dose: "(Vial: 30 ml) Every 3 Months",
-      note: "sdfdsfdsf",
-    },
-    {
-      id: 5,
-      vaccineName: "PI3",
-      periodDays: 120,
-      repeatVaccine: "No",
-      dose: "3ml, midneck injection push.",
-      note: "After 4 Months",
-    },
-    {
-      id: 6,
-      vaccineName: "Vitamin A",
-      periodDays: 60,
-      repeatVaccine: "Yes",
-      dose: "Oral Single Table",
-      note: "Twice a Month",
-    },
-    // Add more vaccines as needed
-  ]);
+interface ManageVaccineProviderProps {
+  children: React.ReactNode;
+}
 
-  const addVaccine = (newVaccine) => {
-    const maxId = Math.max(...vaccines.map((vaccine) => vaccine.id), 0);
-    const newVaccineWithId = { ...newVaccine, id: maxId + 1 };
-    setVaccines([...vaccines, newVaccineWithId]);
+export const ManageVaccineContext = createContext<ManageVaccineContextProps | null>(null);
+
+export const ManageVaccineProvider: React.FC<ManageVaccineProviderProps> = ({ children }) => {
+  const [vaccines, setVaccines] = useState<Vaccine[]>([]);
+
+  useEffect(() => {
+    const fetchVaccineData = async () => {
+      try {
+        const data = await VaccineService.fetchVaccines();
+        setVaccines(data || []);
+      } catch (error) {
+        console.error("Error fetching vaccines:", error);
+      }
+    };
+
+    fetchVaccineData();
+  }, []);
+
+  const addVaccine = async (newVaccine: Omit<Vaccine, 'id'>) => {
+    try {
+      const data = await VaccineService.addVaccine(newVaccine);
+      setVaccines(prevVaccines => [...prevVaccines, data]);
+    } catch (error) {
+      console.error("Error adding vaccine:", (error as Error).message);
+    }
   };
 
-  const editVaccine = (id, updatedVaccine) => {
-    setVaccines((prevVaccines) =>
-      prevVaccines.map((vaccine) => (vaccine.id === id ? { ...vaccine, ...updatedVaccine } : vaccine))
-    );
+  const editVaccine = async (id: string, updatedVaccine: Partial<Omit<Vaccine, 'id'>>) => {
+    try {
+      const existingVaccine = vaccines.find(vaccine => vaccine.id === id);
+      if (!existingVaccine) {
+        throw new Error("Vaccine not found");
+      }
+
+      const mergedVaccine = { ...existingVaccine, ...updatedVaccine };
+      await VaccineService.editVaccine(id, mergedVaccine);
+      setVaccines(prevVaccines =>
+        prevVaccines.map(vaccine =>
+          vaccine.id === id ? mergedVaccine : vaccine
+        )
+      );
+    } catch (error) {
+      console.error("Error editing vaccine:", (error as Error).message);
+    }
   };
 
-  const deleteVaccine = (id) => {
-    const updatedVaccines = vaccines.filter((vaccine) => vaccine.id !== id);
-    setVaccines(updatedVaccines);
+  const deleteVaccine = async (id: string) => {
+    try {
+      await VaccineService.deleteVaccine(id);
+      setVaccines(prevVaccines => prevVaccines.filter(vaccine => vaccine.id !== id));
+    } catch (error) {
+      console.error("Error deleting vaccine:", (error as Error).message);
+    }
   };
 
-  const getVaccineById = (id) => {
-    // Find and return the vaccine with the given ID
-    return vaccines.find((vaccine) => vaccine.id === id);
-  };
-
-  const value = {
+  const value: ManageVaccineContextProps = {
     vaccines,
     addVaccine,
     editVaccine,
-    deleteVaccine,
-    getVaccineById,
+    deleteVaccine
   };
 
   return (
@@ -92,10 +81,10 @@ export const ManageVaccineProvider = ({ children }) => {
   );
 };
 
-export const useManageVaccine = () => {
+export const useVaccine = () => {
   const context = useContext(ManageVaccineContext);
   if (!context) {
-    throw new Error("useManageVaccine must be used within a ManageVaccineProvider");
+    throw new Error("useVaccine must be used within a ManageVaccineProvider");
   }
   return context;
 };

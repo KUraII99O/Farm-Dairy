@@ -1,13 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 
 export interface AnimalType {
-    id: string,
-    name: string,
-    userId: string,
-    setupDate: Date,
-    builderName: string,
-    phoneNumber: string,
-    email: string,
+    id: string;
+    name: string;
+    userId: string;
 }
 
 const AnimalTypeService = {
@@ -36,7 +32,7 @@ async function fetchAnimalTypes(): Promise<AnimalType[]> {
     const animalTypesData: AnimalType[] = await response.json();
     return animalTypesData;
   } catch (error) {
-    console.error('Error fetching AnimalType data:', error.message);
+    console.error('Error fetching AnimalType data:', error);
     return [];
   }
 }
@@ -106,4 +102,3 @@ async function deleteAnimalType(id: string): Promise<void> {
 }
 
 export { AnimalTypeService };
-  export type { AnimalType };

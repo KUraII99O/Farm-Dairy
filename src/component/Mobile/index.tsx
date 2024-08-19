@@ -1,7 +1,4 @@
 import React from "react";
-import LandingNav from "../LandingNav";
-import { Button } from "flowbite-react";
-import { HiOutlineArrowRight } from "react-icons/hi";
 
 const Mobile = () => {
   return (

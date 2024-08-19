@@ -122,5 +122,5 @@ async function deleteBranch(id: string): Promise<void> {
     }
 }
 
-export { BranchService };  export type { Branch };
+export { BranchService };  
 

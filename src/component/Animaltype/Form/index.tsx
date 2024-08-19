@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 
 interface AnimalType {
-  id: number;
+  id: string;
   name: string;
-  // Include any other fields that your AnimalType has
+  userId: string;
 }
 
 interface EditAnimalTypeFormProps {
@@ -17,13 +17,22 @@ const EditAnimalTypeForm: React.FC<EditAnimalTypeFormProps> = ({
   onSubmit,
   onClose,
 }) => {
-  const [formData, setFormData] = useState<AnimalType>({ id: 0, name: "" });
+  const [formData, setFormData] = useState<AnimalType>({
+    id: "",
+    name: "",
+    userId: "",
+  });
 
   useEffect(() => {
     if (animalType) {
       setFormData(animalType);
     } else {
-      setFormData({ id: 0, name: "" }); // Reset formData when animalType is not provided
+      setFormData({
+        id: "",
+        name: "",
+        userId: "",
+       
+      }); // Reset formData when animalType is not provided
     }
   }, [animalType]);
 

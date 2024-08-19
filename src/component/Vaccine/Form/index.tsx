@@ -9,7 +9,7 @@ const EditVaccineForm = ({ vaccine, onSubmit, onClose }) => {
   const [formData, setFormData] = useState({
     vaccineName: "",
     periodDays: "",
-    repeatVaccine: "",
+    repeatVaccine: true ,
     dose: "",
     note: "",
   });
@@ -35,7 +35,7 @@ const EditVaccineForm = ({ vaccine, onSubmit, onClose }) => {
 
   const handleCloseDrawer = () => {
     onClose(); // Call the onClose function passed from the parent component
-    navigate("/manage-vaccine"); // Assuming the route for managing vaccines is '/manage-vaccine'
+    navigate("/Vaccine-List"); // Assuming the route for managing vaccines is '/manage-vaccine'
   };
 
   const handleOutsideClick = (e) => {

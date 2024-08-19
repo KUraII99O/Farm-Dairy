@@ -36,7 +36,7 @@ async function fetchVaccineRecords(): Promise<VaccineMonitor[]> {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/vaccines?userId=' + user.id);
+    const response = await fetch('http://localhost:3000/vaccines-monitor?userId=' + user.id);
     if (!response.ok) {
       throw new Error('Failed to fetch vaccine records data');
     }
@@ -66,7 +66,7 @@ async function addVaccineRecord(newVaccineRecord: Omit<VaccineMonitor, 'id' | 'u
   try {
     const vaccineRecordWithId: VaccineMonitor = { id: uuidv4(), userId: user.id, ...newVaccineRecord };
 
-    const response = await fetch('http://localhost:3000/vaccines', {
+    const response = await fetch('http://localhost:3000/vaccines-monitor', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ async function editVaccineRecord(id: string, updatedVaccineRecord: Omit<VaccineM
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/vaccines/${id}`, {
+    const response = await fetch(`http://localhost:3000/vaccines-monitor/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -133,7 +133,7 @@ async function deleteVaccineRecord(id: string): Promise<void> {
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/vaccines/${id}`, {
+    const response = await fetch(`http://localhost:3000/vaccines-monitor/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) {

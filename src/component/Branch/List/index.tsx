@@ -12,9 +12,11 @@ import EditBranchForm from "../Form";
 interface Branch {
   id: string;
   name: string;
-  setupDate: string;
+  userId: string;
+  setupDate: Date;
   builderName: string;
   phoneNumber: string;
+  branchName: string;
   email: string;
 }
 
