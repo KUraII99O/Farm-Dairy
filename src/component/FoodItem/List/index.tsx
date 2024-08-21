@@ -1,12 +1,23 @@
 import React, { useState } from "react";
-import { AiOutlineDelete } from "react-icons/ai";
 import { useFoodItem } from "../Provider"; // Import useFoodItem hook
 import Pagination from "../../Pagination";
 import { ToastContainer, toast } from "react-toastify";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import { BiListUl } from "react-icons/bi";
-import { BsPencil } from "react-icons/bs";
 import EditFoodUnitForm from "../Form"; // Update to use EditFoodUnitForm instead of EditDesignationForm
+import { useTranslation } from "../../Translator/Provider";
+import FoodItemTable from "../Table";
+import { Drawer } from "flowbite-react";
+
+
+interface FoodItem{
+  id: string;
+  userId: string;
+  name: string;
+}
+
+
+
 
 const FoodItemList: React.FC = () => {
   const { foodItems, deleteFoodItem, addFoodItem, editFoodItem } = useFoodItem(); // Use useFoodItem hook
@@ -16,21 +27,29 @@ const FoodItemList: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
-  const [selectedFoodItem, setSelectedFoodItem] = useState(null);
+  const [selectedFoodItem, setSelectedFoodItem]= useState<FoodItem | null>(null);
+  const { translate, language } = useTranslation();
+  const isArabic = language === "ar";
+  const formClass = isArabic ? "rtl" : "ltr";
 
-  const handleDeleteConfirmation = (id: number) => {
+  const handleDeleteConfirmation = (id: string) => {
     if (window.confirm("Are you sure you want to delete this food item?")) {
       handleDelete(id);
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
       await deleteFoodItem(id);
       toast.success("Food item deleted successfully!");
     } catch (error) {
       toast.error("An error occurred while deleting food item.");
     }
+  };
+
+  const handleCloseDrawer = () => {
+    setIsEditDrawerOpen(false);
+    setSelectedFoodItem(null);
   };
 
   const handleSort = (fieldName: string) => {
@@ -85,8 +104,8 @@ const FoodItemList: React.FC = () => {
 
   const sortedFoodItems = sortBy
     ? currentFoodItems.slice().sort((a, b) => {
-        const aValue = a[sortBy];
-        const bValue = b[sortBy];
+        const aValue = a[sortBy as keyof FoodItem ];
+        const bValue = b[sortBy as keyof FoodItem ];
         if (sortOrder === "asc") {
           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
         } else {
@@ -119,73 +138,33 @@ const FoodItemList: React.FC = () => {
         <BiListUl className="inline-block mr-2" />
         Food Item List
       </h1>
-      <table className="min-w-full bg-white border-collapse">
-        <thead>
-          <tr>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("id")}
-            >
-              <div className="flex items-center">
-                #ID
-                {sortIcon("id")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("name")}
-            >
-              <div className="flex items-center">
-                Name
-                {sortIcon("name")}
-              </div>
-            </th>
-            <th className="border border-gray-300 px-4 py-2">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedFoodItems
-            .filter((foodItem) =>
-              foodItem.name.toLowerCase().includes(searchTerm.toLowerCase())
-            )
-            .map((foodItem) => (
-              <tr key={foodItem.id}>
-                <td className="border border-gray-300 px-4 py-2">{foodItem.id}</td>
-                <td className="border border-gray-300 px-4 py-2">{foodItem.name}</td>
-                <td className="border border-gray-300 px-2 py-2">
-                  <div className="flex items-center">
-                    <button
-                      onClick={() => handleEditDrawerOpen(foodItem)}
-                      className="text-blue-500 hover:underline flex items-center mr-4 focus:outline-none"
-                    >
-                      <BsPencil className="w-5 h-5 mr-1" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteConfirmation(foodItem.id)}
-                      className="text-red-500 hover:text-red-700 focus:outline-none flex items-center"
-                    >
-                      <AiOutlineDelete className="w-5 h-5 mr-1" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
-      {isEditDrawerOpen && (
-        <div className="fixed inset-0 overflow-y-auto z-50 flex justify-end">
-          <div className="w-96 bg-white h-full shadow-lg p-6">
-            <h2 className="text-xl font-bold mb-4">
-              {selectedFoodItem ? "Edit Food Item" : "Add New Food Item"}
-            </h2>
-            <EditFoodUnitForm
-              foodItem={selectedFoodItem} 
-              onSubmit={selectedFoodItem ? handleUpdateFoodItem : handleAddNewFoodItem}
-              onClose={() => setIsEditDrawerOpen(false)} // Assuming setIsEditDrawerOpen is the function to close the drawer
-            />
-          </div>
-        </div>
-      )}
+      <FoodItemTable
+        sortedFoodItems={sortedFoodItems}
+        handleSort={handleSort}
+        sortIcon={sortIcon}
+        handleEditDrawerOpen={handleEditDrawerOpen}
+        handleDeleteConfirmation={handleDeleteConfirmation}
+        formClass={formClass}
+        translate={translate}
+      />
+     <Drawer
+        open={isEditDrawerOpen}
+        onClose={handleCloseDrawer}
+        position="right" // Set the position to "right"
+      >
+        <Drawer.Header>
+          <h2 className="text-xl font-bold">
+            {selectedFoodItem ? translate("editFoodItem") : translate("addNewFoodItem")}
+          </h2>
+        </Drawer.Header>
+        <Drawer.Items> {/* Corrected to Drawer.Body */}
+          <EditFoodUnitForm
+            foodItem={selectedFoodItem}
+            onSubmit={selectedFoodItem ? handleUpdateFoodItem : handleAddNewFoodItem}
+            onClose={handleCloseDrawer}
+          />
+        </Drawer.Items>
+      </Drawer>
       <Pagination
         totalItems={foodItems.length}
         defaultItemsPerPage={itemsPerPage}

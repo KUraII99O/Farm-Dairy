@@ -1,61 +1,90 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { FoodUnit, FoodUnitService } from "../FoodUnitService"; // Updated import
 
-export const FoodUnitContext = createContext();
+interface ManageFoodUnitContextProps {
+  foodUnits: FoodUnit[];
+  addFoodUnit: (newFoodUnit: Omit<FoodUnit, 'id'>) => Promise<void>;
+  editFoodUnit: (id: string, updatedFoodUnit: Partial<Omit<FoodUnit, 'id'>>) => Promise<void>;
+  deleteFoodUnit: (id: string) => Promise<void>;
+}
 
-export const FoodUnitProvider = ({ children }) => {
-  const [foodUnits, setFoodUnits] = useState([
-    {
-      id: 1,
-      name: "Gram",
-    },
-    {
-      id: 2,
-      name: "KG",
-    },
-    // Add more food units as needed
-  ]);
+interface ManageFoodUnitProviderProps {
+  children: React.ReactNode;
+}
 
-  const addFoodUnit = (newFoodUnit) => {
-    const maxId = Math.max(...foodUnits.map((foodUnit) => foodUnit.id), 0);
-    const newFoodUnitWithId = { ...newFoodUnit, id: maxId + 1 };
-    setFoodUnits([...foodUnits, newFoodUnitWithId]);
+export const ManageFoodUnitContext = createContext<ManageFoodUnitContextProps | null>(null);
+
+export const ManageFoodUnitProvider: React.FC<ManageFoodUnitProviderProps> = ({ children }) => {
+  const [foodUnits, setFoodUnits] = useState<FoodUnit[]>([]);
+
+  useEffect(() => {
+    const fetchFoodUnitData = async () => {
+      try {
+        const data = await FoodUnitService.fetchFoodUnits();
+        setFoodUnits(data || []);
+      } catch (error) {
+        console.error("Error fetching food units:", error);
+      }
+    };
+
+    fetchFoodUnitData();
+  }, []);
+
+  const addFoodUnit = async (newFoodUnit: Omit<FoodUnit, 'id'>) => {
+    try {
+      const data = await FoodUnitService.addFoodUnit(newFoodUnit);
+      setFoodUnits(prevFoodUnits => [...prevFoodUnits, data]);
+    } catch (error) {
+      console.error("Error adding food unit:", (error as Error).message);
+    }
   };
 
-  const editFoodUnit = (id, updatedFoodUnit) => {
-    setFoodUnits((prevFoodUnits) =>
-      prevFoodUnits.map((foodUnit) => (foodUnit.id === id ? { ...foodUnit, ...updatedFoodUnit } : foodUnit))
-    );
+  const editFoodUnit = async (id: string, updatedFoodUnit: Partial<Omit<FoodUnit, 'id'>>) => {
+    try {
+      const existingFoodUnit = foodUnits.find(foodUnit => foodUnit.id === id);
+      if (!existingFoodUnit) {
+        throw new Error("Food unit not found");
+      }
+
+      const mergedFoodUnit = { ...existingFoodUnit, ...updatedFoodUnit };
+      await FoodUnitService.editFoodUnit(id, mergedFoodUnit);
+      setFoodUnits(prevFoodUnits =>
+        prevFoodUnits.map(foodUnit =>
+          foodUnit.id === id ? mergedFoodUnit : foodUnit
+        )
+      );
+    } catch (error) {
+      console.error("Error editing food unit:", (error as Error).message);
+    }
   };
 
-  const deleteFoodUnit = (id) => {
-    const updatedFoodUnits = foodUnits.filter((foodUnit) => foodUnit.id !== id);
-    setFoodUnits(updatedFoodUnits);
+  const deleteFoodUnit = async (id: string) => {
+    try {
+      await FoodUnitService.deleteFoodUnit(id);
+      setFoodUnits(prevFoodUnits => prevFoodUnits.filter(foodUnit => foodUnit.id !== id));
+    } catch (error) {
+      console.error("Error deleting food unit:", (error as Error).message);
+    }
   };
 
-  const getFoodUnitById = (id) => {
-    // Find and return the food unit with the given ID
-    return foodUnits.find((foodUnit) => foodUnit.id === id);
-  };
-
-  const value = {
+  const value: ManageFoodUnitContextProps = {
     foodUnits,
     addFoodUnit,
     editFoodUnit,
-    deleteFoodUnit,
-    getFoodUnitById,
+    deleteFoodUnit
   };
 
   return (
-    <FoodUnitContext.Provider value={value}>
+    <ManageFoodUnitContext.Provider value={value}>
       {children}
-    </FoodUnitContext.Provider>
+    </ManageFoodUnitContext.Provider>
   );
 };
 
 export const useFoodUnit = () => {
-  const context = useContext(FoodUnitContext);
+  const context = useContext(ManageFoodUnitContext);
   if (!context) {
-    throw new Error("useFoodUnit must be used within a FoodUnitProvider");
+    throw new Error("useFoodUnit must be used within a ManageFoodUnitProvider");
   }
   return context;
 };

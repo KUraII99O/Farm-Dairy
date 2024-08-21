@@ -4,7 +4,7 @@ interface Branch {
   id: string;
   name: string;
   userId: string;
-  setupDate: Date;
+  setupDate: string;
   builderName: string;
   phoneNumber: string;
   branchName: string;

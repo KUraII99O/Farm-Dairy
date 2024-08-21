@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-interface User {
+export type  User = {
   id: string;
   userId: string;
   name: string;
@@ -33,14 +33,15 @@ async function fetchUsers(): Promise<User[]> {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/users?userId='+ user.id);
+    const response = await fetch('http://localhost:3000/users?userId=' + user.id);
     if (!response.ok) {
       throw new Error('Failed to fetch user data');
     }
     const userData: User[] = await response.json();
-    return userData
+    return userData;
   } catch (error) {
-    console.error('Error fetching user data:', error.message);
+    const errorMessage = (error as Error).message;
+    console.error('Error fetching user data:', errorMessage);
     return [];
   }
 }
@@ -73,7 +74,8 @@ async function addUser(newUser: Omit<User, 'id' | 'userId'>): Promise<User> {
 
     return userWithId;
   } catch (error) {
-    console.error('Error adding user:', error.message);
+    const errorMessage = (error as Error).message;
+    console.error('Error adding user:', errorMessage);
     throw error;
   }
 }
@@ -101,7 +103,8 @@ async function editUser(id: string, updatedUser: Omit<User, 'id' | 'userId'>): P
       throw new Error('Failed to update user');
     }
   } catch (error) {
-    console.error('Error updating user:', error.message);
+    const errorMessage = (error as Error).message;
+    console.error('Error updating user:', errorMessage);
     throw error;
   }
 }
@@ -112,7 +115,7 @@ async function toggleUserStatus(id: string): Promise<User> {
     throw new Error("User not logged in");
   }
 
-  const user: User = JSON.parse(loggedInUser);
+  const user = JSON.parse(loggedInUser);
   if (!user || !user.id) {
     throw new Error("User ID not found");
   }
@@ -133,7 +136,8 @@ async function toggleUserStatus(id: string): Promise<User> {
     const updatedUser: User = await response.json();
     return updatedUser;
   } catch (error) {
-    console.error('Error toggling user status:', error.message);
+    const errorMessage = (error as Error).message;
+    console.error('Error toggling user status:', errorMessage);
     throw error;
   }
 }
@@ -157,9 +161,10 @@ async function deleteUser(id: string): Promise<void> {
       throw new Error('Failed to delete user');
     }
   } catch (error) {
-    console.error('Error deleting user:', error.message);
+    const errorMessage = (error as Error).message;
+    console.error('Error deleting user:', errorMessage);
     throw error;
   }
 }
 
-export { UserService, User };
+export { UserService };

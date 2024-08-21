@@ -1,36 +1,52 @@
-import React, { useState, useContext } from "react";
-import { AiOutlineDelete } from "react-icons/ai";
-import { FoodUnitContext } from "../Provider"; // Import FoodUnitContext
+import React, { useState } from "react";
+import { useFoodUnit } from "../Provider"; // Import FoodUnitContext
 import Pagination from "../../Pagination";
 import { ToastContainer, toast } from "react-toastify";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import { BiListUl } from "react-icons/bi";
-import { BsPencil } from "react-icons/bs";
 import EditFoodUnitForm from "../Form"; // Update to use EditFoodUnitForm instead of EditDesignationForm
+import { Drawer } from "flowbite-react";
+import { useTranslation } from "../../Translator/Provider";
+import FoodUnitTable from "../../FoodUnit/Table";
+
+interface FoodUnit {
+  id: string;
+  userId: string;
+  name: string;
+}
 
 const FoodUnitList: React.FC = () => {
-  const { foodUnits, deleteFoodUnit, addFoodUnit, editFoodUnit } = useContext(FoodUnitContext); // Use FoodUnitContext
+  const { foodUnits, deleteFoodUnit, addFoodUnit, editFoodUnit } = useFoodUnit(); // Use FoodUnitContext
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("");
-  const [sortOrder, setSortOrder] = useState("asc");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
-  const [selectedFoodUnit, setSelectedFoodUnit] = useState(null);
+  const [sortBy, setSortBy] = useState<string>("");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(5);
+  const [isEditDrawerOpen, setIsEditDrawerOpen] = useState<boolean>(false);
+  const [selectedFoodUnit, setSelectedFoodUnit] = useState<FoodUnit | null>(null);
+  const { translate, language } = useTranslation();
+  const isArabic = language === "ar";
+  const formClass = isArabic ? "rtl" : "ltr";
 
-  const handleDeleteConfirmation = (id: number) => {
+  const handleDeleteConfirmation = (id: string) => {
     if (window.confirm("Are you sure you want to delete this food unit?")) {
       handleDelete(id);
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
       await deleteFoodUnit(id);
       toast.success("Food unit deleted successfully!");
     } catch (error) {
-      toast.error("An error occurred while deleting food unit.");
+      console.error("Error deleting food unit:", error);
+      toast.error("An error occurred while deleting the food unit.");
     }
+  };
+
+  const handleCloseDrawer = () => {
+    setIsEditDrawerOpen(false);
+    setSelectedFoodUnit(null);
   };
 
   const handleSort = (fieldName: string) => {
@@ -49,12 +65,12 @@ const FoodUnitList: React.FC = () => {
     return <FaSort />;
   };
 
-  const handleEditDrawerOpen = (foodUnit: any) => {
+  const handleEditDrawerOpen = (foodUnit: FoodUnit | null) => {
     setSelectedFoodUnit(foodUnit);
     setIsEditDrawerOpen(true);
   };
 
-  const handleAddNewFoodUnit = async (newFoodUnitData: any) => {
+  const handleAddNewFoodUnit = async (newFoodUnitData: Omit<FoodUnit, 'id' | 'userId'>) => {
     try {
       await addFoodUnit(newFoodUnitData);
       setIsEditDrawerOpen(false); // Close the drawer after adding
@@ -64,11 +80,13 @@ const FoodUnitList: React.FC = () => {
     }
   };
 
-  const handleUpdateFoodUnit = async (updatedFoodUnitData) => {
+  const handleUpdateFoodUnit = async (updatedFoodUnitData: Omit<FoodUnit, 'id' | 'userId'>) => {
     try {
-      await editFoodUnit(selectedFoodUnit.id, updatedFoodUnitData);
-      setIsEditDrawerOpen(false); // Close the drawer after updating
-      toast.success("Food unit updated successfully!");
+      if (selectedFoodUnit) {
+        await editFoodUnit(selectedFoodUnit.id, updatedFoodUnitData);
+        setIsEditDrawerOpen(false); // Close the drawer after updating
+        toast.success("Food unit updated successfully!");
+      }
     } catch (error) {
       toast.error("An error occurred while updating food unit.");
     }
@@ -85,8 +103,8 @@ const FoodUnitList: React.FC = () => {
 
   const sortedFoodUnits = sortBy
     ? currentFoodUnits.slice().sort((a, b) => {
-        const aValue = a[sortBy];
-        const bValue = b[sortBy];
+        const aValue = a[sortBy as keyof FoodUnit];
+        const bValue = b[sortBy as keyof FoodUnit];
         if (sortOrder === "asc") {
           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
         } else {
@@ -105,7 +123,7 @@ const FoodUnitList: React.FC = () => {
             placeholder="Search..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="p-2 rounded border border-gray-300 "
+            className="p-2 rounded border border-gray-300"
           />
           <button
             onClick={() => handleEditDrawerOpen(null)}
@@ -119,73 +137,33 @@ const FoodUnitList: React.FC = () => {
         <BiListUl className="inline-block mr-2" />
         Food Unit List
       </h1>
-      <table className="min-w-full bg-white border-collapse">
-        <thead>
-          <tr>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("id")}
-            >
-              <div className="flex items-center">
-                #ID
-                {sortIcon("id")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("name")}
-            >
-              <div className="flex items-center">
-                Name
-                {sortIcon("name")}
-              </div>
-            </th>
-            <th className="border border-gray-300 px-4 py-2">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedFoodUnits
-            .filter((foodUnit) =>
-              foodUnit.name.toLowerCase().includes(searchTerm.toLowerCase())
-            )
-            .map((foodUnit) => (
-              <tr key={foodUnit.id}>
-                <td className="border border-gray-300 px-4 py-2">{foodUnit.id}</td>
-                <td className="border border-gray-300 px-4 py-2">{foodUnit.name}</td>
-                <td className="border border-gray-300 px-2 py-2">
-                  <div className="flex items-center">
-                    <button
-                      onClick={() => handleEditDrawerOpen(foodUnit)}
-                      className="text-blue-500 hover:underline flex items-center mr-4 focus:outline-none"
-                    >
-                      <BsPencil className="w-5 h-5 mr-1" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteConfirmation(foodUnit.id)}
-                      className="text-red-500 hover:text-red-700 focus:outline-none flex items-center"
-                    >
-                      <AiOutlineDelete className="w-5 h-5 mr-1" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
-      {isEditDrawerOpen && (
-        <div className="fixed inset-0 overflow-y-auto z-50 flex justify-end">
-          <div className="w-96 bg-white h-full shadow-lg p-6">
-            <h2 className="text-xl font-bold mb-4">
-              {selectedFoodUnit ? "Edit Food Unit" : "Add New Food Unit"}
-            </h2>
-            <EditFoodUnitForm
-              foodUnit={selectedFoodUnit}
-              onSubmit={selectedFoodUnit ? handleUpdateFoodUnit : handleAddNewFoodUnit}
-              onClose={() => setIsEditDrawerOpen(false)} // Assuming setIsEditDrawerOpen is the function to close the drawer
-            />
-          </div>
-        </div>
-      )}
+      <FoodUnitTable
+        sortedFoodUnits={sortedFoodUnits}
+        handleSort={handleSort}
+        sortIcon={sortIcon}
+        handleEditDrawerOpen={handleEditDrawerOpen}
+        handleDeleteConfirmation={handleDeleteConfirmation}
+        formClass={formClass}
+        translate={translate}
+      />
+      <Drawer
+        open={isEditDrawerOpen}
+        onClose={handleCloseDrawer}
+        position="right" // Set the position to "right"
+      >
+        <Drawer.Header>
+          <h2 className="text-xl font-bold">
+            {selectedFoodUnit ? translate("editFoodUnit") : translate("addNewFoodUnit")}
+          </h2>
+        </Drawer.Header>
+        <Drawer.Items> {/* Corrected to Drawer.Body */}
+          <EditFoodUnitForm
+            foodUnit={selectedFoodUnit}
+            onSubmit={selectedFoodUnit ? handleUpdateFoodUnit : handleAddNewFoodUnit}
+            onClose={handleCloseDrawer}
+          />
+        </Drawer.Items>
+      </Drawer>
       <Pagination
         totalItems={foodUnits.length}
         defaultItemsPerPage={itemsPerPage}

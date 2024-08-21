@@ -13,6 +13,23 @@ import RoutineMonitorList from "../Table";
 import { Drawer, Button } from "flowbite-react";
 import ItemDetailDrawer from "../ItemDetails";
 
+
+interface RoutineMonitor  {
+  id: string;
+  date: string;
+  StallNo: string;
+  healthStatus: string;
+  note: number;
+  reportedBy: string;
+  userId: string;
+  quantity: number;
+  ServiceName: string;
+  Result: string;
+  MonitoringTime: string;
+}
+
+
+
 const RoutineMonitorTable: React.FC = () => {
   const { routineRecords, deleteRoutineRecord } = useContext(ManageRoutineContext);
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,7 +38,7 @@ const RoutineMonitorTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [selectedRoutineRecord, setSelectedRoutineRecord] = useState(null);
+  const [selectedRoutineRecord, setSelectedRoutineRecord] = useState<RoutineMonitor | null>(null);
   const [isDetailsDrawerOpen, setIsDetailsDrawerOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState<string>("");
   const [user, setUser] = useState<{ username: string }>({ username: "" });
@@ -108,16 +125,16 @@ const RoutineMonitorTable: React.FC = () => {
     };
   };
 
-  const filteredRoutineRecords = routineRecords.filter((routineRecord) =>
+  const filteredRoutineRecords = routineRecords.filter((routineRecord:RoutineMonitor) =>
     Object.values(routineRecord).some((field) =>
       field.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
 
   const sortedRoutineRecords = sortBy
-    ? filteredRoutineRecords.slice().sort((a, b) => {
-        const aValue = a[sortBy];
-        const bValue = b[sortBy];
+    ? filteredRoutineRecords.slice().sort((a:RoutineMonitor, b:RoutineMonitor) => {
+      const aValue = a[sortBy as keyof RoutineMonitor];
+      const bValue = b[sortBy as keyof RoutineMonitor];
         if (sortOrder === "asc") {
           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
         } else {
@@ -156,7 +173,7 @@ const RoutineMonitorTable: React.FC = () => {
     }
   };
 
-  const handleViewDetails = (routineRecord) => {
+  const handleViewDetails = (routineRecord:RoutineMonitor) => {
     setSelectedRoutineRecord(routineRecord);
     setIsDetailsDrawerOpen(true);
   };

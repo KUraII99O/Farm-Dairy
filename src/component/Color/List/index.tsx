@@ -24,7 +24,7 @@ const ColorList: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(5);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState<boolean>(false);
-  const [selectedColor, setSelectedColor] = useState<Color | undefined>(undefined);
+  const [selectedColor, setSelectedColor] = useState<Color |  null>(null);
   const isArabic = language === "ar";
   const formClass = isArabic ? "rtl" : "ltr";
 
@@ -59,7 +59,7 @@ const ColorList: React.FC = () => {
     return <FaSort />;
   };
 
-  const handleEditDrawerOpen = (color: Color | undefined) => {
+  const handleEditDrawerOpen = (color: Color | null) => {
     setSelectedColor(color);
     setIsEditDrawerOpen(true);
   };
@@ -96,7 +96,7 @@ const ColorList: React.FC = () => {
   const currentColors = colors.slice(indexOfFirstColor, indexOfLastColor);
 
   const sortedColors = sortBy
-    ? currentColors.slice().sort((a: Color, b: Color) => {
+    ? currentColors.slice().sort((a, b) => {
         const aValue = a[sortBy as keyof Color];
         const bValue = b[sortBy as keyof Color];
         if (sortOrder === "asc") {
@@ -120,7 +120,7 @@ const ColorList: React.FC = () => {
             className="p-2 rounded border border-gray-300"
           />
           <button
-            onClick={() => handleEditDrawerOpen(undefined)} 
+            onClick={() => handleEditDrawerOpen(null)} 
             className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary ml-2"
           >
             Add New

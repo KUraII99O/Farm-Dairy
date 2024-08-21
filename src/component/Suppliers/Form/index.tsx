@@ -4,32 +4,47 @@ import ProfileImageUploader from "../../FileUpload";
 import { MdEdit } from "react-icons/md";
 import { FaUserPlus } from "react-icons/fa";
 
+interface Supplier {
+  id: string;
+  name: string;
+  companyName: string;
+  phoneNumber: string;
+  email: string;
+  address: string;
+  image: string;
+}
 
+interface EditSupplierFormProps {
+  supplier: Supplier | null;
+  onSubmit: (formData: Supplier) => void;
+  onClose: () => void;
+}
 
-const EditSupplierForm = ({ supplier, onSubmit, onClose }) => {
-  const { id } = useParams();
+const EditSupplierForm: React.FC<EditSupplierFormProps> = ({ supplier, onSubmit, onClose }) => {
+  useParams<{ id: string; }>();
   const navigate = useNavigate();
-  const formRef = useRef(null);
+  const formRef = useRef<HTMLDivElement | null>(null);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Supplier>({
+    id: "",
     name: "",
     companyName: "",
     phoneNumber: "",
     email: "",
     address: "",
-    image: "", // Add image field to formData
+    image: "",
   });
 
   useEffect(() => {
     if (supplier) {
       setFormData({
         ...supplier,
-        image: supplier.image ? supplier.image : null,
+        image: supplier.image || "",
       });
     }
   }, [supplier]);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -37,14 +52,14 @@ const EditSupplierForm = ({ supplier, onSubmit, onClose }) => {
     });
   };
 
-  const handleImageChange = (image) => {
+  const handleImageChange = (image: string) => {
     setFormData({
       ...formData,
-      image: image,
+      image,
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onSubmit(formData); // Call onSubmit (which is handleAddNewSupplier or handleUpdateSupplier)
   };
@@ -54,8 +69,8 @@ const EditSupplierForm = ({ supplier, onSubmit, onClose }) => {
     navigate("/suppliers");
   };
 
-  const handleOutsideClick = (e) => {
-    if (formRef.current && !formRef.current.contains(e.target)) {
+  const handleOutsideClick = (e: MouseEvent) => {
+    if (formRef.current && !formRef.current.contains(e.target as Node)) {
       handleCloseDrawer();
     }
   };
@@ -72,11 +87,9 @@ const EditSupplierForm = ({ supplier, onSubmit, onClose }) => {
       <div
         className="fixed inset-0 bg-gray-500 bg-opacity-70 z-40"
         onClick={handleCloseDrawer}
-      >
-
-      </div>
+      ></div>
       {/* Edit supplier form */}
-      <div className="fixed inset-0  z-50 flex justify-end ">
+      <div className="fixed inset-0 z-50 flex justify-end">
         <div className="w-full max-w-md bg-white shadow-lg p-6" ref={formRef}>
           <button
             className="absolute top-0 right-0 m-2 text-gray-600 hover:text-gray-900 focus:outline-none"
@@ -197,7 +210,7 @@ const EditSupplierForm = ({ supplier, onSubmit, onClose }) => {
                 />
               )}
             </div>
-            <div className="flex ">
+            <div className="flex">
               <button
                 type="submit"
                 className="bg-secondary hover:primary text-white font-bold py-2 px-4 rounded"

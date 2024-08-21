@@ -50,7 +50,6 @@ import EditCowPregnancyPage from "./Pages/EditCowPregnancyPage";
 import StallListPage from "./Pages/StallListPage";
 import { ManageStallProvider } from "./component/ManageStall/Provider";
 import SuppliersListPage from "./Pages/suppliersListPage";
-import { SupplierProvider } from "./component/Suppliers/Provider";
 import CowCalfListPage from "./Pages/CowCalfListPage";
 import { ManageCowCalfProvider } from "./component/ManageCowCalf/Provider";
 import EditCowCalfPage from "./Pages/EditCowCalfPage";
@@ -74,9 +73,9 @@ import { ManageAnimalTypeProvider } from "./component/Animaltype/Provider";
 import VaccineList from "./component/Vaccine/List";
 import { ManageVaccineProvider } from "./component/Vaccine/Provider";
 import FoodUnitListPage from "./Pages/FoodUnitListPage";
-import { FoodUnitProvider } from "./component/FoodUnit/Provider";
+import { ManageFoodUnitProvider } from "./component/FoodUnit/Provider";
 import FoodItemListPage from "./Pages/FoodItemListPage";
-import { FoodItemProvider } from "./component/FoodItem/Provider";
+import { ManageFoodItemProvider } from "./component/FoodItem/Provider";
 import MonitoringServiceListPage from "./Pages/MonitoringServiceListPage";
 import { MonitoringServiceProvider } from "./component/MonitoringServices/Provider";
 import UserTypeListPage from "./Pages/UserTypeListPage";
@@ -97,6 +96,7 @@ import PaypalPage from "./Pages/PaypalPage";
 import BankTransferPage from "./Pages/BankTransferPage";
 import AddPaymentMethodPage from "./Pages/AddPaymentMethodPage";
 import 'react-toastify/dist/ReactToastify.css';
+import { ManageSupplierProvider } from './component/Suppliers/Provider';
 const App: React.FC = () => {
   return (
 
@@ -111,7 +111,7 @@ const App: React.FC = () => {
                     <ManageVaccineProvider>
                       <ManageCowProvider>
                         <ManageStallProvider>
-                          <SupplierProvider>
+                          <ManageSupplierProvider>
                             <ManageCowCalfProvider>
                               <ManageSalesProvider>
                                 <ExpenseProvider>
@@ -121,8 +121,8 @@ const App: React.FC = () => {
                                         <ManageColorProvider>
                                           <ManageAnimalTypeProvider>
                                             <ManageVaccineProvider>
-                                              <FoodUnitProvider>
-                                                <FoodItemProvider>
+                                              <ManageFoodUnitProvider>
+                                                <ManageFoodItemProvider>
                                                   <MonitoringServiceProvider>
                                                     <UserTypeProvider>
                                                       <ManagePregnancyProvider>
@@ -677,8 +677,8 @@ const App: React.FC = () => {
                                                       </ManagePregnancyProvider>
                                                     </UserTypeProvider>
                                                   </MonitoringServiceProvider>
-                                                </FoodItemProvider>
-                                              </FoodUnitProvider>
+                                                </ManageFoodItemProvider>
+                                              </ManageFoodUnitProvider>
                                             </ManageVaccineProvider>
                                           </ManageAnimalTypeProvider>
                                         </ManageColorProvider>
@@ -688,7 +688,7 @@ const App: React.FC = () => {
                                 </ExpenseProvider>
                               </ManageSalesProvider>
                             </ManageCowCalfProvider>
-                          </SupplierProvider>
+                          </ManageSupplierProvider>
                         </ManageStallProvider>
                       </ManageCowProvider>
                     </ManageVaccineProvider>

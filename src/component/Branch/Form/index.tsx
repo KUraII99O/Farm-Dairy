@@ -57,7 +57,7 @@ const EditBranchForm: React.FC<EditBranchFormProps> = ({
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: name === "setupDate" ? new Date(value) : value, // Handle date conversion
+      [name]: name === "setupDate" ? new Date(value) : value, // Correctly handle the date input
     });
   };
 

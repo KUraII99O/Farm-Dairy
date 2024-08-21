@@ -2,14 +2,24 @@ import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { permissionCategories } from "../Permissions/permissions";
 
-const EditUserTypeForm = ({ userType, onSubmit, onClose }) => {
+interface EditUserTypeFormProps {
+  userType?: { [key: string]: any }; // Adjust the type according to your actual userType shape
+  onSubmit: (formData: any) => void; // Adjust the type according to your actual formData shape
+  onClose: () => void;
+}
+
+interface FormData {
+  typeName: string;
+  [key: string]: boolean | string; // Allows for dynamic keys
+}
+
+const EditUserTypeForm: React.FC<EditUserTypeFormProps> = ({ userType, onSubmit, onClose }) => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const formRef = useRef(null);
+  const formRef = useRef<HTMLDivElement>(null);
 
-  // Initialize form data
-  const initializeFormData = () => {
-    const initialFormData = { typeName: "" };
+  const initializeFormData = (): FormData => {
+    const initialFormData: FormData = { typeName: "" };
 
     permissionCategories.forEach(category => {
       category.permissions.forEach(perm => {
@@ -25,7 +35,7 @@ const EditUserTypeForm = ({ userType, onSubmit, onClose }) => {
     return initialFormData;
   };
 
-  const [formData, setFormData] = useState(initializeFormData);
+  const [formData, setFormData] = useState<FormData>(initializeFormData);
 
   useEffect(() => {
     if (userType) {
@@ -42,7 +52,7 @@ const EditUserTypeForm = ({ userType, onSubmit, onClose }) => {
     setFormData(initializeFormData());
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, type, checked, value } = e.target;
     setFormData(prevData => ({
       ...prevData,
@@ -50,7 +60,7 @@ const EditUserTypeForm = ({ userType, onSubmit, onClose }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onSubmit(formData);
     resetForm();
@@ -61,8 +71,8 @@ const EditUserTypeForm = ({ userType, onSubmit, onClose }) => {
     navigate("/User-Type-List");
   };
 
-  const handleOutsideClick = (e) => {
-    if (formRef.current && !formRef.current.contains(e.target)) {
+  const handleOutsideClick = (e: MouseEvent) => {
+    if (formRef.current && !formRef.current.contains(e.target as Node)) {
       handleCloseDrawer();
     }
   };
@@ -117,7 +127,6 @@ const EditUserTypeForm = ({ userType, onSubmit, onClose }) => {
                 <div key={category.category} className="mt-4">
                   <h3 className="font-semibold text-lg">{category.category}</h3>
                   {category.permissions.map((perm) => {
-                    // Convert permission names to match the keys in formData
                     const key = perm
                       .toLowerCase()
                       .replace(/ /g, '')
@@ -129,7 +138,7 @@ const EditUserTypeForm = ({ userType, onSubmit, onClose }) => {
                           <input
                             type="checkbox"
                             name={key}
-                            checked={formData[key]}
+                            checked={formData[key] as boolean}
                             onChange={handleChange}
                             className="form-checkbox h-5 w-5 text-blue-500"
                           />

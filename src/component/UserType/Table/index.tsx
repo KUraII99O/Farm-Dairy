@@ -3,7 +3,22 @@ import { AiOutlineDelete } from "react-icons/ai";
 import { BsPencil } from "react-icons/bs";
 import { Table } from "flowbite-react";
 
-const UserTypeTable = ({
+interface UserType {
+  id: string;
+  typeName: string;
+}
+
+interface UserTypeTableProps {
+  sortedUserTypes: UserType[];
+  handleSort: (column: string) => void;
+  sortIcon: (column: string) => JSX.Element;
+  handleEditDrawerOpen: (userType: UserType) => void;
+  handleDeleteConfirmation: (id: string) => void;
+  translate: (key: string) => string;
+  formClass?: string; // Optional prop
+}
+
+const UserTypeTable: React.FC<UserTypeTableProps> = ({
   sortedUserTypes,
   handleSort,
   sortIcon,
@@ -26,7 +41,6 @@ const UserTypeTable = ({
           {sortIcon("name")}
         </div>
       </Table.HeadCell>
-     
       <Table.HeadCell>{translate("Action")}</Table.HeadCell>
     </Table.Head>
     <Table.Body className="divide-y">

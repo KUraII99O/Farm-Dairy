@@ -1,69 +1,90 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { Supplier, SupplierService } from "../SuppliersService";
 
-export const SupplierContext = createContext();
+interface ManageSupplierContextProps {
+  suppliers: Supplier[];
+  addSupplier: (newSupplier: Omit<Supplier, 'id'>) => Promise<void>;
+  editSupplier: (id: string, updatedSupplier: Partial<Omit<Supplier, 'id'>>) => Promise<void>;
+  deleteSupplier: (id: string) => Promise<void>;
+}
 
-export const SupplierProvider = ({ children }) => {
-  const [suppliers, setSuppliers] = useState([
-    {
-      id: 1,
-      name: "John Doe",
-      companyName: "ABC Enterprises",
-      phoneNumber: "+1234567890",
-      email: "john.doe@example.com",
-      image: "path_to_image1.jpg", // Provide the path to the image
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      companyName: "XYZ Corporation",
-      phoneNumber: "+1987654321",
-      email: "jane.smith@example.com",
-      image: "path_to_image2.jpg", // Provide the path to the image
-    },
-    // Add more suppliers as needed
-  ]);
+interface ManageSupplierProviderProps {
+  children: React.ReactNode;
+}
 
-  const addSupplier = (newSupplier) => {
-    const maxId = Math.max(...suppliers.map((supplier) => supplier.id), 0);
-    const newSupplierWithId = { ...newSupplier, id: maxId + 1 };
-    setSuppliers([...suppliers, newSupplierWithId]);
+export const ManageSupplierContext = createContext<ManageSupplierContextProps | null>(null);
+
+export const ManageSupplierProvider: React.FC<ManageSupplierProviderProps> = ({ children }) => {
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+
+  useEffect(() => {
+    const fetchSupplierData = async () => {
+      try {
+        const data = await SupplierService.fetchSuppliers();
+        setSuppliers(data || []);
+      } catch (error) {
+        console.error("Error fetching suppliers:", error);
+      }
+    };
+
+    fetchSupplierData();
+  }, []);
+
+  const addSupplier = async (newSupplier: Omit<Supplier, 'id'>) => {
+    try {
+      const data = await SupplierService.addSupplier(newSupplier);
+      setSuppliers(prevSuppliers => [...prevSuppliers, data]);
+    } catch (error) {
+      console.error("Error adding supplier:", (error as Error).message);
+    }
   };
 
-  const editSupplier = (id, updatedSupplier) => {
-    setSuppliers((prevSuppliers) =>
-      prevSuppliers.map((supplier) => (supplier.id === id ? { ...supplier, ...updatedSupplier } : supplier))
-    );
+  const editSupplier = async (id: string, updatedSupplier: Partial<Omit<Supplier, 'id'>>) => {
+    try {
+      const existingSupplier = suppliers.find(supplier => supplier.id === id);
+      if (!existingSupplier) {
+        throw new Error("Supplier not found");
+      }
+
+      const mergedSupplier = { ...existingSupplier, ...updatedSupplier };
+      await SupplierService.editSupplier(id, mergedSupplier);
+      setSuppliers(prevSuppliers =>
+        prevSuppliers.map(supplier =>
+          supplier.id === id ? mergedSupplier : supplier
+        )
+      );
+    } catch (error) {
+      console.error("Error editing supplier:", (error as Error).message);
+    }
   };
 
-  const deleteSupplier = (id) => {
-    const updatedSuppliers = suppliers.filter((supplier) => supplier.id !== id);
-    setSuppliers(updatedSuppliers);
+  const deleteSupplier = async (id: string) => {
+    try {
+      await SupplierService.deleteSupplier(id);
+      setSuppliers(prevSuppliers => prevSuppliers.filter(supplier => supplier.id !== id));
+    } catch (error) {
+      console.error("Error deleting supplier:", (error as Error).message);
+    }
   };
 
-  const getSupplierById = (id) => {
-    // Find and return the supplier with the given ID
-    return suppliers.find((supplier) => supplier.id === id);
-  };
-
-  const value = {
+  const value: ManageSupplierContextProps = {
     suppliers,
     addSupplier,
     editSupplier,
-    deleteSupplier,
-    getSupplierById,
+    deleteSupplier
   };
 
   return (
-    <SupplierContext.Provider value={value}>
+    <ManageSupplierContext.Provider value={value}>
       {children}
-    </SupplierContext.Provider>
+    </ManageSupplierContext.Provider>
   );
 };
 
 export const useSupplier = () => {
-  const context = useContext(SupplierContext);
+  const context = useContext(ManageSupplierContext);
   if (!context) {
-    throw new Error("useSupplier must be used within a SupplierProvider");
+    throw new Error("useSupplier must be used within a ManageSupplierProvider");
   }
   return context;
 };

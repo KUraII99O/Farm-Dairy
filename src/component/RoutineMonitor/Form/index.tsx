@@ -1,25 +1,33 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, ChangeEvent, MouseEvent } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { PiMonitor } from "react-icons/pi";
 import { IoInformationCircle } from "react-icons/io5";
-import { TiMinus } from "react-icons/ti"; // Import TiMinus icon
 import { FaRegEdit } from "react-icons/fa"; // Import FaRegEdit icon
 import { useTranslation } from "../../Translator/Provider";
 import { ManageRoutineContext } from "../Provider";
 import FormTable from "../TableForm";
 
-const EditRoutineMonitorForm = () => {
+// Define the RoutineMonitorInfo type
+interface RoutineMonitorInfo {
+  ServiceName: string;
+  Result: string;
+  MonitoringTime: string;
+  unit?: string; // Add if unit is used
+}
+
+
+
+const EditRoutineMonitorForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { routineRecords, addRoutineRecord, editRoutineRecord } =
     useContext(ManageRoutineContext);
   const navigate = useNavigate();
   const [currentDate, setCurrentDate] = useState<string>("");
   const { translate, language } = useTranslation();
-
   const isEditMode = !!id;
 
   const handleClick = () => {
-    history.back();
+    navigate(-1); // Use navigate for backward navigation
   };
 
   useEffect(() => {
@@ -49,20 +57,20 @@ const EditRoutineMonitorForm = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [successPopup, setSuccessPopup] = useState(false);
+  const [, setSuccessPopup] = useState(false);
 
   useEffect(() => {
     if (isEditMode) {
       const selectedRoutineRecord = routineRecords.find(
-        (routineRecord) => routineRecord.id === id
+        (routineRecord: { id: string; }) => routineRecord.id === id
       );
       if (selectedRoutineRecord) {
         setFormData({
-          stallNo: selectedRoutineRecord.stallNo,
-          animalID: selectedRoutineRecord.animalID,
+          stallNo: selectedRoutineRecord.StallNo,
+          animalID: "", // Initialize as needed
           date: selectedRoutineRecord.date,
           note: selectedRoutineRecord.note,
-          reportedby: selectedRoutineRecord.reportedby,
+          reportedby: selectedRoutineRecord.reportedBy,
           healthStatus: selectedRoutineRecord.healthStatus,
           informations: selectedRoutineRecord.informations ||  [
             { ServiceName: "", Result: "", MonitoringTime: "" },
@@ -77,7 +85,7 @@ const EditRoutineMonitorForm = () => {
         });
       }
     }
-  }, [id, isEditMode ,routineRecords ]);
+  }, [id, isEditMode, routineRecords]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("loggedInUser");
@@ -91,9 +99,9 @@ const EditRoutineMonitorForm = () => {
     }
   }, []);
 
-  const handleChange = (e, index) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>, index?: number) => {
     const { name, value } = e.target;
-    if (index === -1) {
+    if (index === undefined) {
       setFormData({
         ...formData,
         [name]: value,
@@ -121,23 +129,28 @@ const EditRoutineMonitorForm = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    if (isEditMode) {
-      await editRoutineRecord(id, formData);
-    } else {
-      await addRoutineRecord(formData);
+    try {
+      if (isEditMode) {
+        await editRoutineRecord(id, formData);
+      } else {
+        await addRoutineRecord(formData);
+      }
+      setSuccessPopup(true);
+      setTimeout(() => {
+        setSuccessPopup(false);
+        navigate("/routine-monitor");
+      }, 2000);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-    setSuccessPopup(true);
-    setTimeout(() => {
-      setSuccessPopup(false);
-      navigate("/routine-monitor");
-    }, 2000);
   };
 
-  const handleRemoveRow = (indexToRemove) => {
+  const handleRemoveRow = (indexToRemove: number) => {
     setFormData({
       ...formData,
       informations: formData.informations.filter(
@@ -146,12 +159,9 @@ const EditRoutineMonitorForm = () => {
     });
   };
 
-  const handleHealthStatusChange = (e) => {
-    setFormData({
-      ...formData,
-      healthStatus: e.target.value,
-    });
-  };
+  function handleHealthStatusChange(event: ChangeEvent<HTMLInputElement>): void {
+    throw new Error("Function not implemented.");
+  }
 
   return (
     <div>

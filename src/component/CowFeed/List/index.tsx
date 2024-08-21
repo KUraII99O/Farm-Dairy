@@ -10,6 +10,20 @@ import CowFeedList from "../Table";
 import { ManageCowFeedContext } from "../Provider";
 import { Drawer, Button } from "flowbite-react";
 
+
+interface  CowFeed {
+  id: string;
+  date: string; 
+  StallNo: string;
+  cowNumber: string;
+  note: number;
+  foodItem: string;
+  quantity: number;
+  userId: string;
+  unit: string;
+  feedingTime: string;
+};
+
 const CowFeedTable: React.FC = () => {
   const { cowFeedRecords, deleteCowFeedRecord } = useContext(ManageCowFeedContext);
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,7 +32,7 @@ const CowFeedTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [selectedCowFeed, setSelectedCowFeed] = useState(null);
+  const [selectedCowFeed, setSelectedCowFeed]  = useState<CowFeed |  null>(null);
   const [currentDate, setCurrentDate] = useState<string>("");
   const { translate, language } = useTranslation();
   const isArabic = language === "ar";
@@ -61,7 +75,7 @@ const CowFeedTable: React.FC = () => {
     };
   };
 
-  const filteredCowFeeds = cowFeedRecords.filter((cowFeed) =>
+  const filteredCowFeeds = cowFeedRecords.filter((cowFeed : CowFeed) =>
     Object.values(cowFeed).some((field) =>
       field.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
@@ -69,9 +83,9 @@ const CowFeedTable: React.FC = () => {
 
   // Sort cowFeeds based on the selected field
   const sortedCowFeeds = sortBy
-    ? filteredCowFeeds.slice().sort((a, b) => {
-        const aValue = a[sortBy];
-        const bValue = b[sortBy];
+    ? filteredCowFeeds.slice().sort((a:CowFeed, b:CowFeed) => {
+      const aValue = a[sortBy as keyof CowFeed];
+      const bValue = b[sortBy as keyof CowFeed];
         if (sortOrder === "asc") {
           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
         } else {
@@ -113,7 +127,7 @@ const CowFeedTable: React.FC = () => {
     }
   };
 
-  const handleViewDetails = (cowFeed) => {
+  const handleViewDetails = (cowFeed:CowFeed) => {
     setSelectedCowFeed(cowFeed);
   };
 

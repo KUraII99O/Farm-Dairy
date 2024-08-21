@@ -1,6 +1,13 @@
 import React, { useRef, useEffect } from "react";
 import { useTranslation } from "../../Translator/Provider";
 
+interface RoutineMonitorInfo {
+  ServiceName: string;
+  Result: string;
+  MonitoringTime: string;
+  unit?: string; // Add this if unit is optional
+}
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -8,20 +15,16 @@ interface Props {
     serviceName: string;
     result: string;
     monitoringTime: string;
-    informations: {
-      ServiceName: string;
-      Result: string;
-      MonitoringTime: string;
-    }[];
+    informations: RoutineMonitorInfo[];
   };
 }
 
 const ItemDetailDrawer: React.FC<Props> = ({ isOpen, onClose, routineMonitor }) => {
   const { translate } = useTranslation();
-  const ref = useRef(null);
+  const ref = useRef<HTMLDivElement>(null);
 
-  const handleClickOutside = (event) => {
-    if (ref.current && !ref.current.contains(event.target)) {
+  const handleClickOutside = (event: MouseEvent) => {
+    if (ref.current && !ref.current.contains(event.target as Node)) {
       onClose();
     }
   };
@@ -38,9 +41,9 @@ const ItemDetailDrawer: React.FC<Props> = ({ isOpen, onClose, routineMonitor }) 
   return (
     <>
       {isOpen && (
-        <div >
+        <div>
           <div>
-            <div ref={ref} className="w-full max-w-md bg-white  p-6">
+            <div ref={ref} className="w-full max-w-md bg-white p-6">
               <h1 className="inline-block text-xl font-bold mb-4">
                 {translate("itemdetails")}
               </h1>
@@ -81,7 +84,7 @@ const ItemDetailDrawer: React.FC<Props> = ({ isOpen, onClose, routineMonitor }) 
                         {info.ServiceName}
                       </td>
                       <td className="border border-gray-400 px-3 py-2">
-                        {info.Result} {info.unit}
+                        {info.Result} {info.unit || ''} {/* Handle unit conditionally */}
                       </td>
                       <td className="border border-gray-400 px-3 py-2">
                         {info.MonitoringTime}

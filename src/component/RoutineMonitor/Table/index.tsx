@@ -5,7 +5,34 @@ import { Table } from "flowbite-react";
 import { Link } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
 
-const RoutineMonitorList = ({
+interface Monitor {
+  id: string;
+  date: string;
+  stallNo: string;
+  animalID: string;
+  note: string;
+  healthStatus: number;
+  reportedby: string;
+}
+
+interface HealthStatus {
+  color: string;
+  condition: string;
+}
+
+interface RoutineMonitorListProps {
+  determineHealthStatus: (healthStatus: number) => HealthStatus;
+  currentMonitors: Monitor[];
+  handleSort: (field: keyof Monitor) => void;
+  sortIcon: (field: keyof Monitor) => JSX.Element;
+  handleDeleteConfirmation: (id: string) => void;
+  translate: (key: string) => string;
+  formClass?: string;
+  reportedbyuser: string;
+  handleViewDetails: (monitor: Monitor) => void;
+}
+
+const RoutineMonitorList: React.FC<RoutineMonitorListProps> = ({
   determineHealthStatus,
   currentMonitors,
   handleSort,
@@ -15,10 +42,7 @@ const RoutineMonitorList = ({
   formClass,
   reportedbyuser,
   handleViewDetails
-  
 }) => {
-  // Get user name from localStorage
-
   return (
     <div className="rtl:mirror-x">
       <Table>
@@ -29,41 +53,41 @@ const RoutineMonitorList = ({
               {sortIcon("date")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("StallNo")}>
+          <Table.HeadCell onClick={() => handleSort("stallNo")}>
             <div className="flex items-center">
               {translate("Stall No")}
-              {sortIcon("StallNo")}
+              {sortIcon("stallNo")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("AnimalID")}>
+          <Table.HeadCell onClick={() => handleSort("animalID")}>
             <div className="flex items-center">
               {translate("Animal ID")}
-              {sortIcon("AnimalID")}
+              {sortIcon("animalID")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("Note")}>
+          <Table.HeadCell onClick={() => handleSort("note")}>
             <div className="flex items-center">
               {translate("Note")}
-              {sortIcon("Note")}
+              {sortIcon("note")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("HealthStatus")}>
+          <Table.HeadCell onClick={() => handleSort("healthStatus")}>
             <div className="flex items-center">
               {translate("Health Status")}
-              {sortIcon("HealthStatus")}
+              {sortIcon("healthStatus")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("ReportedBy")}>
+          <Table.HeadCell onClick={() => handleSort("reportedby")}>
             <div className="flex items-center">
               {translate("Reported by")}
-              {sortIcon("ReportedBy")}
+              {sortIcon("reportedby")}
             </div>
           </Table.HeadCell>
           <Table.HeadCell>{translate("Action")}</Table.HeadCell>
         </Table.Head>
         <Table.Body className="divide-y">
           {currentMonitors.map((monitor) => (
-            <Table.Row key={monitor.id}> 
+            <Table.Row key={monitor.id}>
               <Table.Cell>{monitor.date}</Table.Cell>
               <Table.Cell>{monitor.stallNo}</Table.Cell>
               <Table.Cell>{monitor.animalID}</Table.Cell>
@@ -71,9 +95,7 @@ const RoutineMonitorList = ({
               <Table.Cell>
                 <div>
                   <div
-                    className={`bg-gray-300 h-6 w-full relative ${
-                      determineHealthStatus(monitor.healthStatus).color
-                    }`}
+                    className={`bg-gray-300 h-6 w-full relative ${determineHealthStatus(monitor.healthStatus).color}`}
                   >
                     <div
                       className="h-full"
@@ -84,23 +106,20 @@ const RoutineMonitorList = ({
                     ></div>
                   </div>
                   <span
-                    className={`text-xs font-semibold text-${
-                      determineHealthStatus(monitor.healthStatus).color
-                    }`}
+                    className={`text-xs font-semibold text-${determineHealthStatus(monitor.healthStatus).color}`}
                   >
                     {determineHealthStatus(monitor.healthStatus).condition}
                   </span>
                 </div>
-              </Table.Cell>{" "}
+              </Table.Cell>
               <Table.Cell>{monitor.reportedby}</Table.Cell>
               <Table.Cell>
                 <div className="flex items-center">
-                <button
+                  <button
                     onClick={() => handleViewDetails(monitor)}
                     className="text-secondary hover:text-primary focus:outline-none flex  mr-4"
                   >
                     <FaEye className="w-5 h-5 mr-1" />
-                    
                   </button>
 
                   <Link

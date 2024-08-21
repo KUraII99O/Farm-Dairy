@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-export interface RoutineMonitor {
+export type RoutineMonitor = {
   id: string;
   date: string;
   StallNo: string;
@@ -40,7 +40,7 @@ async function fetchRoutineRecords(): Promise<RoutineMonitor[]> {
     const routineRecordsData: RoutineMonitor[] = await response.json();
     return routineRecordsData;
   } catch (error) {
-    console.error('Error fetching routine records data:', error.message);
+    console.error('Error fetching routine records data:', (error as Error).message);
     return [];
   }
 }
@@ -73,7 +73,7 @@ async function addRoutineRecord(newRoutineRecord: Omit<RoutineMonitor, 'id' | 'u
 
     return routineRecordWithId;
   } catch (error) {
-    console.error('Error adding routine record:', error.message);
+    console.error('Error adding routine record:', (error as Error).message);
     throw error;
   }
 }
@@ -101,7 +101,7 @@ async function editRoutineRecord(id: string, updatedRoutineRecord: Omit<RoutineM
       throw new Error('Failed to update routine record');
     }
   } catch (error) {
-    console.error('Error updating routine record:', error.message);
+    console.error('Error updating routine record:', (error as Error).message);
     throw error;
   }
 }
@@ -125,9 +125,9 @@ async function deleteRoutineRecord(id: string): Promise<void> {
       throw new Error('Failed to delete routine record');
     }
   } catch (error) {
-    console.error('Error deleting routine record:', error.message);
+    console.error('Error deleting routine record:', (error as Error).message);
     throw error;
   }
 }
 
-export { RoutineService, RoutineMonitor };
+export { RoutineService };

@@ -8,15 +8,27 @@ import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import { useTranslation } from "../../Translator/Provider";
 import UserList from "../Table";
 
+
+interface  User  {
+  id: string;
+  userId: string;
+  name: string;
+  email: string;
+  mobile: string;
+  designation: string;
+  joiningDate: string;
+  grossSalary: string;
+  status: boolean;
+  image: string;
+}
+
 const UserTable: React.FC = () => {
   const { users, toggleUserStatus, deleteUser } = useContext(ManageUserContext);
   const { translate, language } = useTranslation();
-
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [userToDelete, setUserToDelete] = useState<number | null>(null);
+  const [, setIsDeleting] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -31,7 +43,7 @@ const UserTable: React.FC = () => {
       toast.success("User Added successfully!");
       navigate(location.pathname, { replace: true });
     }
-  }, [query, location.pathname, navigate]);  const filteredUsers = users.filter((user) =>
+  }, [query, location.pathname, navigate]);  const filteredUsers = users.filter((user:User) =>
     Object.values(user).some((field) =>
       field.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
@@ -39,7 +51,7 @@ const UserTable: React.FC = () => {
 
   // Sort users based on the selected field
   const sortedUsers = sortBy
-    ? filteredUsers.sort((a, b) =>
+    ? filteredUsers.sort((a:any, b:any) =>
         sortOrder === "asc" ? (a[sortBy] > b[sortBy] ? 1 : -1) : a[sortBy] < b[sortBy] ? 1 : -1
       )
     : filteredUsers;

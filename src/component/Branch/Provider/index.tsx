@@ -49,7 +49,10 @@ export const ManageBranchProvider: React.FC<ManageBranchProviderProps> = ({ chil
 
   const editBranch = async (id: string, updatedBranch: Omit<Branch, 'id' | 'userId'>) => {
     try {
-      await BranchService.editBranch(id, updatedBranch); // Updated service call
+      const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
+      const branchWithUserId = { ...updatedBranch, userId: loggedInUser.id };
+      
+      await BranchService.editBranch(id, branchWithUserId);
       setBranches(prevBranches =>
         prevBranches.map(branch =>
           branch.id === id ? { ...branch, ...updatedBranch } : branch

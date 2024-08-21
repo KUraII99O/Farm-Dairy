@@ -1,65 +1,90 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { FoodItem, FoodItemService } from "../FoodItemService"; // Updated import
 
-export const FoodItemContext = createContext();
+interface ManageFoodItemContextProps {
+  foodItems: FoodItem[];
+  addFoodItem: (newFoodItem: Omit<FoodItem, 'id'>) => Promise<void>;
+  editFoodItem: (id: string, updatedFoodItem: Partial<Omit<FoodItem, 'id'>>) => Promise<void>;
+  deleteFoodItem: (id: string) => Promise<void>;
+}
 
-export const FoodItemProvider = ({ children }) => {
-  const [foodItems, setFoodItems] = useState([
-    {
-      id: 1,
-      name: "Grass",
-    },
-    {
-      id: 2,
-      name: "Water",
-    },
-    {
-      id: 3,
-      name: "Salt",
-    },
-    // Add more food items as needed
-  ]);
+interface ManageFoodItemProviderProps {
+  children: React.ReactNode;
+}
 
-  const addFoodItem = (newFoodItem) => {
-    const maxId = Math.max(...foodItems.map((foodItem) => foodItem.id), 0);
-    const newFoodItemWithId = { ...newFoodItem, id: maxId + 1 };
-    setFoodItems([...foodItems, newFoodItemWithId]);
+export const ManageFoodItemContext = createContext<ManageFoodItemContextProps | null>(null);
+
+export const ManageFoodItemProvider: React.FC<ManageFoodItemProviderProps> = ({ children }) => {
+  const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
+
+  useEffect(() => {
+    const fetchFoodItemData = async () => {
+      try {
+        const data = await FoodItemService.fetchFoodItems();
+        setFoodItems(data || []);
+      } catch (error) {
+        console.error("Error fetching food items:", error);
+      }
+    };
+
+    fetchFoodItemData();
+  }, []);
+
+  const addFoodItem = async (newFoodItem: Omit<FoodItem, 'id'>) => {
+    try {
+      const data = await FoodItemService.addFoodItem(newFoodItem);
+      setFoodItems(prevFoodItems => [...prevFoodItems, data]);
+    } catch (error) {
+      console.error("Error adding food item:", (error as Error).message);
+    }
   };
 
-  const editFoodItem = (id, updatedFoodItem) => {
-    setFoodItems((prevFoodItems) =>
-      prevFoodItems.map((foodItem) => (foodItem.id === id ? { ...foodItem, ...updatedFoodItem } : foodItem))
-    );
+  const editFoodItem = async (id: string, updatedFoodItem: Partial<Omit<FoodItem, 'id'>>) => {
+    try {
+      const existingFoodItem = foodItems.find(foodItem => foodItem.id === id);
+      if (!existingFoodItem) {
+        throw new Error("Food item not found");
+      }
+
+      const mergedFoodItem = { ...existingFoodItem, ...updatedFoodItem };
+      await FoodItemService.editFoodItem(id, mergedFoodItem);
+      setFoodItems(prevFoodItems =>
+        prevFoodItems.map(foodItem =>
+          foodItem.id === id ? mergedFoodItem : foodItem
+        )
+      );
+    } catch (error) {
+      console.error("Error editing food item:", (error as Error).message);
+    }
   };
 
-  const deleteFoodItem = (id) => {
-    const updatedFoodItems = foodItems.filter((foodItem) => foodItem.id !== id);
-    setFoodItems(updatedFoodItems);
+  const deleteFoodItem = async (id: string) => {
+    try {
+      await FoodItemService.deleteFoodItem(id);
+      setFoodItems(prevFoodItems => prevFoodItems.filter(foodItem => foodItem.id !== id));
+    } catch (error) {
+      console.error("Error deleting food item:", (error as Error).message);
+    }
   };
 
-  const getFoodItemById = (id) => {
-    // Find and return the food item with the given ID
-    return foodItems.find((foodItem) => foodItem.id === id);
-  };
-
-  const value = {
+  const value: ManageFoodItemContextProps = {
     foodItems,
     addFoodItem,
     editFoodItem,
-    deleteFoodItem,
-    getFoodItemById,
+    deleteFoodItem
   };
 
   return (
-    <FoodItemContext.Provider value={value}>
+    <ManageFoodItemContext.Provider value={value}>
       {children}
-    </FoodItemContext.Provider>
+    </ManageFoodItemContext.Provider>
   );
 };
 
 export const useFoodItem = () => {
-  const context = useContext(FoodItemContext);
+  const context = useContext(ManageFoodItemContext);
   if (!context) {
-    throw new Error("useFoodItem must be used within a FoodItemProvider");
+    throw new Error("useFoodItem must be used within a ManageFoodItemProvider");
   }
   return context;
 };

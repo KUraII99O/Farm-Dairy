@@ -50,7 +50,7 @@ const EditUser = () => {
     });
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e:any) => {
     const { name, value } = e.target;
     if (name === "status") {
       // Convert the selected value to boolean
@@ -67,7 +67,7 @@ const EditUser = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e:any) => {
     e.preventDefault();
 
     try {

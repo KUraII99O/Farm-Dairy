@@ -10,17 +10,23 @@ interface Color {
 
 // Define the props type for the component
 interface EditColorFormProps {
-  color?: Color; // Use undefined instead of null to match the expected type
-  onSubmit: (colorData: Omit<Color, "id" | "userId">) => void;
+  color?: Color | null; // Use undefined instead of null to match the expected type
+  onSubmit: (formData: Omit<Color, "id" | "userId">) => void;
   onClose: () => void;
 }
 
-const EditColorForm: React.FC<EditColorFormProps> = ({ color, onSubmit, onClose }) => {
+const EditColorForm: React.FC<EditColorFormProps> = ({
+  color,
+  onSubmit,
+  onClose,
+ }) => {
   useParams();
   const navigate = useNavigate();
   const formRef = useRef<HTMLDivElement | null>(null);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Omit<Color, 'id' | 'userId'>>({
+
+
     name: "",
   });
 
