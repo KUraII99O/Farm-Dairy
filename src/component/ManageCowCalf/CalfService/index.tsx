@@ -1,26 +1,28 @@
 import { v4 as uuidv4 } from 'uuid';
 
-interface Calf {
+export type  Calf = {
     id: string;
     image: File; // Add image property
     gender: string;
     animalType: string;
-    buyDate: Date;
-    buyingPrice: number;
+    buyDate: string;
+    buyingPrice: string;
     milkPerDay: string;
     status: boolean;
-    stallNumber: string;
-    dateOfBirth: Date;
-    animalAgeDays: string;
-    weight: string;
-    height: string;
-    color: string;
     numOfPregnant: string;
-    buyFrom: string;
-    prevVaccineDone: string;
-    note: string;
-    CreatedBy: string;
     userId: string;
+    informations: {
+      stallNumber: string;
+      dateOfBirth: string;
+      animalAgeDays: string;
+      weight: string;
+      height: string;
+      color: string;
+      buyFrom: string;
+      prevVaccineDone: string;
+      note: string;
+      createdBy: string;
+  }
   }
 
 const CalfService = {
@@ -33,14 +35,14 @@ const CalfService = {
 
 async function fetchCalves(userId: string): Promise<Calf[]> {
   try {
-    const response = await fetch(`http://localhost:3000/calves?userId=${userId}`);
+    const response = await fetch(`http://localhost:3000/calfs?userId=${userId}`);
     if (!response.ok) {
       throw new Error('Failed to fetch calf data');
     }
     const calfData: Calf[] = await response.json();
     return calfData;
   } catch (error) {
-    console.error('Error fetching calf data:', error.message);
+    console.error('Error fetching calf data:', error);
     return [];
   }
 }
@@ -59,7 +61,7 @@ async function addCalf(newCalf: Omit<Calf, 'id' | 'userId'>): Promise<Calf> {
   try {
     const calfWithId: Calf = { id: uuidv4(), userId: user.id, ...newCalf };
 
-    const response = await fetch('http://localhost:3000/calves', {
+    const response = await fetch('http://localhost:3000/calfs', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -70,20 +72,20 @@ async function addCalf(newCalf: Omit<Calf, 'id' | 'userId'>): Promise<Calf> {
     if (response.status === 403) {
       throw new Error('Limit has been reached');
     } else if (!response.ok) {
-      throw new Error('Failed to add staff');
+      throw new Error('Failed to add calf');
     }
 
 
     return calfWithId;
   } catch (error) {
-    console.error('Error adding calf:', error.message);
+    console.error('Error adding calf:', error);
     throw error;
   }
 }
 
 async function editCalf(id: string, updatedCalf: Omit<Calf, 'id' | 'userId'>): Promise<void> {
   try {
-    const response = await fetch(`http://localhost:3000/calves/${id}`, {
+    const response = await fetch(`http://localhost:3000/calfs/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -94,14 +96,14 @@ async function editCalf(id: string, updatedCalf: Omit<Calf, 'id' | 'userId'>): P
       throw new Error('Failed to update calf');
     }
   } catch (error) {
-    console.error('Error updating calf:', error.message);
+    console.error('Error updating calf:', error);
     throw error;
   }
 }
 
 async function toggleCalfStatus(id: string): Promise<Calf> {
   try {
-    const response = await fetch(`http://localhost:3000/calves/${id}/toggle-status`, {
+    const response = await fetch(`http://localhost:3000/calfs/${id}/toggle-status`, {
       method: 'PUT',
     });
     if (!response.ok) {
@@ -109,23 +111,23 @@ async function toggleCalfStatus(id: string): Promise<Calf> {
     }
     return await response.json();
   } catch (error) {
-    console.error('Error toggling calf status:', error.message);
+    console.error('Error toggling calf status:', error);
     throw error;
   }
 }
 
 async function deleteCalf(id: string): Promise<void> {
   try {
-    const response = await fetch(`http://localhost:3000/calves/${id}`, {
+    const response = await fetch(`http://localhost:3000/calfs/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) {
       throw new Error('Failed to delete calf');
     }
   } catch (error) {
-    console.error('Error deleting calf:', error.message);
+    console.error('Error deleting calf:', error);
     throw error;
   }
 }
 
-export { CalfService, Calf };
+export { CalfService };

@@ -8,6 +8,19 @@ import StaffList from "../Table";
 import { ManageStaffContext } from "../Provider";
 import * as XLSX from "xlsx";
 
+interface  Staff {
+  id: string;
+  userId: string;
+  name: string;
+  email: string;
+  mobile: string;
+  designation: string;
+  joiningDate: string;
+  grossSalary: string;
+  status: boolean;
+  image: string;
+}
+
 const StaffTable: React.FC = () => {
   const { staff, toggleStaffStatus, deleteStaff, addStaff } = useContext(
     ManageStaffContext
@@ -16,7 +29,7 @@ const StaffTable: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [itemsPerPage, setItemsPerPage] = useState(5,); // Number of staff per page
+  const [itemsPerPage] = useState(5,); // Number of staff per page
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -47,7 +60,7 @@ const StaffTable: React.FC = () => {
   }, [query, location.pathname, navigate]);
 
   // Filter staff based on search term
-  const filteredStaff = staff.filter((staffMember) =>
+  const filteredStaff = staff.filter((staffMember:Staff) =>
     Object.values(staffMember).some((field) =>
       field.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
@@ -55,12 +68,12 @@ const StaffTable: React.FC = () => {
 
   // Sort staff based on the selected field
   const sortedStaff = sortBy
-    ? filteredStaff.sort((a, b) =>
+    ? filteredStaff.sort((a:Staff, b:Staff) =>
         sortOrder === "asc"
-          ? a[sortBy] > b[sortBy]
+          ? a[sortBy as keyof Staff] > b[sortBy  as keyof Staff]
             ? 1
             : -1
-          : a[sortBy] < b[sortBy]
+          : a[sortBy  as keyof Staff] < b[sortBy  as keyof Staff]
           ? 1
           : -1
       )

@@ -8,6 +8,24 @@ import ReactToPrint from 'react-to-print';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
+
+interface MilkSaleRecord {
+  id: string;
+  Date: string;
+  userId: string;
+  AccountNo: string;
+  StallNo: string;
+  AnimalID: string;
+  Liter: string;
+  Fate: string;
+  Price: string;
+  Total: string;
+  CollectedFrom: string;
+  addedBy: string;
+}
+
+
+
 const CowSaleInvoice: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { milkSales } = useContext(ManageMilkSaleContext);
@@ -33,7 +51,7 @@ const CowSaleInvoice: React.FC = () => {
   useEffect(() => {
     if (isEditMode) {
       const selectedMilkSale = milkSales.find(
-        (milkSale) => milkSale.id === parseInt(id)
+        (milkSale:MilkSaleRecord) => milkSale.id === (id)
       );
       if (selectedMilkSale) {
         setFormData(selectedMilkSale);

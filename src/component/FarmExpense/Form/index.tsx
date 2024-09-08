@@ -1,22 +1,29 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { Expense } from "../FarmExpenseService";
 
-const EditExpenseForm = ({ expense, onSubmit, onClose }) => {
+
+interface EditExpenseFormProps {
+  expense?: Expense;
+  onSubmit: (formData: Expense) => void;
+  onClose: () => void;
+}
+
+const EditExpenseForm: React.FC<EditExpenseFormProps> = ({ expense, onSubmit, onClose }) => {
   const navigate = useNavigate();
-  const formRef = useRef(null);
+  const formRef = useRef<HTMLDivElement>(null);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Expense>({
     Date: "",
     purposeName: "",
     details: "",
-    totalAmount: "", // Make sure totalAmount field is included
+    totalAmount: "",
     AddedBy: "",
   });
 
-
   useEffect(() => {
     const date = new Date();
-    const formattedDate = date.toLocaleDateString(); // Adjust the date format as needed
+    const formattedDate = date.toLocaleDateString();
     setFormData(prevState => ({
       ...prevState,
       Date: formattedDate,
@@ -29,14 +36,15 @@ const EditExpenseForm = ({ expense, onSubmit, onClose }) => {
     }
   }, [expense]);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value,
     });
   };
-useEffect(() => {
+
+  useEffect(() => {
     const storedUser = localStorage.getItem('loggedInUser');
     if (storedUser) {
       const userData = JSON.parse(storedUser);
@@ -48,7 +56,7 @@ useEffect(() => {
     }
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onSubmit(formData);
   };
@@ -58,8 +66,8 @@ useEffect(() => {
     navigate("/Expense-List");
   };
 
-  const handleOutsideClick = (e) => {
-    if (formRef.current && !formRef.current.contains(e.target)) {
+  const handleOutsideClick = (e: MouseEvent) => {
+    if (formRef.current && !formRef.current.contains(e.target as Node)) {
       handleCloseDrawer();
     }
   };
@@ -77,7 +85,7 @@ useEffect(() => {
         className="fixed inset-0 bg-gray-500 bg-opacity-70 z-40"
         onClick={handleCloseDrawer}
       ></div>
-      <div className="fixed inset-0  z-50 flex justify-end ">
+      <div className="fixed inset-0 z-50 flex justify-end">
         <div className="w-full max-w-md bg-white shadow-lg p-6" ref={formRef}>
           <button
             className="absolute top-0 right-0 m-2 text-gray-600 hover:text-gray-900 focus:outline-none"
@@ -110,8 +118,8 @@ useEffect(() => {
               </label>
               <input
                 type="date"
-                name="date"
-                value={formData.date}
+                name="Date"
+                value={formData.Date}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
@@ -142,7 +150,7 @@ useEffect(() => {
                 name="details"
                 value={formData.details}
                 onChange={handleChange}
-                rows={+formData.rows} // Convert the value to a number
+                rows={4}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               ></textarea>
             </div>
@@ -170,8 +178,8 @@ useEffect(() => {
               </label>
               <input
                 type="text"
-                name="addedBy"
-                value={formData.addedBy}
+                name="AddedBy"
+                value={formData.AddedBy}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               />

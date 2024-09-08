@@ -3,21 +3,35 @@ import { AiOutlineDelete } from "react-icons/ai";
 import { BsPencil } from "react-icons/bs";
 import { Table } from "flowbite-react";
 
-const ExpensePurposeTable = ({
+interface ExpensePurpose {
+  id: string;
+  name: string;
+}
+
+interface ExpensePurposeTableProps {
+  sortedExpensePurposes: ExpensePurpose[];
+  handleSort: (field: keyof ExpensePurpose) => void;
+  sortIcon: (field: keyof ExpensePurpose) => React.ReactNode;
+  handleEditDrawerOpen: (expensePurpose: ExpensePurpose) => void;
+  handleDeleteConfirmation: (id: string) => void;
+  translate: (key: string) => string;
+  formClass?: string; // Assuming it's an optional string
+}
+
+const ExpensePurposeTable: React.FC<ExpensePurposeTableProps> = ({
   sortedExpensePurposes,
   handleSort,
   sortIcon,
   handleEditDrawerOpen,
   handleDeleteConfirmation,
   translate,
-  formClass,
 }) => (
   <Table>
     <Table.Head>
-      <Table.HeadCell onClick={() => handleSort("rowNumber")}>
+      <Table.HeadCell onClick={() => handleSort("id")}>
         <div className="flex items-center">
           {translate("row")}
-          {sortIcon("rowNumber")}
+          {sortIcon("id")}
         </div>
       </Table.HeadCell>
       <Table.HeadCell onClick={() => handleSort("name")}>

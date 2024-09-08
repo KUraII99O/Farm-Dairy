@@ -1,10 +1,12 @@
-// ImageUpload.js
-
 import React, { useState } from "react";
 import { readAndCompressImage } from 'browser-image-resizer';
 
-const ImageUpload = ({ onImageUpload }) => {
-  const [selectedImage, setSelectedImage] = useState(null); // State to store selected image path
+interface ImageUploadProps {
+  onImageUpload: (base64Image: string) => void;
+}
+
+const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUpload }) => {
+  const [selectedImage, setSelectedImage] = useState<string | null>(null); // State to store selected image path
 
   const imageConfig = {
     quality: 0.7,
@@ -14,14 +16,15 @@ const ImageUpload = ({ onImageUpload }) => {
     debug: true,
   };
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-  
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
     try {
       const compressedFile = await readAndCompressImage(file, imageConfig);
       const blobURL = URL.createObjectURL(compressedFile);
       setSelectedImage(blobURL);
-  
+
       const blob = await fetchBlobData(blobURL);
       const base64Data = await blobToBase64(blob);
 
@@ -30,21 +33,23 @@ const ImageUpload = ({ onImageUpload }) => {
     } catch (error) {
       console.error("Error handling file change:", error);
     } finally {
-      URL.revokeObjectURL(blobURL);
+      if (selectedImage) {
+        URL.revokeObjectURL(selectedImage);
+      }
     }
   };
 
-  async function fetchBlobData(blobURL) {
+  async function fetchBlobData(blobURL: string): Promise<Blob> {
     const response = await fetch(blobURL);
     const blob = await response.blob();
     return blob;
   }
 
-  async function blobToBase64(blob) {
+  async function blobToBase64(blob: Blob): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => {
-        const base64String = reader.result;
+        const base64String = reader.result as string;
         resolve(base64String);
       };
       reader.onerror = (error) => {

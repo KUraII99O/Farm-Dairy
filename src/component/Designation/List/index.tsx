@@ -1,26 +1,28 @@
-import React, { useState, useContext } from "react";
-import { ManageDesignationContext } from "../Provider"; // Import ManageDesignationContext
+import React, { useState } from "react";
+import { useManageDesignation } from "../Provider"; // Import ManageDesignationContext
 import Pagination from "../../Pagination";
 import { ToastContainer, toast } from "react-toastify";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
-import { BiListUl } from "react-icons/bi";
 import EditDesignationForm from "../Form"; // Update to use EditDesignationForm instead of EditStallForm
 import DesignationTable from "../Table";
 import { useTranslation } from "../../Translator/Provider";
+import { Designation } from "../DesignationService";
+
 
 const DesignationList: React.FC = () => {
   const { designations, deleteDesignation, addDesignation, editDesignation } =
-    useContext(ManageDesignationContext); // Use ManageDesignationContext
+    useManageDesignation(); // Use ManageDesignationContext
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
-  const [selectedDesignation, setSelectedDesignation] = useState(null);
+  const [selectedDesignation, setSelectedDesignation] =
+    useState<Designation | null>(null);
   const { translate, language } = useTranslation();
 
-  const handleDeleteConfirmation = (id: number) => {
+  const handleDeleteConfirmation = (id: string) => {
     if (window.confirm("Are you sure you want to delete this designation?")) {
       handleDelete(id);
     }
@@ -28,8 +30,7 @@ const DesignationList: React.FC = () => {
   const isArabic = language === "ar";
   const formClass = isArabic ? "rtl" : "ltr";
 
-
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
       await deleteDesignation(id);
       toast.success("Designation deleted successfully!");
@@ -69,9 +70,12 @@ const DesignationList: React.FC = () => {
     }
   };
 
-  const handleUpdateDesignation = async (updatedDesignationData) => {
+  const handleUpdateDesignation = async (
+    updatedDesignationData: Designation
+  ) => {
     try {
-      await editDesignation(selectedDesignation.id, updatedDesignationData);
+      if (selectedDesignation)
+        await editDesignation(selectedDesignation.id!, updatedDesignationData);
       setIsEditDrawerOpen(false); // Close the drawer after updating
       toast.success("Designation updated successfully!");
     } catch (error) {
@@ -86,12 +90,15 @@ const DesignationList: React.FC = () => {
 
   const indexOfLastDesignation = currentPage * itemsPerPage;
   const indexOfFirstDesignation = indexOfLastDesignation - itemsPerPage;
-  const currentDesignations = designations.slice(indexOfFirstDesignation, indexOfLastDesignation);
+  const currentDesignations = designations.slice(
+    indexOfFirstDesignation,
+    indexOfLastDesignation
+  );
 
   const sortedDesignations = sortBy
     ? currentDesignations.slice().sort((a, b) => {
-        const aValue = a[sortBy];
-        const bValue = b[sortBy];
+        const aValue = a[sortBy as keyof Designation] ?? "";
+        const bValue = b[sortBy as keyof Designation] ?? "";
         if (sortOrder === "asc") {
           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
         } else {
@@ -120,10 +127,7 @@ const DesignationList: React.FC = () => {
           </button>
         </div>
       </div>
-      <h1 className="text-xl font-bold mb-4">
-        <BiListUl className="inline-block mr-2" />
-        Designation List
-      </h1>
+
       <DesignationTable
         sortedDesignations={sortedDesignations}
         handleSort={handleSort}
@@ -136,12 +140,13 @@ const DesignationList: React.FC = () => {
       {isEditDrawerOpen && (
         <div className="fixed inset-0 overflow-y-auto z-50 flex justify-end">
           <div className="w-96 bg-white h-full shadow-lg p-6">
-            <h2 className="text-xl font-bold mb-4">
-              {selectedDesignation ? "Edit Designation" : "Add New Designation"}
-            </h2>
             <EditDesignationForm
               designation={selectedDesignation}
-              onSubmit={selectedDesignation ? handleUpdateDesignation : handleAddNewDesignation}
+              onSubmit={
+                selectedDesignation
+                  ? handleUpdateDesignation
+                  : handleAddNewDesignation
+              }
               onClose={() => setIsEditDrawerOpen(false)} // Assuming setIsEditDrawerOpen is the function to close the drawer
             />
           </div>
@@ -151,6 +156,11 @@ const DesignationList: React.FC = () => {
         totalItems={designations.length}
         defaultItemsPerPage={itemsPerPage}
         onPageChange={handlePageChange}
+        itemsPerPage={0}
+        currentPage={0}
+        setCurrentPage={function (): void {
+          throw new Error("Function not implemented.");
+        }}
       />
       <ToastContainer />
     </div>

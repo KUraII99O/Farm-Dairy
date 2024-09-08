@@ -8,12 +8,9 @@ import EditFoodUnitForm from "../Form"; // Update to use EditFoodUnitForm instea
 import { Drawer } from "flowbite-react";
 import { useTranslation } from "../../Translator/Provider";
 import FoodUnitTable from "../../FoodUnit/Table";
+import { FoodUnit } from "../FoodUnitService";
 
-interface FoodUnit {
-  id: string;
-  userId: string;
-  name: string;
-}
+
 
 const FoodUnitList: React.FC = () => {
   const { foodUnits, deleteFoodUnit, addFoodUnit, editFoodUnit } = useFoodUnit(); // Use FoodUnitContext
@@ -70,7 +67,7 @@ const FoodUnitList: React.FC = () => {
     setIsEditDrawerOpen(true);
   };
 
-  const handleAddNewFoodUnit = async (newFoodUnitData: Omit<FoodUnit, 'id' | 'userId'>) => {
+  const handleAddNewFoodUnit = async (newFoodUnitData: Omit<FoodUnit, 'id'>) => {
     try {
       await addFoodUnit(newFoodUnitData);
       setIsEditDrawerOpen(false); // Close the drawer after adding
@@ -80,10 +77,10 @@ const FoodUnitList: React.FC = () => {
     }
   };
 
-  const handleUpdateFoodUnit = async (updatedFoodUnitData: Omit<FoodUnit, 'id' | 'userId'>) => {
+  const handleUpdateFoodUnit = async (updatedFoodUnitData: Omit<FoodUnit, 'id' >) => {
     try {
       if (selectedFoodUnit) {
-        await editFoodUnit(selectedFoodUnit.id, updatedFoodUnitData);
+        await editFoodUnit(selectedFoodUnit.id!, updatedFoodUnitData);
         setIsEditDrawerOpen(false); // Close the drawer after updating
         toast.success("Food unit updated successfully!");
       }
@@ -103,8 +100,8 @@ const FoodUnitList: React.FC = () => {
 
   const sortedFoodUnits = sortBy
     ? currentFoodUnits.slice().sort((a, b) => {
-        const aValue = a[sortBy as keyof FoodUnit];
-        const bValue = b[sortBy as keyof FoodUnit];
+        const aValue = a[sortBy as keyof FoodUnit]?? "";
+        const bValue = b[sortBy as keyof FoodUnit]?? "";
         if (sortOrder === "asc") {
           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
         } else {
@@ -167,8 +164,9 @@ const FoodUnitList: React.FC = () => {
       <Pagination
         totalItems={foodUnits.length}
         defaultItemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
-      />
+        onPageChange={handlePageChange} itemsPerPage={0} currentPage={0} setCurrentPage={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
       <ToastContainer />
     </div>
   );

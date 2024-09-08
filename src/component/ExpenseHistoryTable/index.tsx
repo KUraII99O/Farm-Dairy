@@ -14,7 +14,7 @@ interface ExpenseHistoryProps {
   className?: string;
 }
 
-const ExpenseHistory: React.FC<ExpenseHistoryProps> = ({ className }) => {
+const ExpenseHistory: React.FC<ExpenseHistoryProps> = ({ }) => {
   const { translate, language } = useTranslation(); // Assuming you have a translate function from your translation hook or context
 
   return (

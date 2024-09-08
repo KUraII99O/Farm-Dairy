@@ -33,7 +33,7 @@ const SettingHeader: React.FC = () => {
     setActiveSection(section);
   };
   
-  const { translate, language } = useTranslation();
+  const { translate } = useTranslation();
 
   return (
     <div className="border-b text-secondary dark:text-secondary w-full">

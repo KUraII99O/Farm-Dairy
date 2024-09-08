@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-interface Pregnancy {
+export type Pregnancy ={
   id: string;
   stallNumber: string;
   pregnancyType: string;
@@ -11,7 +11,11 @@ interface Pregnancy {
   semenCost: string;
   otherCost: string;
   note: string;
+  animalAgeDays: string;
   userId: string;
+  image: string;
+  due: string;
+  
 }
 
 const PregnancyService = {
@@ -21,7 +25,7 @@ const PregnancyService = {
   deletePregnancy
 };
 
-async function fetchPregnancies(): Promise<Pregnancy[]> {
+async function fetchPregnancies(animalId: string): Promise<Pregnancy[]> {
   const loggedInUser = localStorage.getItem('loggedInUser');
   if (!loggedInUser) {
     throw new Error("User not logged in");
@@ -33,14 +37,14 @@ async function fetchPregnancies(): Promise<Pregnancy[]> {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/pregnancies?userId='+ user.id);
+    const response = await fetch(`http://localhost:3000/pregnancies?userId=${user.id}&animalId=${animalId}`);
     if (!response.ok) {
       throw new Error('Failed to fetch pregnancy data');
     }
     const pregnanciesData: Pregnancy[] = await response.json();
     return pregnanciesData;
   } catch (error) {
-    console.error('Error fetching pregnancy data:', error.message);
+    console.error('Error fetching pregnancy data:', error);
     return [];
   }
 }
@@ -61,12 +65,14 @@ try {
 
   const response = await fetch('http://localhost:3000/pregnancies', {
     method: 'POST',
+
     headers: {
       'Content-Type': 'application/json',
     },
+
     body: JSON.stringify(pregnancyWithId),
   });
-
+console.log("chpetin" )
   if (response.status === 403) {
     throw new Error('Limit has been reached');
   } else if (!response.ok) {
@@ -75,7 +81,7 @@ try {
 
   return pregnancyWithId;
 } catch (error) {
-  console.error('Error adding staff:', error.message);
+  throw new Error ('Error adding staff:');
   throw error;
 }
 }
@@ -104,7 +110,7 @@ async function editPregnancy(id: string, updatedPregnancy: Omit<Pregnancy, 'id' 
       throw new Error('Failed to update pregnancy');
     }
   } catch (error) {
-    console.error('Error updating pregnancy:', error.message);
+    throw new Error ('Error updating pregnancy:');
     throw error;
   }
 }
@@ -132,9 +138,9 @@ async function deletePregnancy(id: string): Promise<void> {
       throw new Error('Failed to delete pregnancy');
     }
   } catch (error) {
-    console.error('Error deleting pregnancy:', error.message);
+    throw new Error ('Error deleting pregnancy:');
     throw error;
   }
 }
 
-export { PregnancyService, Pregnancy };
+export { PregnancyService };

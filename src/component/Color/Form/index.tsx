@@ -1,17 +1,14 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 
-// Define the type for the color prop
 interface Color {
   id: string;
-  name: string;
   userId: string;
+  name: string;
 }
 
-// Define the props type for the component
 interface EditColorFormProps {
-  color?: Color | null; // Use undefined instead of null to match the expected type
-  onSubmit: (formData: Omit<Color, "id" | "userId">) => void;
+  color?: Color;
+  onSubmit: (formData: Color) => void;
   onClose: () => void;
 }
 
@@ -19,20 +16,24 @@ const EditColorForm: React.FC<EditColorFormProps> = ({
   color,
   onSubmit,
   onClose,
- }) => {
-  useParams();
-  const navigate = useNavigate();
-  const formRef = useRef<HTMLDivElement | null>(null);
-
-  const [formData, setFormData] = useState<Omit<Color, 'id' | 'userId'>>({
-
-
+}) => {
+  const [formData, setFormData] = useState<Color>({
+    id: "",
+    userId: "",
     name: "",
   });
 
   useEffect(() => {
     if (color) {
-      setFormData(color);
+      setFormData({
+        ...color,
+      });
+    } else {
+      setFormData({
+        id: "",
+        userId: "",
+        name: "",
+      });
     }
   }, [color]);
 
@@ -44,81 +45,52 @@ const EditColorForm: React.FC<EditColorFormProps> = ({
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
   };
 
-  const handleCloseDrawer = () => {
-    onClose(); // Call the onClose function passed from the parent component
-    navigate("/Color-List");
-  };
-
-  const handleOutsideClick = (e: MouseEvent) => {
-    if (formRef.current && !formRef.current.contains(e.target as Node)) {
-      handleCloseDrawer();
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, []);
-
   return (
-    <>
-      {/* Semi-transparent overlay */}
-      <div
-        className="fixed inset-0 bg-gray-200 bg-opacity-50 z-40"
-        onClick={handleCloseDrawer}
-      ></div>
-      {/* Edit color form */}
-      <div className="fixed inset-0 overflow-y-auto z-50 flex justify-end">
-        <div className="w-96 bg-white h-full shadow-lg p-6" ref={formRef}>
-          <button
-            className="absolute top-0 right-0 m-2 text-gray-600 hover:text-gray-900 focus:outline-none"
-            onClick={handleCloseDrawer}
+    <div className="flex justify-end">
+      <form onSubmit={handleSubmit} className="w-96">
+        <h2 className="text-xl font-bold mb-4">
+          {color ? "Edit Color" : "Add New Color"}
+        </h2>
+        <div className="mb-4">
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700 mb-1"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-          <form onSubmit={handleSubmit}>
-            <h2 className="text-xl font-bold mb-4">{color ? "Edit Color" : "Add New Color"}</h2>
-            <div className="mb-4">
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">Color Name * :</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                className="bg-secondary hover:bg-primary text-white font-bold py-2 px-4 rounded"
-              >
-                {color ? "Update Color" : "Add Color"}
-              </button>
-            </div>
-          </form>
+            Color Name
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            className="p-2 rounded border border-gray-300 w-full"
+            required
+          />
         </div>
-      </div>
-    </>
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={onClose}
+            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 mr-2"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary"
+          >
+            {color ? "Update" : "Add"}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 
-export default EditColorForm; // Ensure you export the component as default
+export default EditColorForm;

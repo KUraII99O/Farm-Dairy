@@ -8,21 +8,24 @@ import { toast } from "react-toastify";
 import { useTranslation } from "../../Translator/Provider";
 import CowFeedList from "../Table";
 import { ManageCowFeedContext } from "../Provider";
-import { Drawer, Button } from "flowbite-react";
+import { Drawer } from "flowbite-react";
 
+interface CowFeedInfo {
+  foodItem: string;
+  quantity: string;
+  feedingTime: string;
+  unit: string;
+}
 
-interface  CowFeed {
+interface CowFeed {
   id: string;
-  date: string; 
+  date: string;
   StallNo: string;
   cowNumber: string;
-  note: number;
-  foodItem: string;
-  quantity: number;
+  note: string;
   userId: string;
-  unit: string;
-  feedingTime: string;
-};
+  informations: CowFeedInfo[]; // Ensure this is an array
+}
 
 const CowFeedTable: React.FC = () => {
   const { cowFeedRecords, deleteCowFeedRecord } = useContext(ManageCowFeedContext);
@@ -31,9 +34,9 @@ const CowFeedTable: React.FC = () => {
   const [sortOrder, setSortOrder] = useState("asc");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [selectedCowFeed, setSelectedCowFeed]  = useState<CowFeed |  null>(null);
-  const [currentDate, setCurrentDate] = useState<string>("");
+  const [, setIsDeleting] = useState(false);
+  const [selectedCowFeed, setSelectedCowFeed] = useState<CowFeed | null>(null);
+  const [, setCurrentDate] = useState<string>("");
   const { translate, language } = useTranslation();
   const isArabic = language === "ar";
 
@@ -50,7 +53,7 @@ const CowFeedTable: React.FC = () => {
 
   useEffect(() => {
     const date = new Date();
-    const formattedDate = date.toLocaleDateString(); // Adjust the date format as needed
+    const formattedDate = date.toLocaleDateString();
     setCurrentDate(formattedDate);
   }, []);
 
@@ -61,40 +64,24 @@ const CowFeedTable: React.FC = () => {
     return <FaSort />;
   };
 
-  // Sorting function for array of objects
-  const dynamicSort = (property: string) => {
-    const sortOrderValue = sortOrder === "asc" ? 1 : -1;
-    return function (a: any, b: any) {
-      if (a[property] < b[property]) {
-        return -1 * sortOrderValue;
-      } else if (a[property] > b[property]) {
-        return 1 * sortOrderValue;
-      } else {
-        return 0;
-      }
-    };
-  };
-
-  const filteredCowFeeds = cowFeedRecords.filter((cowFeed : CowFeed) =>
+  const filteredCowFeeds = cowFeedRecords.filter((cowFeed: CowFeed) =>
     Object.values(cowFeed).some((field) =>
       field.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
 
-  // Sort cowFeeds based on the selected field
   const sortedCowFeeds = sortBy
-    ? filteredCowFeeds.slice().sort((a:CowFeed, b:CowFeed) => {
+    ? filteredCowFeeds.slice().sort((a: CowFeed, b: CowFeed) => {
       const aValue = a[sortBy as keyof CowFeed];
       const bValue = b[sortBy as keyof CowFeed];
-        if (sortOrder === "asc") {
-          return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
-        } else {
-          return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
-        }
-      })
+      if (sortOrder === "asc") {
+        return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+      } else {
+        return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+      }
+    })
     : filteredCowFeeds;
 
-  // Pagination
   const handlePageChange = (page: number, itemsPerPage: number) => {
     setCurrentPage(page);
     setItemsPerPage(itemsPerPage);
@@ -108,7 +95,7 @@ const CowFeedTable: React.FC = () => {
   );
 
   const handleDeleteConfirmation = (id: string) => {
-    if ( 
+    if (
       window.confirm("Are you sure you want to delete this cow feed entry?")
     ) {
       handleDelete(id);
@@ -127,7 +114,7 @@ const CowFeedTable: React.FC = () => {
     }
   };
 
-  const handleViewDetails = (cowFeed:CowFeed) => {
+  const handleViewDetails = (cowFeed: CowFeed) => {
     setSelectedCowFeed(cowFeed);
   };
 
@@ -143,16 +130,14 @@ const CowFeedTable: React.FC = () => {
           <input
             type="text"
             placeholder={translate("searchPlaceholder")}
-             value={searchTerm}
+            value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="p-2 rounded border border-gray-300 ml-2"
           />
-
           <Link
             to="/Add-cow-feed "
             className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary ml-2"
           >
-            
             {translate("addNew")}
           </Link>
         </div>
@@ -170,7 +155,6 @@ const CowFeedTable: React.FC = () => {
         translate={translate}
         formClass={formClass}
       />
-      {/* Render ItemDetailDrawer outside of the table */}
       <Drawer
         open={selectedCowFeed !== null}
         onClose={handleDrawerClose}
@@ -189,8 +173,9 @@ const CowFeedTable: React.FC = () => {
       <Pagination
         totalItems={sortedCowFeeds.length}
         defaultItemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
-      />
+        onPageChange={handlePageChange} itemsPerPage={0} currentPage={0} setCurrentPage={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
     </div>
   );
 };

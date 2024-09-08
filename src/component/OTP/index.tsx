@@ -13,18 +13,19 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ email }) => {
   // Function to handle input change
   const handleChange = (index: number, value: string) => {
     // Update the input value
-    if (inputs.current[index]) {
-      inputs.current[index].value = value;
-
+    const inputElement = inputs.current[index];
+    if (inputElement) {
+      inputElement.value = value;
+  
       // Move focus to the next input if available
       if (index < inputs.current.length - 1 && value !== "") {
         inputs.current[index + 1]?.focus();
       }
+  
+      // Check if all inputs are filled
+      const allFilled = inputs.current.every((input) => input?.value.trim() !== "");
+      setIsValid(allFilled); // Update form validity state
     }
-
-    // Check if all inputs are filled
-    const allFilled = inputs.current.every((input) => input?.value.trim() !== "");
-    setIsValid(allFilled); // Update form validity state
   };
 
   // Function to handle keydown event

@@ -5,12 +5,42 @@ import { IoInformationCircle } from "react-icons/io5";
 import { useTranslation } from "../../Translator/Provider";
 import { FaMinusCircle, FaPlusCircle } from "react-icons/fa";
 
+interface CowSales {
+  status: boolean;
+  id: string;
+  customerName: string;
+  customerPhone: string;
+  customerEmail: string;
+  address: string;
+  totalPrice: String;
+  totalPaid: string;
+  due: String;
+  note: string;
+  collectedFrom: string;
+  image: string;
+  stallNo: string;
+  cowNumber: string;
+  gender: string;
+  weight: string;
+  height: string;
+  userId: string;
+}
+
+interface Stall {
+  id: string;
+  stallNumber: string;
+}
+
+interface Cow {
+  id: string;
+  animalType: string;
+}
+
 const EditSaleForm = () => {
   const { id } = useParams<{ id: string }>();
   const { sales, addSale, editSale } = useContext(ManageSalesContext);
-  const [showCowDetails, setShowCowDetails] = useState(false);
-  const [stallList, setStallList] = useState([]);
-  const [cowList, setCowList] = useState([]);
+  const [stallList, setStallList] = useState<Stall[]>([]);
+  const [cowList, setCowList] = useState<Cow[]>([]);
   const { translate, language } = useTranslation();
 
   const navigate = useNavigate();
@@ -42,7 +72,7 @@ const EditSaleForm = () => {
 
   useEffect(() => {
     if (isEditMode) {
-      const selectedSale = sales.find((sale) => sale.id === id);
+      const selectedSale = sales.find((sale: CowSales) => sale.id === id);
       if (selectedSale) {
         setFormData(selectedSale);
         setCowDetails(selectedSale.cowDetails || cowDetails);
@@ -84,7 +114,7 @@ const EditSaleForm = () => {
       });
   }, []);
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -92,7 +122,7 @@ const EditSaleForm = () => {
     });
   };
 
-  const handleCowDetailsChange = (index, e) => {
+  const handleCowDetailsChange = (index: any, e: any) => {
     const { name, value } = e.target;
     const updatedCowDetails = cowDetails.map((detail, idx) =>
       idx === index ? { ...detail, [name]: value } : detail
@@ -100,7 +130,7 @@ const EditSaleForm = () => {
     setCowDetails(updatedCowDetails);
   };
 
-  const handleFileChange = (index, e) => {
+  const handleFileChange = (index: any, e: any) => {
     const file = e.target.files[0];
     const updatedCowDetails = cowDetails.map((detail, idx) =>
       idx === index ? { ...detail, image: URL.createObjectURL(file) } : detail
@@ -121,11 +151,11 @@ const EditSaleForm = () => {
     ]);
   };
 
-  const handleRemoveRow = (index) => {
+  const handleRemoveRow = (index: any) => {
     setCowDetails(cowDetails.filter((_, idx) => idx !== index));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     const newFormData = { ...formData, cowDetails };
     if (isEditMode) {
@@ -227,7 +257,9 @@ const EditSaleForm = () => {
             <thead>
               <tr>
                 <th className="border border-gray-400 px-3 py-2">Image</th>
-                <th className="border border-gray-400 px-3 py-2">Animal Type</th>
+                <th className="border border-gray-400 px-3 py-2">
+                  Animal Type
+                </th>
                 <th className="border border-gray-400 px-3 py-2">Stall No</th>
                 <th className="border border-gray-400 px-3 py-2">Animal ID</th>
                 <th className="border border-gray-400 px-3 py-2">Sell Price</th>
@@ -279,11 +311,8 @@ const EditSaleForm = () => {
                       onChange={(e) => handleCowDetailsChange(index, e)}
                     >
                       <option value="">-- Select --</option>
-                      {cowList.map((cow) => (
-                        <option key={cow.animalType} value={cow.animalType}>
-                          {cow.animalType}
-                        </option>
-                      ))}
+                      <option value="Cow">Cow</option>
+                      <option value="Calf">Calf</option>
                     </select>
                   </td>
                   <td className="border border-gray-400 px-3 py-2">
@@ -295,7 +324,7 @@ const EditSaleForm = () => {
                       onChange={(e) => handleCowDetailsChange(index, e)}
                     >
                       <option value="">-- Select --</option>
-                      {stallList.map((stall) => (
+                      {stallList.map((stall: Stall) => (
                         <option key={stall.id} value={stall.stallNumber}>
                           {stall.stallNumber}
                         </option>
@@ -311,7 +340,7 @@ const EditSaleForm = () => {
                       onChange={(e) => handleCowDetailsChange(index, e)}
                     >
                       <option value="">-- Select --</option>
-                      {cowList.map((cow) => (
+                      {cowList.map((cow: Cow) => (
                         <option key={cow.id} value={cow.id}>
                           {cow.id}
                         </option>
@@ -364,7 +393,10 @@ const EditSaleForm = () => {
               className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
             />
           </div>
-          <div className="flex flex-col space-y-1 ml-4" style={{ width: "30%" }}>
+          <div
+            className="flex flex-col space-y-1 ml-4"
+            style={{ width: "30%" }}
+          >
             <label className="text-sm font-medium text-gray-700">
               Total Paid:
             </label>
@@ -377,7 +409,10 @@ const EditSaleForm = () => {
               className="border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
             />
           </div>
-          <div className="flex flex-col space-y-1 ml-4" style={{ width: "30%" }}>
+          <div
+            className="flex flex-col space-y-1 ml-4"
+            style={{ width: "30%" }}
+          >
             <label className="text-sm font-medium text-gray-700">Due:</label>
             <input
               type="text"

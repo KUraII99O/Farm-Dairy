@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-interface Staff {
+export type Staff = {
   id: string;
   userId: string;
   name: string;
@@ -33,14 +33,14 @@ async function fetchStaff(): Promise<Staff[]> {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/staffs?userId='+ user.id);
+    const response = await fetch('http://localhost:3000/staffs?userId=' + user.id);
     if (!response.ok) {
       throw new Error('Failed to fetch staff data');
     }
     const staffData: Staff[] = await response.json();
-    return staffData
+    return staffData;
   } catch (error) {
-    console.error('Error fetching staff data:', error.message);
+    console.error('Error fetching staff data:', (error as Error).message);
     return [];
   }
 }
@@ -75,7 +75,7 @@ async function addStaff(newStaff: Omit<Staff, 'id' | 'userId'>): Promise<Staff> 
 
     return staffWithId;
   } catch (error) {
-    console.error('Error adding staff:', error.message);
+    console.error('Error adding staff:', (error as Error).message);
     throw error;
   }
 }
@@ -103,7 +103,7 @@ async function editStaff(id: string, updatedStaff: Omit<Staff, 'id' | 'userId'>)
       throw new Error('Failed to update staff');
     }
   } catch (error) {
-    console.error('Error updating staff:', error.message);
+    console.error('Error updating staff:', (error as Error).message);
     throw error;
   }
 }
@@ -128,7 +128,7 @@ async function toggleStaffStatus(id: string): Promise<Staff> {
     }
     return await response.json();
   } catch (error) {
-    console.error('Error toggling staff status:', error.message);
+    console.error('Error toggling staff status:', (error as Error).message);
     throw error;
   }
 }
@@ -152,9 +152,9 @@ async function deleteStaff(id: string): Promise<void> {
       throw new Error('Failed to delete staff');
     }
   } catch (error) {
-    console.error('Error deleting staff:', error.message);
+    console.error('Error deleting staff:', (error as Error).message);
     throw error;
   }
 }
 
-export { StaffService, Staff };
+export { StaffService };

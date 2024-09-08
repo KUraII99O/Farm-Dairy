@@ -45,7 +45,6 @@ export const ManageUserProvider: React.FC<ProviderProps> = ({ children }) => {
 
   const editUser = async (id: string, updatedUser: Omit<User, 'id'>) => {
     try {
-      const data = await UserService.editUser(id, updatedUser);
       setUsers(prevUsers =>
         prevUsers.map(member => (member.id === id ? { ...member, ...updatedUser } : member))
       );
@@ -56,7 +55,6 @@ export const ManageUserProvider: React.FC<ProviderProps> = ({ children }) => {
 
   const toggleUserStatus = async (id: string) => {
     try {
-      const data = await UserService.toggleUserStatus(id);
       setUsers(prevUsers =>
         prevUsers.map(member => (member.id === id ? { ...member, status: !member.status } : member))
       );

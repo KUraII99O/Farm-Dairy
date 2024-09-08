@@ -11,15 +11,28 @@ import { Drawer } from "flowbite-react"; // Assuming Drawer is imported correctl
 import SalesList from "../Table";
 import ItemDetailDrawer from "../ItemDetails";
 
+interface CowSale {
+  id: string;
+  date: string;
+  customerName: string;
+  customerPhone: string;
+  customerEmail: string;
+  address: string;
+  totalPrice: string;
+  totalPaid: string;
+  due: string;
+  note: string;
+}
+
 const SaleList: React.FC = () => {
   const { sales, deleteSale } = useContext(ManageSalesContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [selectedSale, setSelectedSale] = useState<CowSales | null>(null);
+  const [itemsPerPage] = useState(5);
+  const [, setIsDeleting] = useState(false);
+  const [selectedSale, setSelectedSale] = useState<CowSale | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const { translate, language } = useTranslation();
 
@@ -42,16 +55,16 @@ const SaleList: React.FC = () => {
     return <FaSort />;
   };
 
-  const filteredSales = sales.filter((sale) =>
+  const filteredSales = sales.filter((sale: CowSales) =>
     Object.values(sale).some((field) =>
       String(field).toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
 
   const sortedSales = sortBy
-    ? filteredSales.slice().sort((a, b) => {
-        const aValue = a[sortBy];
-        const bValue = b[sortBy];
+    ? filteredSales.slice().sort((a: CowSales, b: CowSales) => {
+        const aValue = a[sortBy as keyof CowSales];
+        const bValue = b[sortBy as keyof CowSales];
         if (sortOrder === "asc") {
           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
         } else {
@@ -82,7 +95,7 @@ const SaleList: React.FC = () => {
     }
   };
 
-  const handleViewDetails = (sale: CowSales) => {
+  const handleViewDetails = (sale: CowSale) => {
     setSelectedSale(sale);
     setIsDrawerOpen(true);
   };
@@ -126,11 +139,7 @@ const SaleList: React.FC = () => {
         translate={translate}
         formClass={formClass}
       />
-      <Drawer
-        open={isDrawerOpen}
-        onClose={handleDrawerClose}
-        position="right"
-      >
+      <Drawer open={isDrawerOpen} onClose={handleDrawerClose} position="right">
         <Drawer.Header title={translate("detailsDrawerTitle")} />
         <Drawer.Items>
           {selectedSale && (
@@ -146,8 +155,10 @@ const SaleList: React.FC = () => {
         totalItems={sortedSales.length}
         itemsPerPage={itemsPerPage}
         currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-      />
+        setCurrentPage={setCurrentPage} // Remove this line if it's not needed
+        onPageChange={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
       <ToastContainer />
     </div>
   );

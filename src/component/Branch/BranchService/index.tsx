@@ -1,14 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
 
 export type Branch = {
-    id: string;
-    name: string;
-    userId: string;
-    branchName: string;
-    setupDate: Date;
-    builderName: string;
-    phoneNumber: string;
-    email: string;
+  id?: string;
+  name: string;
+  userId?: string;
+  branchName: string;
+  setupDate: Date;
+  builderName: string;
+  phoneNumber: string;
+  email: string;
 }
 
 const BranchService = {

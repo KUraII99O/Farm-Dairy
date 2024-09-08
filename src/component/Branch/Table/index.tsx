@@ -4,7 +4,17 @@ import React from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { BsPencil } from "react-icons/bs";
 import { Table } from "flowbite-react";
-import { BranchTableProps } from "../../../types/types";
+import { Branch } from "../BranchService";
+
+export interface BranchTableProps {
+  sortedBranches: Branch[];
+  handleSort: (fieldName: string) => void;
+  sortIcon: (fieldName: string) => JSX.Element;
+  handleEditDrawerOpen: (branch: Branch) => void;
+  handleDeleteConfirmation: (id: string) => void;
+  translate: (key: string) => string;
+  formClass: string;
+}
 
 const BranchTable: React.FC<BranchTableProps> = ({
   sortedBranches,
@@ -64,7 +74,7 @@ const BranchTable: React.FC<BranchTableProps> = ({
             {index + 1} {/* Display row number */}
           </Table.Cell>
           <Table.Cell>{branch.name}</Table.Cell>
-          <Table.Cell>{branch.setupDate}</Table.Cell>
+          <Table.Cell>{branch.setupDate.toLocaleDateString()}</Table.Cell> {/* Format the Date */}
           <Table.Cell>{branch.builderName}</Table.Cell>
           <Table.Cell>{branch.phoneNumber}</Table.Cell>
           <Table.Cell>{branch.email}</Table.Cell>
@@ -77,7 +87,7 @@ const BranchTable: React.FC<BranchTableProps> = ({
                 <BsPencil className="w-5 h-5 ml-2" />
               </button>
               <button
-                onClick={() => handleDeleteConfirmation(branch.id)}
+                onClick={() => handleDeleteConfirmation(branch.id!)}
                 className="text-red-500 hover:text-red-700 focus:outline-none flex items-center"
               >
                 <AiOutlineDelete className="w-5 h-5 mr-1" />

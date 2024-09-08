@@ -1,16 +1,18 @@
 import React from "react";
-import LandingNav from "../LandingNav";
 import { Button } from "flowbite-react";
 import { HiOutlineArrowRight } from "react-icons/hi";
 
-const Desktop = ({ scrollToOptionSelection }) => {
+interface DesktopProps {
+  scrollToOptionSelection: () => void; // Define the type for the prop
+}
+
+const Desktop: React.FC<DesktopProps> = ({ scrollToOptionSelection }) => {
   return (
     <div>
       <section className="py-20 bg-white">
         <div className="flex flex-col px-8 mx-auto space-y-12 max-w-7xl xl:px-12">
           <div className="relative">
             <h2 className="w-full text-3xl font-bold text-center sm:text-4xl md:text-5xl">
-              {" "}
               Elevate Your Farm Management
             </h2>
             <p className="w-full py-8 mx-auto -mt-2 text-lg text-center text-gray-700 intro sm:max-w-3xl">

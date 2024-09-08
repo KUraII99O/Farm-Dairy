@@ -4,7 +4,7 @@ import { useTranslation } from "../Translator/Provider";
 import ProfilePopover from "../PopOver";
 
 const NavBar: React.FC = () => {
-  const { translate, isRTL } = useTranslation();
+  const { isRTL } = useTranslation();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [user, setUser] = useState<{ username: string; email: string; image: string }>({
     username: "",

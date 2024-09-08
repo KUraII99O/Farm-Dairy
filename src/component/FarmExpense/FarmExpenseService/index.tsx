@@ -1,13 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
 
-interface Expense {
-  id: string;
-  title: string;
-  amount: number;
-  date: string;
-  category: string;
-  note: string;
-  userId: string;
+export type Expense ={
+  id?: string;
+  Date: string;
+  purposeName: string;
+  details: string;
+  totalAmount: string;
+  AddedBy: string;
+  userId?: string;
 }
 
 const ExpenseService = {
@@ -35,7 +35,7 @@ async function fetchExpenses(): Promise<Expense[]> {
     }
     const expensesData: Expense[] = await response.json();
     return expensesData;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching expenses data:', error.message);
     return [];
   }
@@ -68,7 +68,7 @@ async function addExpense(newExpense: Omit<Expense, 'id' | 'userId'>): Promise<E
     }
 
     return expenseWithId;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error adding expense:', error.message);
     throw error;
   }
@@ -96,7 +96,7 @@ async function editExpense(id: string, updatedExpense: Omit<Expense, 'id' | 'use
     if (!response.ok) {
       throw new Error('Failed to update expense');
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error updating expense:', error.message);
     throw error;
   }
@@ -120,10 +120,10 @@ async function deleteExpense(id: string): Promise<void> {
     if (!response.ok) {
       throw new Error('Failed to delete expense');
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error deleting expense:', error.message);
     throw error;
   }
 }
 
-export { ExpenseService, Expense };
+export { ExpenseService };

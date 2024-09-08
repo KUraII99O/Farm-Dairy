@@ -5,9 +5,9 @@ export type CowFeed = {
   date: string; 
   StallNo: string;
   cowNumber: string;
-  note: number;
+  note: string;
   foodItem: string;
-  quantity: number;
+  quantity: string;
   userId: string;
   unit: string;
   feedingTime: string;

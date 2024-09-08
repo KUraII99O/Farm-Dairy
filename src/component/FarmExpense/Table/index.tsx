@@ -5,11 +5,11 @@ import { Table } from "flowbite-react";
 import Pagination from "../../Pagination";
 
 interface Expense {
-  id: number;
+  id: string;
   Date: string;
   purposeName: string;
   details: string;
-  totalAmount: number;
+  totalAmount: string;
   AddedBy: string;
 }
 
@@ -18,7 +18,7 @@ interface ExpenseListProps {
   handleSort: (fieldName: string) => void;
   sortIcon: (fieldName: string) => React.ReactNode;
   handleEditDrawerOpen: (expense: Expense) => void;
-  handleDeleteConfirmation: (id: number) => void;
+  handleDeleteConfirmation: (id: string) => void;
   translate: (key: string) => string;
   formClass: string;
   itemsPerPage: number; // If pagination is involved
@@ -31,7 +31,6 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
   handleDeleteConfirmation,
   handleEditDrawerOpen,
   translate,
-  formClass,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
@@ -115,8 +114,9 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
       <Pagination
         totalItems={currentExpenses.length}
         defaultItemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
-      />
+        onPageChange={handlePageChange} itemsPerPage={0} currentPage={0} setCurrentPage={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
     </div>
   );
 };

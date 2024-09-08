@@ -10,6 +10,8 @@ import { toast } from "react-toastify";
 import {  ManageVaccineMonitorContext } from "../Provider";
 import { VaccineMonitor } from "../VaccineMonitorService";
 
+
+
 const VaccineMonitorTable: React.FC = () => {
   const context = useContext(ManageVaccineMonitorContext);
   if (!context) {
@@ -150,6 +152,10 @@ const VaccineMonitorTable: React.FC = () => {
     }
   };
   const handleViewDetails = (vaccineMonitor: VaccineMonitor) => {
+    if (!vaccineMonitor.stallNo || !vaccineMonitor.animalID) {
+      console.error("VaccineMonitor is missing stallNo or animalID");
+      return;
+    }
     setSelectedVaccineMonitor(vaccineMonitor);
     setIsDetailsDrawerOpen(true);
   };
@@ -203,8 +209,9 @@ const VaccineMonitorTable: React.FC = () => {
       <Pagination
         totalItems={sortedVaccineMonitors.length}
         defaultItemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
-      />
+        onPageChange={handlePageChange} itemsPerPage={0} currentPage={0} setCurrentPage={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
     </div>
   );
 };

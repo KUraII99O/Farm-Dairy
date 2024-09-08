@@ -6,13 +6,22 @@ import { Link } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
 
 // Define types for props
+
 interface VaccineMonitor {
   id: string;
+  stallNo: string;
+  animalID: string;
   date: string;
-  StallNo: string;
-  CowNumber: string;
   note: string;
   reportedby: string;
+  userId: string;
+  informations: Array<{
+    VaccineName: string;
+    Dose: string;
+    Repeat: string;
+    Remarks: string;
+    GivenTime: string;
+  }>;
 }
 
 interface VaccineMonitorListProps {
@@ -21,8 +30,8 @@ interface VaccineMonitorListProps {
   sortIcon: (key: keyof VaccineMonitor) => JSX.Element;
   handleDeleteConfirmation: (id: string) => void;
   translate: (key: string) => string;
-  formClass: string; // If formClass is not used in the component, you can remove this
-  reportedbyuser: string; // If reportedbyuser is not used in the component, you can remove this
+  formClass?: string; // Optional if not used
+  reportedbyuser?: string; // Optional if not used
   handleViewDetails: (vaccine: VaccineMonitor) => void;
 }
 
@@ -44,16 +53,16 @@ const VaccineMonitorList: React.FC<VaccineMonitorListProps> = ({
               {sortIcon("date")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("StallNo")}>
+          <Table.HeadCell onClick={() => handleSort("stallNo")}>
             <div className="flex items-center">
               {translate("Stall No")}
-              {sortIcon("StallNo")}
+              {sortIcon("stallNo")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("CowNumber")}>
+          <Table.HeadCell onClick={() => handleSort("animalID")}>
             <div className="flex items-center">
-              {translate("CowNumber")}
-              {sortIcon("CowNumber")}
+              {translate("animalID")}
+              {sortIcon("animalID")}
             </div>
           </Table.HeadCell>
           <Table.HeadCell onClick={() => handleSort("note")}>
@@ -75,8 +84,8 @@ const VaccineMonitorList: React.FC<VaccineMonitorListProps> = ({
           {currentVaccineMonitors.map((vaccine) => (
             <Table.Row key={vaccine.id}>
               <Table.Cell>{vaccine.date}</Table.Cell>
-              <Table.Cell>{vaccine.StallNo}</Table.Cell>
-              <Table.Cell>{vaccine.CowNumber}</Table.Cell>
+              <Table.Cell>{vaccine.stallNo}</Table.Cell>
+              <Table.Cell>{vaccine.animalID}</Table.Cell>
               <Table.Cell>{vaccine.note}</Table.Cell>
               <Table.Cell>{vaccine.reportedby}</Table.Cell>
               <Table.Cell>
@@ -87,9 +96,8 @@ const VaccineMonitorList: React.FC<VaccineMonitorListProps> = ({
                   >
                     <FaEye className="w-5 h-5 mr-1" />
                   </button>
-
                   <Link
-                    to={`/Edit-Vaccine-Monitor/${String(vaccine.id)}`}
+                    to={`/Edit-Vaccine-Monitor/${vaccine.id}`}
                     className="text-blue-500 hover:underline flex items-center mr-2"
                   >
                     <BsPencil className="w-5 h-5 mr-1" />

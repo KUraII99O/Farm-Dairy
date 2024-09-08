@@ -1,32 +1,39 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { BsPencil } from "react-icons/bs";
-import { AiOutlineDelete } from "react-icons/ai";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import Pagination from "../../Pagination";
 import { BiListUl } from "react-icons/bi";
-import { FaEye } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useTranslation } from "../../Translator/Provider";
 import { ManageRoutineContext } from "../Provider";
 import RoutineMonitorList from "../Table";
-import { Drawer, Button } from "flowbite-react";
+import { Drawer } from "flowbite-react";
 import ItemDetailDrawer from "../ItemDetails";
 
 
-interface RoutineMonitor  {
-  id: string;
-  date: string;
-  StallNo: string;
-  healthStatus: string;
-  note: number;
-  reportedBy: string;
-  userId: string;
-  quantity: number;
+interface Information  {
   ServiceName: string;
   Result: string;
   MonitoringTime: string;
+};
+
+interface RoutineMonitor {
+  id: string;
+  date: string;
+  stallNo: string;
+  healthStatus: number; // Change to number
+  note: string;
+  reportedBy: string;
+  userId: string;
+  updatedWeight: string;
+  updatedHeight: string;
+  milkPerDay: string;
+  monitoringDate: string;
+  reports: string;
+  animalID: string;
+  informations: Information[];
 }
+
 
 
 
@@ -37,11 +44,11 @@ const RoutineMonitorTable: React.FC = () => {
   const [sortOrder, setSortOrder] = useState("asc");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [, setIsDeleting] = useState(false);
   const [selectedRoutineRecord, setSelectedRoutineRecord] = useState<RoutineMonitor | null>(null);
   const [isDetailsDrawerOpen, setIsDetailsDrawerOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState<string>("");
-  const [user, setUser] = useState<{ username: string }>({ username: "" });
+  const [, setUser] = useState<{ username: string }>({ username: "" });
   const { translate, language } = useTranslation();
   const isArabic = language === "ar";
 
@@ -52,7 +59,7 @@ const RoutineMonitorTable: React.FC = () => {
     animalID: "",
     date: currentDate,
     note: "",
-    reportedby: "",
+    reportedBy: "",
     healthStatus: 50,
     informations: Array.from({ length: 3 }, () => ({
       ServiceName: "",
@@ -112,18 +119,6 @@ const RoutineMonitorTable: React.FC = () => {
     return <FaSort />;
   };
 
-  const dynamicSort = (property: string) => {
-    const sortOrderValue = sortOrder === "asc" ? 1 : -1;
-    return function (a: any, b: any) {
-      if (a[property] < b[property]) {
-        return -1 * sortOrderValue;
-      } else if (a[property] > b[property]) {
-        return 1 * sortOrderValue;
-      } else {
-        return 0;
-      }
-    };
-  };
 
   const filteredRoutineRecords = routineRecords.filter((routineRecord:RoutineMonitor) =>
     Object.values(routineRecord).some((field) =>
@@ -225,7 +220,7 @@ const RoutineMonitorTable: React.FC = () => {
         handleDeleteConfirmation={handleDeleteConfirmation}
         translate={translate}
         formClass={formClass}
-        reportedbyuser={formData.reportedby}
+        reportedByuser={formData.reportedBy}
         determineHealthStatus={determineHealthStatus}
         handleViewDetails={handleViewDetails}
       />
@@ -249,8 +244,9 @@ const RoutineMonitorTable: React.FC = () => {
       <Pagination
         totalItems={sortedRoutineRecords.length}
         defaultItemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
-      />
+        onPageChange={handlePageChange} itemsPerPage={0} currentPage={0} setCurrentPage={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
     </div>
   );
 };

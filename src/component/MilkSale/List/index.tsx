@@ -1,15 +1,30 @@
 import React, { useState, useContext, useEffect } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import {  ToastContainer } from "react-toastify";
 import { Link } from "react-router-dom";
 import { useTranslation } from "../../Translator/Provider";
-
 import "react-toastify/dist/ReactToastify.css";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import Pagination from "../../Pagination";
-import { BsPencil } from "react-icons/bs";
-import { AiOutlineDelete } from "react-icons/ai";
 import MilkSaleList from "../Table";
 import { ManageMilkSaleContext } from "../Provider";
+
+
+interface MilkSaleRecord {
+  id: string;
+  Date: string;
+  userId: string;
+  AccountNo: string;
+  StallNo: string;
+  AnimalID: string;
+  Liter: string;
+  Fate: string;
+  Price: string;
+  Total: string;
+  CollectedFrom: string;
+  addedBy: string;
+}
+
+
 
 const MilkSaleTable: React.FC = () => {
   const { milkSaleRecords, deleteMilkSaleRecord } = useContext(ManageMilkSaleContext);
@@ -18,19 +33,18 @@ const MilkSaleTable: React.FC = () => {
   const [sortOrder, setSortOrder] = useState("asc");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5); // Number of milk sale entries per page
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [milkSaleToDelete, setMilkSaleToDelete] = useState<number | null>(null);
-  const [user, setUser] = useState<{ username: string }>({
+  const [, setIsDeleting] = useState(false);
+  const [, setUser] = useState<{ username: string }>({
     username: "",
   });
-  const [currentDate, setCurrentDate] = useState<string>("");
+  const [, setCurrentDate] = useState<string>("");
   const { translate, language } = useTranslation();
   const isArabic = language === "ar";
 
   const formClass = isArabic ? "rtl" : "ltr";
 
   const filteredMilkSales = milkSaleRecords.filter(
-    (milkSale: { [s: string]: unknown } | ArrayLike<unknown>) =>
+    (milkSale: { [s: string]: MilkSaleRecord } | ArrayLike<MilkSaleRecord>) =>
       Object.values(milkSale).some((field) =>
         field.toString().toLowerCase().includes(searchTerm.toLowerCase())
       )
@@ -82,12 +96,12 @@ const MilkSaleTable: React.FC = () => {
   }, []);
 
   const sortedMilkSales = sortBy
-    ? filteredMilkSales.sort((a, b) =>
+    ? filteredMilkSales.sort((a:MilkSaleRecord, b:MilkSaleRecord) =>
         sortOrder === "asc"
-          ? a[sortBy] > b[sortBy]
+          ? a[sortBy as keyof MilkSaleRecord] > b[sortBy as keyof MilkSaleRecord ]
             ? 1
             : -1
-          : a[sortBy] < b[sortBy]
+          : a[sortBy as keyof MilkSaleRecord] < b[sortBy as keyof MilkSaleRecord ]
           ? 1
           : -1
       )
@@ -121,7 +135,7 @@ const MilkSaleTable: React.FC = () => {
     return <FaSort />;
   };
 
-  const handleDeleteConfirmation = (id: number) => {
+  const handleDeleteConfirmation = (id: string) => {
     if (window.confirm("Are you sure you want to delete this milk sale entry?")) {
       // If the user confirms, directly call handleDelete
       handleDelete(id);
@@ -167,14 +181,15 @@ const MilkSaleTable: React.FC = () => {
         handleDeleteConfirmation={handleDeleteConfirmation}
         translate={translate}
         formClass={formClass}
-        SoldByUser={formData.soldBy} // Pass the soldBy field as prop
+        soldByUser={formData.soldBy} // Pass the soldBy field as prop
       />
       {/* Pagination */}
       <Pagination
         totalItems={sortedMilkSales.length}
         defaultItemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
-      />
+        onPageChange={handlePageChange} itemsPerPage={0} currentPage={0} setCurrentPage={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
       {/* Toast container for notifications */}
       <ToastContainer />
     </div>

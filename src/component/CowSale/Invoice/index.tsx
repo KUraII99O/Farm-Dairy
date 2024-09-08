@@ -1,16 +1,40 @@
-import React, { useState, useContext, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "../../Translator/Provider";
 import { FaPrint, FaSave } from 'react-icons/fa'; // Importing icons
-
 import ReactToPrint from 'react-to-print';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { SaleListContext } from "../provider";
+import { useManageSales } from "../provider";
 
-const MilkSaleInvoice: React.FC = () => {
+
+
+interface  CowSales {
+  status: boolean;
+  id: string;
+  customerName: string;
+  customerPhone: string;
+  customerEmail: string;
+  address: string;
+  totalPrice: String;
+  totalPaid: string;
+  due: String;
+  note: string;
+  collectedFrom: string;
+  image: string;
+  stallNo: string;
+  cowNumber: string;
+  gender: string;
+  weight: string;
+  height: string;
+  userId: string;
+  supplier: string;
+}
+
+
+const CowSaleInvoice: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { CowSales } = useContext(SaleListContext);
+  const { CowSales } = useManageSales();
 
   const isEditMode = !!id;
   const { translate, language } = useTranslation();
@@ -32,16 +56,17 @@ const MilkSaleInvoice: React.FC = () => {
   gender:"" ,
   weight:"" ,
   height:"" ,
+  supplier:"" ,
 
   });
 
   useEffect(() => {
     if (isEditMode) {
-      const selectedMilkSale = CowSales.find(
-        (CowSales) => CowSales.id === parseInt(id)
+      const selectedCowSale = CowSales.find(
+        (CowSales:CowSales) => CowSales.id === (id)
       );
-      if (selectedMilkSale) {
-        setFormData(selectedMilkSale);
+      if (selectedCowSale) {
+        setFormData(selectedCowSale);
       }
     }
   }, [id, isEditMode, CowSales]);
@@ -173,4 +198,4 @@ const MilkSaleInvoice: React.FC = () => {
   );
 };
 
-export default MilkSaleInvoice;
+export default CowSaleInvoice;

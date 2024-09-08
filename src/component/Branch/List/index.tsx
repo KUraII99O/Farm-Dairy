@@ -8,19 +8,7 @@ import { useTranslation } from "../../Translator/Provider";
 import { Drawer } from "flowbite-react";
 import BranchTable from "../Table";
 import EditBranchForm from "../Form";
-
-interface Branch {
-  id: string;
-  name: string;
-  userId: string;
-  setupDate: Date;
-  builderName: string;
-  phoneNumber: string;
-  branchName: string;
-  email: string;
-}
-
-
+import { Branch } from "../BranchService";
 
 const BranchList: React.FC = () => {
   const { branches, deleteBranch, addBranch, editBranch } =
@@ -86,7 +74,7 @@ const BranchList: React.FC = () => {
   const handleUpdateBranch = async (updatedBranchData: Branch) => {
     if (selectedBranch) {
       try {
-        await editBranch(selectedBranch.id, updatedBranchData);
+        await editBranch(selectedBranch.id!, updatedBranchData);
         setIsEditDrawerOpen(false); // Close the drawer after updating
         toast.success("Branch updated successfully!");
       } catch (error) {
@@ -111,8 +99,8 @@ const BranchList: React.FC = () => {
 
   const sortedBranches = sortBy
     ? currentBranches.slice().sort((a:Branch, b:Branch) => {
-        const aValue = a[sortBy as keyof Branch];
-        const bValue = b[sortBy as keyof Branch];
+        const aValue = a[sortBy as keyof Branch] ?? "";;
+        const bValue = b[sortBy as keyof Branch] ?? "";;
         if (sortOrder === "asc") {
           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
         } else {
@@ -175,8 +163,9 @@ const BranchList: React.FC = () => {
       <Pagination
         totalItems={branches.length}
         defaultItemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
-      />
+        onPageChange={handlePageChange} itemsPerPage={0} currentPage={0} setCurrentPage={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
       <ToastContainer />
     </div>
   );

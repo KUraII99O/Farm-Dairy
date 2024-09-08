@@ -77,7 +77,7 @@ import { ManageFoodUnitProvider } from "./component/FoodUnit/Provider";
 import FoodItemListPage from "./Pages/FoodItemListPage";
 import { ManageFoodItemProvider } from "./component/FoodItem/Provider";
 import MonitoringServiceListPage from "./Pages/MonitoringServiceListPage";
-import { MonitoringServiceProvider } from "./component/MonitoringServices/Provider";
+import { ManageMonitoringProvider } from "./component/MonitoringServices/Provider";
 import UserTypeListPage from "./Pages/UserTypeListPage";
 import { UserTypeProvider } from "./component/UserType/Provider";
 import { ManagePregnancyProvider } from "./component/CowPregnancy/Provider";
@@ -123,7 +123,7 @@ const App: React.FC = () => {
                                             <ManageVaccineProvider>
                                               <ManageFoodUnitProvider>
                                                 <ManageFoodItemProvider>
-                                                  <MonitoringServiceProvider>
+                                                  <ManageMonitoringProvider>
                                                     <UserTypeProvider>
                                                       <ManagePregnancyProvider>
                                                         <Router>
@@ -676,7 +676,7 @@ const App: React.FC = () => {
                                                         </Router>
                                                       </ManagePregnancyProvider>
                                                     </UserTypeProvider>
-                                                  </MonitoringServiceProvider>
+                                                  </ManageMonitoringProvider>
                                                 </ManageFoodItemProvider>
                                               </ManageFoodUnitProvider>
                                             </ManageVaccineProvider>

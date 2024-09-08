@@ -1,35 +1,22 @@
 import React, { useEffect, useState } from "react";
-
-interface Branch {
-  id: string;
-  name: string;
-  setupDate: Date; // Use Date type
-  builderName: string;
-  phoneNumber: string;
-  email: string;
-  userId: string;
-  branchName: string;
-}
+import { Branch } from "../BranchService";
 
 interface EditBranchFormProps {
   branch?: Branch;
-  onSubmit: (formData: Branch) => void;
+  onSubmit: (formData: Branch) => Promise<void>;
   onClose: () => void;
 }
-
 const EditBranchForm: React.FC<EditBranchFormProps> = ({
   branch,
   onSubmit,
   onClose,
 }) => {
   const [formData, setFormData] = useState<Branch>({
-    id: "",
     name: "",
     setupDate: new Date(), // Initialize with current date or appropriate default
     builderName: "",
     phoneNumber: "",
     email: "",
-    userId: "",
     branchName: "",
   });
 
@@ -37,17 +24,15 @@ const EditBranchForm: React.FC<EditBranchFormProps> = ({
     if (branch) {
       setFormData({
         ...branch,
-        setupDate: branch.setupDate, // Use Date object directly
+        setupDate: new Date(branch.setupDate), // Ensure it's a Date object
       });
     } else {
       setFormData({
-        id: "",
         name: "",
         setupDate: new Date(), // Set default date
         builderName: "",
         phoneNumber: "",
         email: "",
-        userId: "",
         branchName: "",
       });
     }
@@ -57,7 +42,7 @@ const EditBranchForm: React.FC<EditBranchFormProps> = ({
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: name === "setupDate" ? new Date(value) : value, // Correctly handle the date input
+      [name]: name === "setupDate" ? new Date(value) : value, // Ensure proper Date handling
     });
   };
 
@@ -100,7 +85,7 @@ const EditBranchForm: React.FC<EditBranchFormProps> = ({
             type="date"
             id="setupDate"
             name="setupDate"
-            value={formData.setupDate.toISOString().split('T')[0]} // Convert to string format
+            value={formData.setupDate.toISOString().split('T')[0]} // Convert Date to string for input
             onChange={handleChange}
             className="p-2 rounded border border-gray-300 w-full"
             required

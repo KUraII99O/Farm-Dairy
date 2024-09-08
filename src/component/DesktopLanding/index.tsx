@@ -7,11 +7,15 @@ import Desktop from '../Desktop';
 import OptionSelection from '../OptionSelection';
 
 const DesktopLanding = () => {
-  const optionSelectionRef = useRef(null);
-  const pricingRef = useRef(null);
+  // Specify the type of the ref as HTMLDivElement or null
+  const optionSelectionRef = useRef<HTMLDivElement | null>(null);
+  const pricingRef = useRef<HTMLDivElement | null>(null);
 
   const scrollToOptionSelection = () => {
-    optionSelectionRef.current.scrollIntoView({ behavior: 'smooth' });
+    // Check if the ref is not null before calling scrollIntoView
+    if (optionSelectionRef.current) {
+      optionSelectionRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const scrollToPricing = () => {

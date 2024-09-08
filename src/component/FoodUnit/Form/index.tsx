@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from "react";
-
-interface FoodUnit {
-  id: string;
-  name: string;
-  userId: string;
-}
+import { FoodUnit } from "../FoodUnitService";
 
 interface EditFoodUnitFormProps {
   foodUnit?: FoodUnit | null; // Accept null to handle empty cases

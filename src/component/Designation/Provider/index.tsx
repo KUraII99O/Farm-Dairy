@@ -1,12 +1,24 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext, ReactNode } from "react";
 import { Designation, DesignationService } from "../DesignationService";
 
-export const ManageDesignationContext = createContext<any>(null);
+// Define the context type
+interface ManageDesignationContextType {
+  designations: Designation[];
+  addDesignation: (newDesignation: Omit<Designation, 'id'>) => Promise<void>;
+  editDesignation: (id: string, updatedDesignation: Omit<Designation, 'id'>) => Promise<void>;
+  deleteDesignation: (id: string) => Promise<void>;
+}
 
-export const ManageDesignationProvider = ({ children }) => {
+// Initialize the context with a default value (null) or create a proper default value
+const ManageDesignationContext = createContext<ManageDesignationContextType | undefined>(undefined);
+
+// Define the props type for the provider component
+interface ManageDesignationProviderProps {
+  children: ReactNode;
+}
+
+export const ManageDesignationProvider: React.FC<ManageDesignationProviderProps> = ({ children }) => {
   const [designations, setDesignations] = useState<Designation[]>([]);
-
-
 
   useEffect(() => {
     const fetchDesignationsData = async () => {
@@ -19,17 +31,15 @@ export const ManageDesignationProvider = ({ children }) => {
         console.log("User ID:", user.id); // Log user ID
   
         const data = await DesignationService.fetchDesignations();
-        console.log("Designation data:", data); // Log staff data
+        console.log("Designation data:", data); // Log designation data
         setDesignations(data || []);
       } catch (error) {
-        console.error("Error fetching Designation:", error);
+        console.error("Error fetching Designations:", error);
       }
     };
   
     fetchDesignationsData();
   }, []);
-
-  
 
   const addDesignation = async (newDesignation: Omit<Designation, 'id'>) => {
     try {
@@ -51,16 +61,7 @@ export const ManageDesignationProvider = ({ children }) => {
     }
   };
 
-  const toggleDesignationStatus = async (id: string) => {
-    try {
-      const data = await DesignationService.toggleDesignationStatus(id);
-      setDesignations(prevDesignations =>
-        prevDesignations.map(designation => (designation.id === id ? { ...designation, status: !designation.status } : designation))
-      );
-    } catch (error) {
-      console.error("Error toggling designation status:", error);
-    }
-  };
+
 
   const deleteDesignation = async (id: string) => {
     try {
@@ -71,12 +72,11 @@ export const ManageDesignationProvider = ({ children }) => {
     }
   };
 
-  const value = {
+  const value: ManageDesignationContextType = {
     designations,
     addDesignation,
     editDesignation,
-    deleteDesignation,
-    toggleDesignationStatus
+    deleteDesignation
   };
 
   return (

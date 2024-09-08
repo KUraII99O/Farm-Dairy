@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import ProfileImageUploader from "../../FileUpload";
+import { useNavigate } from "react-router-dom";
 import { MdEdit } from "react-icons/md";
 import { FaUserPlus } from "react-icons/fa";
 
 interface Supplier {
   id: string;
+  userId: string;
   name: string;
   companyName: string;
   phoneNumber: string;
@@ -16,17 +16,19 @@ interface Supplier {
 
 interface EditSupplierFormProps {
   supplier: Supplier | null;
-  onSubmit: (formData: Supplier) => void;
+  onSubmit: (formData: any) => void; // Adjust the type according to your actual formData shape
   onClose: () => void;
 }
 
-const EditSupplierForm: React.FC<EditSupplierFormProps> = ({ supplier, onSubmit, onClose }) => {
-  useParams<{ id: string; }>();
+const EditSupplierForm: React.FC<EditSupplierFormProps> = ({
+  supplier,
+  onSubmit,
+  onClose,
+}) => {
   const navigate = useNavigate();
   const formRef = useRef<HTMLDivElement | null>(null);
 
-  const [formData, setFormData] = useState<Supplier>({
-    id: "",
+  const [formData, setFormData] = useState<Omit<Supplier, "id" | "userId">>({
     name: "",
     companyName: "",
     phoneNumber: "",
@@ -38,7 +40,11 @@ const EditSupplierForm: React.FC<EditSupplierFormProps> = ({ supplier, onSubmit,
   useEffect(() => {
     if (supplier) {
       setFormData({
-        ...supplier,
+        name: supplier.name,
+        companyName: supplier.companyName,
+        phoneNumber: supplier.phoneNumber,
+        email: supplier.email,
+        address: supplier.address,
         image: supplier.image || "",
       });
     }
@@ -52,16 +58,10 @@ const EditSupplierForm: React.FC<EditSupplierFormProps> = ({ supplier, onSubmit,
     });
   };
 
-  const handleImageChange = (image: string) => {
-    setFormData({
-      ...formData,
-      image,
-    });
-  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSubmit(formData); // Call onSubmit (which is handleAddNewSupplier or handleUpdateSupplier)
+    onSubmit(formData); // Call onSubmit with the formData excluding id and userId
   };
 
   const handleCloseDrawer = () => {
@@ -196,20 +196,7 @@ const EditSupplierForm: React.FC<EditSupplierFormProps> = ({ supplier, onSubmit,
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
-            <div className="mb-4">
-              <label
-                htmlFor="image"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Profile Image:
-              </label>
-              {formData.image !== null && (
-                <ProfileImageUploader
-                  onImageChange={handleImageChange}
-                  image={formData.image}
-                />
-              )}
-            </div>
+            
             <div className="flex">
               <button
                 type="submit"

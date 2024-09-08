@@ -12,7 +12,9 @@ interface MilkListProps {
   handleDeleteConfirmation: (id: number) => void;
   translate: (key: string) => string;
   formClass: string;
-  itemsPerPage: number; // If pagination is involved
+  itemsPerPage: number; 
+  AddedByUser: string;
+  // If pagination is involved
 }
 
 const MilkList: React.FC<MilkListProps> = ({
@@ -21,8 +23,6 @@ const MilkList: React.FC<MilkListProps> = ({
   sortIcon,
   handleDeleteConfirmation,
   translate,
-  formClass,
-  AddedByUser,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
@@ -138,8 +138,9 @@ const MilkList: React.FC<MilkListProps> = ({
       <Pagination
         totalItems={currentMilks.length}
         defaultItemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
-      />
+        onPageChange={handlePageChange} itemsPerPage={0} currentPage={0} setCurrentPage={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
     </div>
   );
 };

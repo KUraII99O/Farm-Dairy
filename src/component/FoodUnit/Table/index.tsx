@@ -2,13 +2,10 @@ import React from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { BsPencil } from "react-icons/bs";
 import { Table } from "flowbite-react";
+import { FoodUnit } from "../FoodUnitService";
 
 // Define the type for an individual food unit
-interface FoodUnit {
-  id: string;
-  name: string;
-  userId: string;
-}
+
 
 // Define the type for the props of FoodUnitTable
 interface FoodUnitTableProps {
@@ -64,7 +61,7 @@ const FoodUnitTable: React.FC<FoodUnitTableProps> = ({
                 <BsPencil className="w-5 h-5 ml-2" />
               </button>
               <button
-                onClick={() => handleDeleteConfirmation(foodUnit.id)}
+                onClick={() => handleDeleteConfirmation(foodUnit.id!)}
                 className="text-red-500 hover:text-red-700 focus:outline-none flex items-center"
               >
                 <AiOutlineDelete className="w-5 h-5 mr-1" />

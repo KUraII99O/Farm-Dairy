@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import Pagination from "../../Pagination";
 import { BiListUl } from "react-icons/bi";
@@ -7,11 +7,11 @@ import EditSupplierForm from "../Form";
 import { useSupplier } from "../Provider";
 import SupplierTable from "../Table";
 import { useTranslation } from "../../Translator/Provider";
-
-
+import { Drawer } from "flowbite-react";
 
 interface Supplier {
   id: string;
+  userId: string;
   name: string;
   companyName: string;
   phoneNumber: string;
@@ -20,18 +20,20 @@ interface Supplier {
   image: string;
 }
 
-type SupplierWithoutId = Omit<Supplier, 'id'>;
+type SupplierWithoutId = Omit<Supplier, "id">;
 
 const SupplierList: React.FC = () => {
   const { suppliers, deleteSupplier, addSupplier, editSupplier } =
-  useSupplier();
+    useSupplier();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
-  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
+  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(
+    null
+  );
   const { translate, language } = useTranslation();
   const isArabic = language === "ar";
   const formClass = isArabic ? "rtl" : "ltr";
@@ -58,8 +60,10 @@ const SupplierList: React.FC = () => {
       toast.error("An error occurred while adding the new supplier.");
     }
   };
-  
-  const handleUpdateSupplier = async (updatedSupplierData: SupplierWithoutId) => {
+
+  const handleUpdateSupplier = async (
+    updatedSupplierData: SupplierWithoutId
+  ) => {
     try {
       if (selectedSupplier) {
         await editSupplier(selectedSupplier.id, updatedSupplierData);
@@ -70,6 +74,11 @@ const SupplierList: React.FC = () => {
       toast.error("An error occurred while updating the supplier.");
     }
   };
+  const handleCloseDrawer = () => {
+    setIsEditDrawerOpen(false);
+    setSelectedSupplier(null);
+  };
+
 
   const handleDeleteConfirmation = (id: string) => {
     if (window.confirm("Are you sure you want to delete this Supplier?")) {
@@ -94,19 +103,6 @@ const SupplierList: React.FC = () => {
     return <FaSort />;
   };
 
-  const dynamicSort = (property: string) => {
-    const sortOrderValue = sortOrder === "asc" ? 1 : -1;
-    return function (a: any, b: any) {
-      if (a[property] < b[property]) {
-        return -1 * sortOrderValue;
-      } else if (a[property] > b[property]) {
-        return 1 * sortOrderValue;
-      } else {
-        return 0;
-      }
-    };
-  };
-
   const filteredSuppliers = suppliers.filter((supplier) =>
     Object.values(supplier).some((field) =>
       field.toString().toLowerCase().includes(searchTerm.toLowerCase())
@@ -115,8 +111,8 @@ const SupplierList: React.FC = () => {
 
   const sortedSuppliers = sortBy
     ? filteredSuppliers.slice().sort((a, b) => {
-      const aValue = a[sortBy as keyof Supplier];
-      const bValue = b[sortBy as keyof Supplier];
+        const aValue = a[sortBy as keyof Supplier];
+        const bValue = b[sortBy as keyof Supplier];
         if (sortOrder === "asc") {
           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
         } else {
@@ -130,22 +126,9 @@ const SupplierList: React.FC = () => {
     setItemsPerPage(itemsPerPage);
   };
 
-  const indexOfLastSupplier = currentPage * itemsPerPage;
-  const indexOfFirstSupplier = indexOfLastSupplier - itemsPerPage;
-  const currentSuppliers = sortedSuppliers.slice(
-    indexOfFirstSupplier,
-    indexOfLastSupplier
-  );
 
   return (
     <>
-      {isEditDrawerOpen && (
-        <EditSupplierForm
-          supplier={selectedSupplier}
-          onSubmit={selectedSupplier ? handleUpdateSupplier : handleAddNewSupplier}
-          onClose={() => setIsEditDrawerOpen(false)}
-        />
-      )}
       <div className="overflow-x-auto">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center"></div>
@@ -170,18 +153,47 @@ const SupplierList: React.FC = () => {
           Supplier List
         </h1>
         <SupplierTable
-        sortedSuppliers={sortedSuppliers}
-        handleSort={handleSort}
-        sortIcon={sortIcon}
-        handleEditDrawerOpen={handleEditDrawerOpen}
-        handleDeleteConfirmation={handleDeleteConfirmation}
-        formClass={formClass}
-        translate={translate}
-      />
+          sortedSuppliers={sortedSuppliers}
+          handleSort={handleSort}
+          sortIcon={sortIcon}
+          handleEditDrawerOpen={handleEditDrawerOpen}
+          handleDeleteConfirmation={handleDeleteConfirmation}
+          formClass={formClass}
+          translate={translate}
+        />
+
+        <Drawer
+          open={isEditDrawerOpen}
+          onClose={handleCloseDrawer}
+          position="right" // Set the position to "right"
+        >
+          <Drawer.Header>
+            <h2 className="text-xl font-bold">
+              {selectedSupplier
+                ? translate("editUserType")
+                : translate("addNewUserType")}
+            </h2>
+          </Drawer.Header>
+          <Drawer.Items>
+            <EditSupplierForm
+              supplier={selectedSupplier}
+              onSubmit={
+                selectedSupplier ? handleUpdateSupplier : handleAddNewSupplier
+              }
+              onClose={handleCloseDrawer}
+            />
+          </Drawer.Items>
+        </Drawer>
+
         <Pagination
           totalItems={sortedSuppliers.length}
           defaultItemsPerPage={itemsPerPage}
           onPageChange={handlePageChange}
+          itemsPerPage={0}
+          currentPage={0}
+          setCurrentPage={function (): void {
+            throw new Error("Function not implemented.");
+          }}
         />
         <ToastContainer />
       </div>

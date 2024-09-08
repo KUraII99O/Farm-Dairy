@@ -1,36 +1,46 @@
-import React, { useState, useContext } from "react";
-import { AiOutlineDelete } from "react-icons/ai";
-import { MonitoringServiceContext } from "../Provider"; // Import MonitoringServiceContext
+import React, { useState } from "react";
+import { useMonitoring } from "../Provider"; // Import MonitoringServiceContext
 import Pagination from "../../Pagination";
 import { ToastContainer, toast } from "react-toastify";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import { BiListUl } from "react-icons/bi";
-import { BsPencil } from "react-icons/bs";
-import EditMonitoringServiceForm from "../Form"; // Update to use EditMonitoringServiceForm instead of EditFoodUnitForm
+import { Drawer } from "flowbite-react";
+import MonitoringTable from "../Table";
+import { useTranslation } from "../../Translator/Provider";
+import EditMonitoringForm from "../Form";
+import { Monitoring } from "../MonitoringService";
 
 const MonitoringServiceList: React.FC = () => {
-  const { monitoringServices, deleteMonitoringService, addMonitoringService, editMonitoringService } = useContext(MonitoringServiceContext); // Use MonitoringServiceContext
+  const { monitorings, addMonitoring, editMonitoring, deleteMonitoring } = useMonitoring(); // Use MonitoringServiceContext
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
-  const [selectedMonitoringService, setSelectedMonitoringService] = useState(null);
+  const [selectedMonitoringService, setSelectedMonitoringService] = useState<Monitoring | null>(null);
+  const { translate, language } = useTranslation();
+  const isArabic = language === "ar";
+  const formClass = isArabic ? "rtl" : "ltr";
 
-  const handleDeleteConfirmation = (id: number) => {
+  const handleDeleteConfirmation = (id: string) => {
     if (window.confirm("Are you sure you want to delete this monitoring service?")) {
       handleDelete(id);
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
-      await deleteMonitoringService(id);
+      await deleteMonitoring(id);
       toast.success("Monitoring service deleted successfully!");
     } catch (error) {
       toast.error("An error occurred while deleting monitoring service.");
     }
+  };
+
+  const handleCloseDrawer = () => {
+    setIsEditDrawerOpen(false);
+    setSelectedMonitoringService(null);
   };
 
   const handleSort = (fieldName: string) => {
@@ -49,14 +59,14 @@ const MonitoringServiceList: React.FC = () => {
     return <FaSort />;
   };
 
-  const handleEditDrawerOpen = (monitoringService: any) => {
+  const handleEditDrawerOpen = (monitoringService: Monitoring | null) => {
     setSelectedMonitoringService(monitoringService);
     setIsEditDrawerOpen(true);
   };
 
-  const handleAddNewMonitoringService = async (newServiceData: any) => {
+  const handleAddNewMonitoringService = async (newServiceData: Omit<Monitoring, "id" | "userId">) => {
     try {
-      await addMonitoringService(newServiceData);
+      await addMonitoring(newServiceData);
       setIsEditDrawerOpen(false); // Close the drawer after adding
       toast.success("New monitoring service added successfully!");
     } catch (error) {
@@ -64,9 +74,10 @@ const MonitoringServiceList: React.FC = () => {
     }
   };
 
-  const handleUpdateMonitoringService = async (updatedServiceData) => {
+  const handleUpdateMonitoringService = async (updatedServiceData: Omit<Monitoring, "id" | "userId">) => {
+    if (!selectedMonitoringService) return;
     try {
-      await editMonitoringService(selectedMonitoringService.id, updatedServiceData);
+      await editMonitoring(selectedMonitoringService.id!, updatedServiceData);
       setIsEditDrawerOpen(false); // Close the drawer after updating
       toast.success("Monitoring service updated successfully!");
     } catch (error) {
@@ -81,12 +92,12 @@ const MonitoringServiceList: React.FC = () => {
 
   const indexOfLastMonitoringService = currentPage * itemsPerPage;
   const indexOfFirstMonitoringService = indexOfLastMonitoringService - itemsPerPage;
-  const currentMonitoringServices = monitoringServices.slice(indexOfFirstMonitoringService, indexOfLastMonitoringService);
+  const currentMonitoringServices = monitorings.slice(indexOfFirstMonitoringService, indexOfLastMonitoringService);
 
   const sortedMonitoringServices = sortBy
     ? currentMonitoringServices.slice().sort((a, b) => {
-        const aValue = a[sortBy];
-        const bValue = b[sortBy];
+        const aValue = a[sortBy as keyof Monitoring]?? "";
+        const bValue = b[sortBy as keyof Monitoring]?? "";
         if (sortOrder === "asc") {
           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
         } else {
@@ -119,78 +130,39 @@ const MonitoringServiceList: React.FC = () => {
         <BiListUl className="inline-block mr-2" />
         Monitoring Service List
       </h1>
-      <table className="min-w-full bg-white border-collapse">
-        <thead>
-          <tr>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("id")}
-            >
-              <div className="flex items-center">
-                #ID
-                {sortIcon("id")}
-              </div>
-            </th>
-            <th
-              className="border border-gray-300 px-4 py-2 cursor-pointer"
-              onClick={() => handleSort("serviceName")}
-            >
-              <div className="flex items-center">
-                Name
-                {sortIcon("serviceName")}
-              </div>
-            </th>
-            <th className="border border-gray-300 px-4 py-2">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedMonitoringServices
-            .filter((service) =>
-              service.serviceName.toLowerCase().includes(searchTerm.toLowerCase())
-            )
-            .map((service) => (
-              <tr key={service.id}>
-                <td className="border border-gray-300 px-4 py-2">{service.id}</td>
-                <td className="border border-gray-300 px-4 py-2">{service.serviceName}</td>
-                <td className="border border-gray-300 px-2 py-2">
-                  <div className="flex items-center">
-                    <button
-                      onClick={() => handleEditDrawerOpen(service)}
-                      className="text-blue-500 hover:underline flex items-center mr-4 focus:outline-none"
-                    >
-                      <BsPencil className="w-5 h-5 mr-1" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteConfirmation(service.id)}
-                      className="text-red-500 hover:text-red-700 focus:outline-none flex items-center"
-                    >
-                      <AiOutlineDelete className="w-5 h-5 mr-1" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
-      {isEditDrawerOpen && (
-        <div className="fixed inset-0 overflow-y-auto z-50 flex justify-end">
-          <div className="w-96 bg-white h-full shadow-lg p-6">
-            <h2 className="text-xl font-bold mb-4">
-              {selectedMonitoringService ? "Edit Monitoring Service" : "Add New Monitoring Service"}
-            </h2>
-            <EditMonitoringServiceForm
-              service={selectedMonitoringService}
-              onSubmit={selectedMonitoringService ? handleUpdateMonitoringService : handleAddNewMonitoringService}
-              onClose={() => setIsEditDrawerOpen(false)} // Assuming setIsEditDrawerOpen is the function to close the drawer
-            />
-          </div>
-        </div>
-      )}
-      <Pagination
-        totalItems={monitoringServices.length}
-        defaultItemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
+      <MonitoringTable
+        sortedMonitorings={sortedMonitoringServices}
+        handleSort={handleSort}
+        sortIcon={sortIcon}
+        handleEditDrawerOpen={handleEditDrawerOpen}
+        handleDeleteConfirmation={handleDeleteConfirmation}
+        formClass={formClass}
+        translate={translate}
       />
+     <Drawer
+        open={isEditDrawerOpen}
+        onClose={handleCloseDrawer}
+        position="right"
+      >
+        <Drawer.Header>
+          <h2 className="text-xl font-bold">
+            {selectedMonitoringService ? translate("editFoodItem") : translate("addNewFoodItem")}
+          </h2>
+        </Drawer.Header>
+        <Drawer.Items>
+          <EditMonitoringForm
+            monitoring={selectedMonitoringService}
+            onSubmit={selectedMonitoringService ? handleUpdateMonitoringService : handleAddNewMonitoringService}
+            onClose={handleCloseDrawer}
+          />
+        </Drawer.Items>
+      </Drawer>
+      <Pagination
+        totalItems={monitorings.length}
+        defaultItemsPerPage={itemsPerPage}
+        onPageChange={handlePageChange} itemsPerPage={0} currentPage={0} setCurrentPage={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
       <ToastContainer />
     </div>
   );

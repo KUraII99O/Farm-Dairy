@@ -1,27 +1,45 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { IoInformationCircle } from "react-icons/io5";
 import { TiMinus } from "react-icons/ti";
 import { FaRegEdit } from "react-icons/fa";
 import { useTranslation } from "../../Translator/Provider";
 import { PiMonitor } from "react-icons/pi";
-import { ManageVaccineMonitorContext } from "../Provider";
+import { useManageVaccine } from "../Provider";
 
-const EditVaccineMonitorForm = () => {
-  const { vaccineRecords, addVaccineRecord, editVaccineRecord } = useContext(ManageVaccineMonitorContext);
+interface VaccineMonitor {
+  id: string;
+  stallNo: string;
+  animalID: string;
+  date: string;
+  note: string;
+  reportedby: string;
+  userId: string;
+  informations: Array<{
+    VaccineName: string;
+    Dose: string;
+    Repeat: string;
+    Remarks: string;
+    GivenTime: string;
+  }>;
+}
+
+const EditVaccineMonitorForm: React.FC = () => {
+  const { vaccineRecords, addVaccineRecord, editVaccineRecord } = useManageVaccine();
   const { id } = useParams<{ id: string }>();
   const { translate, language } = useTranslation();
   const navigate = useNavigate();
 
   const isEditMode = !!id;
 
-  const [, setCurrentDate] = useState<string>("");
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<VaccineMonitor>({
+    id: "",
     stallNo: "",
-    CowNumber: "",
+    animalID: "",
     date: "",
     note: "",
     reportedby: "",
+    userId: "",
     informations: Array.from({ length: 3 }, () => ({
       VaccineName: "",
       Dose: "",
@@ -36,26 +54,19 @@ const EditVaccineMonitorForm = () => {
   useEffect(() => {
     const date = new Date();
     const formattedDate = date.toISOString().split("T")[0];
-    setCurrentDate(formattedDate);
     setFormData((prevFormData) => ({ ...prevFormData, date: formattedDate }));
   }, []);
 
   useEffect(() => {
     if (isEditMode) {
-      const selectedVaccineMonitor = vaccineRecords.find((vaccineMonitor: { id: string; }) => vaccineMonitor.id === id);
+      const selectedVaccineMonitor = vaccineRecords.find((vaccineMonitor) => vaccineMonitor.id === id);
       if (selectedVaccineMonitor) {
         setFormData({
-          stallNo: selectedVaccineMonitor.stallNo,
-          CowNumber: selectedVaccineMonitor.CowNumber,
-          date: selectedVaccineMonitor.date,
-          note: selectedVaccineMonitor.note,
-          reportedby: selectedVaccineMonitor.reportedby,
-          informations: selectedVaccineMonitor.informations,
+          ...selectedVaccineMonitor,
         });
       }
     }
   }, [id, isEditMode, vaccineRecords]);
-
   useEffect(() => {
     const storedUser = localStorage.getItem('loggedInUser');
     if (storedUser) {
@@ -145,12 +156,12 @@ const EditVaccineMonitorForm = () => {
             />
           </div>
           <div className="flex flex-col space-y-1 px-2 w-1/2">
-            <label className="text-sm font-medium text-gray-700">{translate("cownumber")}:</label>
+            <label className="text-sm font-medium text-gray-700">{translate("animalID")}:</label>
             <input
               type="text"
-              placeholder={translate("cownumber")}
-              name="CowNumber"
-              value={formData.CowNumber}
+              placeholder={translate("animalID")}
+              name="animalID"
+              value={formData.animalID}
               onChange={(e) => handleChange(e, -1)}
               className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
             />

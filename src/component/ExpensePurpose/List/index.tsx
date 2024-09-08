@@ -6,7 +6,10 @@ import { toast, ToastContainer } from "react-toastify";
 import EditPurposeForm from "../Form";
 import ExpensePurposeTable from "../Table";
 import { useTranslation } from "../../Translator/Provider";
-import { Drawer, Button } from "flowbite-react";
+import { Drawer } from "flowbite-react";
+import { ExpensePurpose } from "../ExpensePurposeService";
+
+
 
 const PurposeList: React.FC = () => {
   const { expensePurposes, deleteExpensePurpose, addExpensePurpose, editExpensePurpose } = useContext(ExpensePurposeContext);
@@ -16,12 +19,13 @@ const PurposeList: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
-  const [selectedPurpose, setSelectedPurpose] = useState(null);
+  const [selectedPurpose, setSelectedPurpose] = useState<ExpensePurpose | null>(null);
   const { translate, language } = useTranslation();
 
   // Define handleUpdatePurpose function
-  const handleUpdatePurpose = async (updatedPurposeData) => {
+  const handleUpdatePurpose = async (updatedPurposeData:ExpensePurpose) => {
     try {
+      if(selectedPurpose)
       await editExpensePurpose(selectedPurpose.id, updatedPurposeData);
       setIsEditDrawerOpen(false);
       toast.success("Purpose updated successfully!");
@@ -93,7 +97,7 @@ const PurposeList: React.FC = () => {
     };
   };
 
-  const filteredPurposes = expensePurposes.filter((purpose) =>
+  const filteredPurposes = expensePurposes.filter((purpose:ExpensePurpose) =>
     Object.values(purpose).some((field) =>
       field.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
@@ -161,7 +165,7 @@ const PurposeList: React.FC = () => {
         </Drawer.Header>
         <Drawer.Items>
           <EditPurposeForm
-            purpose={selectedPurpose}
+            purpose={selectedPurpose || undefined}
             onSubmit={selectedPurpose ? handleUpdatePurpose : handleAddNewPurpose}
           />
         </Drawer.Items>
@@ -169,8 +173,9 @@ const PurposeList: React.FC = () => {
       <Pagination
         totalItems={sortedPurposes.length}
         defaultItemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
-      />
+        onPageChange={handlePageChange} itemsPerPage={0} currentPage={0} setCurrentPage={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
       <ToastContainer />
     </div>
   );

@@ -1,15 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 
-interface CowSales {
+export type  CowSales ={
   status: boolean;
   id: string;
   customerName: string;
   customerPhone: string;
   customerEmail: string;
   address: string;
-  totalPrice: number;
+  totalPrice: string;
   totalPaid: string;
-  due: number;
+  due: string;
   note: string;
   collectedFrom: string;
   image: string;
@@ -40,7 +40,7 @@ async function fetchSales(): Promise<CowSales[]> {
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/sales?userId=${user.id}`);
+    const response = await fetch(`http://localhost:3000/cowSales?userId=${user.id}`);
     if (!response.ok) {
       throw new Error('Failed to fetch sales data');
     }
@@ -70,7 +70,7 @@ async function addSale(newSale: Omit<CowSales, 'id' | 'userId'>): Promise<CowSal
   try {
     const saleWithId: CowSales = { id: uuidv4(), userId: user.id, ...newSale };
 
-    const response = await fetch('http://localhost:3000/sales', {
+    const response = await fetch('http://localhost:3000/cowSales', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -105,7 +105,7 @@ async function editSale(id: string, updatedSale: Omit<CowSales, 'id' | 'userId'>
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/sales/${id}`, {
+    const response = await fetch(`http://localhost:3000/cowSales/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -137,7 +137,7 @@ async function deleteSale(id: string): Promise<void> {
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/sales/${id}`, {
+    const response = await fetch(`http://localhost:3000/cowSales/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) {
@@ -153,5 +153,5 @@ async function deleteSale(id: string): Promise<void> {
   }
 }
 
-export { CowSalesService };  export type { CowSales };
+export { CowSalesService };  
 

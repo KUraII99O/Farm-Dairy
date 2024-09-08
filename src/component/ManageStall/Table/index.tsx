@@ -3,7 +3,27 @@ import { AiOutlineDelete } from "react-icons/ai";
 import { BsPencil } from "react-icons/bs";
 import { Table } from "flowbite-react";
 
-const StallTable = ({
+// Define the types for the stall data and component props
+interface Stall {
+  id: string;
+  stallNumber: string;
+  status: boolean;
+  details: string;
+  userId: string;
+}
+
+interface StallTableProps {
+  sortedStalls: Stall[];
+  handleSort: (field: keyof Stall) => void;
+  sortIcon: (field: keyof Stall) => React.ReactNode;
+  handleToggleStatus: (id: string, status: string) => void;
+  handleEditDrawerOpen: (stall: Stall) => void;
+  handleDeleteConfirmation: (id: string) => void;
+  translate: (key: string) => string;
+  formClass?: string;
+}
+
+const StallTable: React.FC<StallTableProps> = ({
   sortedStalls,
   handleSort,
   sortIcon,
@@ -98,7 +118,7 @@ const StallTable = ({
                 onClick={() => handleEditDrawerOpen(stall)}
                 className="text-blue-500 hover:underline flex items-center mr-4 focus:outline-none"
               >
-                <BsPencil className="w-5 h-5  ml-2" />
+                <BsPencil className="w-5 h-5 ml-2" />
               </button>
               <button
                 onClick={() => handleDeleteConfirmation(stall.id)}

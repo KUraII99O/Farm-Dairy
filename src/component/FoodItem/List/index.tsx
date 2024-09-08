@@ -85,6 +85,7 @@ const FoodItemList: React.FC = () => {
 
   const handleUpdateFoodItem = async (updatedFoodItemData: any) => {
     try {
+      if(selectedFoodItem)
       await editFoodItem(selectedFoodItem.id, updatedFoodItemData);
       setIsEditDrawerOpen(false); // Close the drawer after updating
       toast.success("Food item updated successfully!");
@@ -168,8 +169,9 @@ const FoodItemList: React.FC = () => {
       <Pagination
         totalItems={foodItems.length}
         defaultItemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
-      />
+        onPageChange={handlePageChange} itemsPerPage={0} currentPage={0} setCurrentPage={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
       <ToastContainer />
     </div>
   );

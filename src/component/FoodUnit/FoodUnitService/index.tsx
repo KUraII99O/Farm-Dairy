@@ -2,8 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 // Define the FoodUnit interface
 export type FoodUnit = {
-    id: string;
-    userId: string;
+    id?: string;
+    userId?: string;
     name: string;
 };
 

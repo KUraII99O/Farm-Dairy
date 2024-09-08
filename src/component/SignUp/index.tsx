@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "../Translator/Provider";
 import { useLocation } from 'react-router-dom';
 
-const SignUpForm: React.FC<{ planId?: number }> = ({ planId }) => {
+const SignUpForm: React.FC<{ planId?: number }> = ({ }) => {
   const { translate, setLanguage, language } = useTranslation();
 
   const [mobile, setMobile] = useState("");
@@ -60,8 +60,9 @@ const SignUpForm: React.FC<{ planId?: number }> = ({ planId }) => {
         });
   
         if (!response.ok) {
-          const errorMessage = await response.json();
-          throw new Error(errorMessage.error);
+          const errorResponse = await response.json();
+          const errorMessage = errorResponse.error || "An unknown error occurred";
+          throw new Error(errorMessage);
         }
   
         const data = await response.json();
@@ -72,8 +73,14 @@ const SignUpForm: React.FC<{ planId?: number }> = ({ planId }) => {
           navigate("/login");
         }, 1000);
       } catch (error) {
-        console.error("Registration failed:", error.message);
-        // Handle error state or display error to the user
+        // Type guard to handle errors properly
+        if (error instanceof Error) {
+          console.error("Registration failed:", error.message);
+          // Handle error state or display error to the user
+        } else {
+          console.error("Registration failed with an unknown error");
+          // Handle the case where error is not an instance of Error
+        }
       }
     }
   };

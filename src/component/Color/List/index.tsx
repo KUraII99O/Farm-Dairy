@@ -7,11 +7,12 @@ import { BiListUl } from "react-icons/bi";
 import EditColorForm from "../Form";
 import { useTranslation } from "../../Translator/Provider";
 import ColorTable from "../Table";
+import { Drawer } from "flowbite-react";
 
 interface Color {
   id: string;
   name: string;
-  userId: string; // Ensure userId is included
+  userId: string;
 }
 
 const ColorList: React.FC = () => {
@@ -24,7 +25,7 @@ const ColorList: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(5);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState<boolean>(false);
-  const [selectedColor, setSelectedColor] = useState<Color |  null>(null);
+  const [selectedColor, setSelectedColor] = useState<Color | null>(null);
   const isArabic = language === "ar";
   const formClass = isArabic ? "rtl" : "ltr";
 
@@ -41,6 +42,11 @@ const ColorList: React.FC = () => {
     } catch (error) {
       toast.error("An error occurred while deleting color.");
     }
+  };
+
+  const handleCloseDrawer = () => {
+    setIsEditDrawerOpen(false);
+    setSelectedColor(null);
   };
 
   const handleSort = (fieldName: string) => {
@@ -64,7 +70,8 @@ const ColorList: React.FC = () => {
     setIsEditDrawerOpen(true);
   };
 
-  const handleAddNewColor = async (newColorData: Omit<Color, 'id'>) => { // Ensure userId is included in addColor
+  const handleAddNewColor = async (newColorData: Color) => {
+    // Ensure userId is included in addColor
     try {
       await addColor(newColorData);
       setIsEditDrawerOpen(false);
@@ -74,7 +81,8 @@ const ColorList: React.FC = () => {
     }
   };
 
-  const handleUpdateColor = async (updatedColorData: Omit<Color, 'id'>) => { // Ensure userId is included in editColor
+  const handleUpdateColor = async (updatedColorData: Color) => {
+    // Ensure userId is included in editColor
     if (selectedColor) {
       try {
         await editColor(selectedColor.id, updatedColorData);
@@ -96,13 +104,13 @@ const ColorList: React.FC = () => {
   const currentColors = colors.slice(indexOfFirstColor, indexOfLastColor);
 
   const sortedColors = sortBy
-    ? currentColors.slice().sort((a, b) => {
-        const aValue = a[sortBy as keyof Color];
-        const bValue = b[sortBy as keyof Color];
+    ? currentColors.slice().sort((a: Color, b: Color) => {
+        const aValue = a[sortBy as keyof Color] || "";
+        const bValue = b[sortBy as keyof Color] || "";
         if (sortOrder === "asc") {
-          return (aValue > bValue ? 1 : aValue < bValue ? -1 : 0);
+          return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
         } else {
-          return (aValue < bValue ? 1 : aValue > bValue ? -1 : 0);
+          return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
         }
       })
     : currentColors;
@@ -120,7 +128,7 @@ const ColorList: React.FC = () => {
             className="p-2 rounded border border-gray-300"
           />
           <button
-            onClick={() => handleEditDrawerOpen(null)} 
+            onClick={() => handleEditDrawerOpen(null)}
             className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary ml-2"
           >
             Add New
@@ -133,7 +141,7 @@ const ColorList: React.FC = () => {
       </h1>
       <div className="rtl:mirror-x">
         <ColorTable
-          colors={sortedColors}
+          sortedColors={sortedColors}
           handleSort={handleSort}
           sortIcon={sortIcon}
           handleDeleteConfirmation={handleDeleteConfirmation}
@@ -142,25 +150,31 @@ const ColorList: React.FC = () => {
           formClass={formClass}
         />
       </div>
-      {isEditDrawerOpen && (
-        <div className="fixed inset-0 overflow-y-auto z-50 flex justify-end">
-          <div className="w-96 bg-white h-full shadow-lg p-6">
-            <h2 className="text-xl font-bold mb-4">
-              {selectedColor ? "Edit Color" : "Add New Color"}
-            </h2>
-            <EditColorForm
-              color={selectedColor}
-              onSubmit={selectedColor ? handleUpdateColor : handleAddNewColor}
-              onClose={() => setIsEditDrawerOpen(false)}
-            />
-          </div>
-        </div>
-      )}
+      <Drawer
+        open={isEditDrawerOpen}
+        onClose={handleCloseDrawer}
+        position="right"
+      >
+        <Drawer.Header>
+          <h2 className="text-xl font-bold">
+            {selectedColor ? translate("editColor") : translate("addNewColor")}
+          </h2>
+        </Drawer.Header>
+        <Drawer.Items>
+          <EditColorForm
+            color={selectedColor ?? undefined}
+            onSubmit={selectedColor ? handleUpdateColor : handleAddNewColor} // Modified functions to handle form data
+            onClose={handleCloseDrawer}
+          />
+        </Drawer.Items>
+      </Drawer>
+
       <Pagination
         totalItems={colors.length}
         defaultItemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
-      />
+        onPageChange={handlePageChange} itemsPerPage={0} currentPage={0} setCurrentPage={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
       <ToastContainer />
     </div>
   );

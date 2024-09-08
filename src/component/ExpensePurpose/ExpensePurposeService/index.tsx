@@ -1,10 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 
-export interface ExpensePurpose {
-  id: string;
+export type ExpensePurpose ={
+  id?: string;
   name: string;
   description: string;
-  userId: string;
+  userId?: string;
 }
 
 const ExpensePurposeService = {
@@ -35,7 +35,7 @@ async function fetchExpensePurposes(): Promise<ExpensePurpose[]> {
     const expensepurposesData: ExpensePurpose[] = await response.json();
     return expensepurposesData
   } catch (error) {
-    console.error('Error fetching Expense Purpose data:', error.message);
+    throw new Error('Error fetching Expense Purpose data:');
     return [];
   }
 }
@@ -104,4 +104,4 @@ async function deleteExpensePurpose(id: string): Promise<void> {
   }
 }
 
-export { ExpensePurposeService, ExpensePurpose };
+export { ExpensePurposeService };

@@ -2,13 +2,27 @@ import React from "react";
 import { Table } from "flowbite-react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { BsPencil } from "react-icons/bs";
-import { ColorTableProps } from "../../../types/types";
 
+interface Color {
+  id: string;
+  name: string;
+  userId: string;
+}
+
+export interface ColorTableProps {
+  sortedColors: Color[]; // Use the Color type here
+  handleSort: (fieldName: string) => void;
+  sortIcon: (fieldName: string) => JSX.Element;
+  handleDeleteConfirmation: (id: string) => void;
+  handleEditDrawerOpen: (color: Color) => void;
+  translate: (key: string) => string;
+  formClass: string;
+}
 
 
 
 const ColorTable: React.FC<ColorTableProps> = ({
-  colors, // Accept colors instead of sortedColors
+  sortedColors, // Accept colors instead of sortedColors
   handleSort,
   sortIcon,
   handleDeleteConfirmation,
@@ -32,7 +46,7 @@ const ColorTable: React.FC<ColorTableProps> = ({
       <Table.HeadCell>{translate("Action")}</Table.HeadCell>
     </Table.Head>
     <Table.Body className="divide-y">
-      {colors.map((colors, index) => (
+      {sortedColors.map((colors:any, index: number) => (
         <Table.Row
           key={colors.id}
           className="bg-white dark:border-gray-700 dark:bg-gray-800"

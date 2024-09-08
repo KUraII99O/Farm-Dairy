@@ -1,5 +1,5 @@
-import React, { useState, useContext } from "react";
-import { UserTypeContext } from "../Provider"; // Adjust path as necessary
+import React, { useState } from "react";
+import { useManageUserType } from "../Provider"; // Adjust path as necessary
 import Pagination from "../../Pagination";
 import { ToastContainer, toast } from "react-toastify";
 import { useTranslation } from "../../Translator/Provider";
@@ -9,15 +9,26 @@ import { Drawer } from "flowbite-react";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import { BiListUl } from "react-icons/bi";
 
+
+
+interface UserType  {
+  id: string;
+  typeName: string;
+  userId: string;
+};
+
+
+
+
 const UserTypeList: React.FC = () => {
-  const { userTypes, deleteUserType, addUserType, editUserType } = useContext(UserTypeContext);
+  const { userTypes, deleteUserType, addUserType, editUserType } = useManageUserType();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
-  const [selectedUserType, setSelectedUserType] = useState(null);
+  const [selectedUserType, setSelectedUserType]= useState<UserType | null>(null);
   const { translate, language } = useTranslation();
 
   const isArabic = language === "ar";
@@ -69,7 +80,8 @@ const UserTypeList: React.FC = () => {
     }
   };
 
-  const handleUpdateUserType = async (updatedUserTypeData) => {
+  const handleUpdateUserType = async (updatedUserTypeData: UserType) => {
+    if (selectedUserType) {
     try {
       await editUserType(selectedUserType.id, updatedUserTypeData);
       setIsEditDrawerOpen(false); // Close the drawer after updating
@@ -77,6 +89,7 @@ const UserTypeList: React.FC = () => {
     } catch (error) {
       toast.error("An error occurred while updating user type.");
     }
+  }
   };
 
   const handleCloseDrawer = () => {
@@ -98,8 +111,8 @@ const UserTypeList: React.FC = () => {
 
   const sortedUserTypes = sortBy
     ? currentUserTypes.slice().sort((a, b) => {
-        const aValue = a[sortBy];
-        const bValue = b[sortBy];
+        const aValue = a[sortBy as keyof UserType];
+        const bValue = b[sortBy as keyof UserType];
         if (sortOrder === "asc") {
           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
         } else {
@@ -163,8 +176,9 @@ const UserTypeList: React.FC = () => {
       <Pagination
         totalItems={validUserTypes.length}
         defaultItemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
-      />
+        onPageChange={handlePageChange} itemsPerPage={0} currentPage={0} setCurrentPage={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
       <ToastContainer />
     </div>
   );

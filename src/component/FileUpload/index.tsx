@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 
 const ImageUploadForm = () => {
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState<File | null>(null);
 
-  const handleFileChange = (event) => {
-    setFile(event.target.files[0]);
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      setFile(event.target.files[0]);
+    }
   };
 
   const handleUpload = async () => {

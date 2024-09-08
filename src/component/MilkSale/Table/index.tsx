@@ -4,14 +4,38 @@ import { BsPencil } from "react-icons/bs";
 import { Table } from "flowbite-react";
 import { Link } from "react-router-dom";
 
-const MilkSaleList = ({
+interface MilkSaleRecord {
+  id: string;
+  Date: string;
+  userId: string;
+  AccountNo: string;
+  invoice: string;
+  StallNo: string;
+  AnimalID: string;
+  Liter: string;
+  Fate: string;
+  Price: string;
+  Total: string;
+  CollectedFrom: string;
+  addedBy: string;
+}
+
+interface MilkSaleListProps {
+  currentMilkSales: MilkSaleRecord[];
+  handleSort: (field: keyof MilkSaleRecord) => void;
+  sortIcon: (field: keyof MilkSaleRecord) => React.ReactNode;
+  handleDeleteConfirmation: (id: string) => void;
+  translate: (key: string) => string;
+  formClass?: string;
+  soldByUser?: string;
+}
+
+const MilkSaleList: React.FC<MilkSaleListProps> = ({
   currentMilkSales,
   handleSort,
   sortIcon,
   handleDeleteConfirmation,
   translate,
-  formClass,
-  soldByUser,
 }) => {
   return (
     <div className="rtl:mirror-x">
@@ -19,68 +43,68 @@ const MilkSaleList = ({
         <Table.Head>
           <Table.HeadCell onClick={() => handleSort("invoice")}>
             <div className="flex items-center">
-              {translate("Invoice")}
+              {translate("invoice")}
               {sortIcon("invoice")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("accountNo")}>
+          <Table.HeadCell onClick={() => handleSort("Date")}>
+            <div className="flex items-center">
+              {translate("Date")}
+              {sortIcon("Date")}
+            </div>
+          </Table.HeadCell>
+          <Table.HeadCell onClick={() => handleSort("AccountNo")}>
             <div className="flex items-center">
               {translate("Account No")}
-              {sortIcon("accountNo")}
+              {sortIcon("AccountNo")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("name")}>
+          <Table.HeadCell onClick={() => handleSort("StallNo")}>
             <div className="flex items-center">
-              {translate("Name")}
-              {sortIcon("name")}
+              {translate("Stall No")}
+              {sortIcon("StallNo")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("contact")}>
+          <Table.HeadCell onClick={() => handleSort("AnimalID")}>
             <div className="flex items-center">
-              {translate("Contact")}
-              {sortIcon("contact")}
+              {translate("Animal ID")}
+              {sortIcon("AnimalID")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("email")}>
-            <div className="flex items-center">
-              {translate("Email")}
-              {sortIcon("email")}
-            </div>
-          </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("liter")}>
+          <Table.HeadCell onClick={() => handleSort("Liter")}>
             <div className="flex items-center">
               {translate("Liter")}
-              {sortIcon("liter")}
+              {sortIcon("Liter")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("price")}>
+          <Table.HeadCell onClick={() => handleSort("Fate")}>
+            <div className="flex items-center">
+              {translate("Fate")}
+              {sortIcon("Fate")}
+            </div>
+          </Table.HeadCell>
+          <Table.HeadCell onClick={() => handleSort("Price")}>
             <div className="flex items-center">
               {translate("Price")}
-              {sortIcon("price")}
+              {sortIcon("Price")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("total")}>
+          <Table.HeadCell onClick={() => handleSort("Total")}>
             <div className="flex items-center">
               {translate("Total")}
-              {sortIcon("total")}
+              {sortIcon("Total")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("paid")}>
+          <Table.HeadCell onClick={() => handleSort("CollectedFrom")}>
             <div className="flex items-center">
-              {translate("Paid")}
-              {sortIcon("paid")}
+              {translate("Collected From")}
+              {sortIcon("CollectedFrom")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("due")}>
+          <Table.HeadCell onClick={() => handleSort("addedBy")}>
             <div className="flex items-center">
-              {translate("Due")}
-              {sortIcon("due")}
-            </div>
-          </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("soldBy")}>
-            <div className="flex items-center">
-              {translate("Sold by")}
-              {sortIcon("soldBy")}
+              {translate("Added By")}
+              {sortIcon("addedBy")}
             </div>
           </Table.HeadCell>
           <Table.HeadCell>{translate("Action")}</Table.HeadCell>
@@ -88,17 +112,16 @@ const MilkSaleList = ({
         <Table.Body className="divide-y">
           {currentMilkSales.map((sale) => (
             <Table.Row key={sale.id}>
-              <Table.Cell>{sale.invoice}</Table.Cell>
-              <Table.Cell>{sale.accountNo}</Table.Cell>
-              <Table.Cell>{sale.name}</Table.Cell>
-              <Table.Cell>{sale.contact}</Table.Cell>
-              <Table.Cell>{sale.email}</Table.Cell>
-              <Table.Cell>{sale.litre}</Table.Cell>
-              <Table.Cell>{sale.price}</Table.Cell>
-              <Table.Cell>{sale.total}</Table.Cell>
-              <Table.Cell>{sale.paid}</Table.Cell>
-              <Table.Cell>{sale.due}</Table.Cell>
-              <Table.Cell>{sale.soldBy}</Table.Cell>
+              <Table.Cell>{sale.Date}</Table.Cell>
+              <Table.Cell>{sale.AccountNo}</Table.Cell>
+              <Table.Cell>{sale.StallNo}</Table.Cell>
+              <Table.Cell>{sale.AnimalID}</Table.Cell>
+              <Table.Cell>{sale.Liter}</Table.Cell>
+              <Table.Cell>{sale.Fate}</Table.Cell>
+              <Table.Cell>{sale.Price}</Table.Cell>
+              <Table.Cell>{sale.Total}</Table.Cell>
+              <Table.Cell>{sale.CollectedFrom}</Table.Cell>
+              <Table.Cell>{sale.addedBy}</Table.Cell>
               <Table.Cell>
                 <div className="flex items-center">
                   <Link

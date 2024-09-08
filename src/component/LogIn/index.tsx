@@ -1,26 +1,29 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import MoooImage from "../../assets/images/Mooo.png";
 import { useTranslation } from "../Translator/Provider";
 
-const LogIn = ({ onLogin }) => {
+// Define the types for the props
+interface LogInProps {
+  onLogin: () => void;
+}
+
+const LogIn: React.FC<LogInProps> = ({ onLogin }) => {
   const { translate, setLanguage, language } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
-  const location = useLocation();
-  const { plan } = location.state || {};
 
   const handleChangeLanguage = (newLanguage: string) => {
     console.log("Changing language to:", newLanguage);
     setLanguage(newLanguage);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-  
+
     try {
       const response = await fetch("http://localhost:3000/login", {
         method: "POST",
@@ -29,12 +32,12 @@ const LogIn = ({ onLogin }) => {
         },
         body: JSON.stringify({ email, password }),
       });
-  
+
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error || "Login failed");
       }
-  
+
       const responseBody = await response.json();
       localStorage.setItem("loggedInUser", JSON.stringify(responseBody.user));
       onLogin(); // Assuming this function sets some state indicating the user is logged in
@@ -60,7 +63,11 @@ const LogIn = ({ onLogin }) => {
                 <div className="px-4 md:px-0 lg:w-6/12">
                   <div className="md:mx-6 md:p-12">
                     <div className="text-center">
-                      <img className="mx-auto w-48" src={MoooImage} alt="Mooo Image" />
+                      <img
+                        className="mx-auto w-48"
+                        src={MoooImage}
+                        alt="Mooo Image"
+                      />
                       <h4 className="mb-12 mt-4 pb-1 text-xl font-semibold">
                         We are GesCow
                       </h4>
@@ -73,16 +80,22 @@ const LogIn = ({ onLogin }) => {
                       >
                         <option value="en">🇺🇸</option> {/* USA flag emoji */}
                         <option value="fr">🇫🇷</option> {/* France flag emoji */}
-                        <option value="ar">🇹🇳</option> {/* Tunisia flag emoji */}
+                        <option value="ar">🇹🇳</option>{" "}
+                        {/* Tunisia flag emoji */}
                       </select>
                     </div>
-                    <form onSubmit={handleSubmit} className={`flex flex-col ${formClass}`}>
+                    <form
+                      onSubmit={handleSubmit}
+                      className={`flex flex-col ${formClass}`}
+                    >
                       <style>{`
                         .rtl {
                           direction: rtl;
                         }
                       `}</style>
-                      <p className="mb-4 font-bold">{translate("login_title")}</p>
+                      <p className="mb-4 font-bold">
+                        {translate("login_title")}
+                      </p>
                       <input
                         type="text"
                         className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
@@ -137,7 +150,8 @@ const LogIn = ({ onLogin }) => {
                 <div
                   className="flex items-center rounded-b-lg lg:w-6/12 lg:rounded-r-lg lg:rounded-bl-none"
                   style={{
-                    background: "linear-gradient(to bottom right, #309975, #58b368)",
+                    background:
+                      "linear-gradient(to bottom right, #309975, #58b368)",
                   }}
                 >
                   <div className="px-4 py-6 text-white md:mx-6 md:p-12">
@@ -145,7 +159,10 @@ const LogIn = ({ onLogin }) => {
                       {translate("company_description")}
                     </h4>
                     <p className="text-sm">
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                      Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                      sed do eiusmod tempor incididunt ut labore et dolore magna
+                      aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                      ullamco laboris nisi ut aliquip ex ea commodo consequat.
                     </p>
                   </div>
                 </div>

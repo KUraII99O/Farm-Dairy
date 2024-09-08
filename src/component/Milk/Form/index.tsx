@@ -1,8 +1,26 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FaUserPlus } from "react-icons/fa";
 import { useTranslation } from "../../Translator/Provider";
 import { ManageMilkContext } from "../Provider";
+
+
+interface MilkRecord {
+
+  id: string;
+  Date: string;
+  userId: string;
+  AccountNo: string;
+  StallNo: string;
+  AnimalID: string;
+  Liter: string;
+  Fate: string;
+  Price: string;
+  Total: string;
+  CollectedFrom: string;
+  addedBy: string;
+}
+
+
 
 const EditMilk = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,8 +39,8 @@ const EditMilk = () => {
     AddedBy: "", // AddedBy field added here
   });
   const [loading, setLoading] = useState(false);
-  const [successPopup, setSuccessPopup] = useState(false);
-  const { translate, language } = useTranslation();
+  const [, setSuccessPopup] = useState(false);
+  const { translate } = useTranslation();
 
   useEffect(() => {
     const date = new Date();
@@ -35,7 +53,7 @@ const EditMilk = () => {
 
   useEffect(() => {
     if (id && milkRecords.length > 0) {
-      const selectedMilk = milkRecords.find(milk => milk.id === id);
+      const selectedMilk = milkRecords.find((milk:MilkRecord) => milk.id === id);
       if (selectedMilk) {
         setFormData(selectedMilk);
       }
@@ -54,7 +72,7 @@ const EditMilk = () => {
     }
   }, []);
 
-  const handleChange = (e) => {
+  const handleChange = (e:any) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
       ...prevState,
@@ -62,7 +80,7 @@ const EditMilk = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e:any) => {
     e.preventDefault();
     setLoading(true);
   

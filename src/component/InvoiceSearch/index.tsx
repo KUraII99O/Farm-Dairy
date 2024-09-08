@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { MilkSale } from "../Staff/types";
+import { MilkSaleRecord } from "../MilkSale/MilkSaleService";
 
-const InvoiceSearch: React.FC<{ sales: MilkSale[] }> = ({ sales }) => {
+const InvoiceSearch: React.FC<{ sales: MilkSaleRecord[] }> = ({ sales }) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [filteredSales, setFilteredSales] = useState<MilkSale[]>([]);
+  const [filteredSales, setFilteredSales] = useState<MilkSaleRecord[]>([]);
 
   const handleSearch = () => {
     const filtered = sales.filter((sale) =>

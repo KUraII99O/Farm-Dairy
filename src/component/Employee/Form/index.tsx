@@ -1,31 +1,42 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { MdEdit } from "react-icons/md";
-import { FaUserPlus } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "../../Translator/Provider";
-import Autocomplete from "../../autocomplete";
+import AutocompleteInput from "../../autocomplete";
+import { Employee } from "../EmployeeService";
 
-const EditEmployeeForm = ({ employee, onSubmit }) => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const formRef = useRef(null);
+
+interface Staff {
+  id: string;
+  name: string; // Ensure this matches the staff data field
+}
+
+interface EditEmployeeFormProps {
+  employee?: Employee | null;
+  onSubmit: (formData: Employee) => void;
+}
+
+const EditEmployeeForm: React.FC<EditEmployeeFormProps> = ({
+  employee,
+  onSubmit,
+}) => {
   const { translate, language } = useTranslation();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Employee>({
+    id: "",
     payDate: "",
     month: "",
     year: "",
-    employeeName: "",
+    name: "",
     monthlySalary: "",
     additionMoney: "",
-    note: "",
+    total: "",
     image: "",
+    userId: "",
   });
 
-  const [staffList, setStaffList] = useState([]); // State to store staff data
+  const [staffList, setStaffList] = useState<Staff[]>([]);
+  const [, setInputValue] = useState<string>("");
 
   useEffect(() => {
-    // Fetch staff data from the endpoint
     fetch("http://localhost:3000/staffs")
       .then((response) => {
         if (!response.ok) {
@@ -43,33 +54,40 @@ const EditEmployeeForm = ({ employee, onSubmit }) => {
 
   useEffect(() => {
     if (employee) {
-      setFormData({
-        ...employee,
-      });
+      setFormData(employee);
+      setInputValue(employee.name); // Initialize inputValue with the employee's name
     }
   }, [employee]);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prevFormData) => ({
+      ...prevFormData,
       [name]: value,
-    });
+    }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSelectEmployee = (value: string) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      employeeName: value,
+    }));
+    setInputValue(value); // Update inputValue for autocomplete
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSubmit(formData); // Call onSubmit (which is handleAddNewEmployee or handleUpdateEmployee)
+    onSubmit(formData);
   };
 
   const isArabic = language === "ar";
   const formClass = isArabic ? "rtl" : "ltr";
+
   return (
     <div className="flex justify-end">
-     
-      <form onSubmit={handleSubmit} className="w-96"> {/* Set a width for the form */}
-      <h2 className="text-xl font-bold mb-4">
-          {employee ? "Edit employee" : "Add New employee"}
+      <form onSubmit={handleSubmit} className={`w-96 ${formClass}`}>
+        <h2 className="text-xl font-bold mb-4">
+          {employee ? translate("editEmployee") : translate("addNewEmployee")}
         </h2>
         <div className="mb-4">
           <label
@@ -83,7 +101,7 @@ const EditEmployeeForm = ({ employee, onSubmit }) => {
             name="payDate"
             value={formData.payDate}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none  focus:border-primary"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary"
           />
         </div>
         <div className="mb-4">
@@ -98,7 +116,7 @@ const EditEmployeeForm = ({ employee, onSubmit }) => {
             name="month"
             value={formData.month}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none  focus:border-primary"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary"
           />
         </div>
         <div className="mb-4">
@@ -113,7 +131,7 @@ const EditEmployeeForm = ({ employee, onSubmit }) => {
             name="year"
             value={formData.year}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none  focus:border-primary"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary"
           />
         </div>
         <div className="mb-4">
@@ -121,13 +139,11 @@ const EditEmployeeForm = ({ employee, onSubmit }) => {
             htmlFor="employeeName"
             className="block text-sm font-medium text-gray-700"
           >
-            {translate("selectemloyee")} * :
+            {translate("selectEmployee")} * :
           </label>
-          <Autocomplete
+          <AutocompleteInput
             options={staffList.map((staff) => staff.name)}
-            onSelect={(value) =>
-              handleChange({ target: { name: "employeeName", value } })
-            }
+            onSelect={handleSelectEmployee}
           />
         </div>
         <div className="mb-4">
@@ -135,14 +151,14 @@ const EditEmployeeForm = ({ employee, onSubmit }) => {
             htmlFor="monthlySalary"
             className="block text-sm font-medium text-gray-700"
           >
-            {translate("monthlysalary")}:
+            {translate("monthlySalary")}:
           </label>
           <input
             type="number"
             name="monthlySalary"
             value={formData.monthlySalary}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none  focus:border-primary"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary"
           />
         </div>
         <div className="mb-4">
@@ -150,36 +166,36 @@ const EditEmployeeForm = ({ employee, onSubmit }) => {
             htmlFor="additionMoney"
             className="block text-sm font-medium text-gray-700"
           >
-            {translate("AdditionAmount")} :
+            {translate("additionAmount")} :
           </label>
           <input
             type="number"
             name="additionMoney"
             value={formData.additionMoney}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none  focus:border-primary"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary"
           />
         </div>
         <div className="mb-4">
           <label
-            htmlFor="note"
+            htmlFor="total"
             className="block text-sm font-medium text-gray-700"
           >
-            {translate("note")} :
+            {translate("total")} :
           </label>
           <input
             type="text"
-            name="note"
-            value={formData.note}
+            name="total"
+            value={formData.total}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none  focus:border-primary"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary"
           />
         </div>
         <button
           type="submit"
-          className="bg-secondary hover:primary text-white font-bold py-2 px-4 rounded"
+          className="bg-secondary hover:bg-primary text-white font-bold py-2 px-4 rounded"
         >
-          {employee ? translate("editemployee") : translate("addemployee")}
+          {employee ? translate("editEmployee") : translate("addEmployee")}
         </button>
       </form>
     </div>

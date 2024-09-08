@@ -28,7 +28,7 @@ const StaffList: React.FC<StaffListProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   // Pagination
-  const handlePageChange = (page, itemsPerPage) => {
+  const handlePageChange = (page: React.SetStateAction<number>, itemsPerPage: React.SetStateAction<number>) => {
     setCurrentPage(page);
     setItemsPerPage(itemsPerPage);
   };
@@ -163,8 +163,9 @@ const StaffList: React.FC<StaffListProps> = ({
       <Pagination
         totalItems={staff.length}
         defaultItemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
-      />
+        onPageChange={handlePageChange} itemsPerPage={0} currentPage={0} setCurrentPage={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
     </div>
   );
 };

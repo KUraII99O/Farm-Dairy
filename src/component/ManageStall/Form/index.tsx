@@ -1,12 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "../../Translator/Provider";
+import { Stall } from "../StallService";
 
-const EditStallForm = ({ stall, onSubmit }) => {
-  const [formData, setFormData] = useState({
+
+// Define the props for the EditStallForm component
+interface EditStallFormProps {
+  stall: Stall | null;
+  onSubmit: (formData: Stall) => void;
+}
+
+const EditStallForm: React.FC<EditStallFormProps> = ({ stall, onSubmit }) => {
+  const [formData, setFormData] = useState<Stall>({
     stallNumber: "",
     details: "",
-    status: "true", // Ensure default status is set to "true" for available
+    status: true, // Ensure default status is set to "true" for available
   });
+
   const { translate } = useTranslation();
 
   useEffect(() => {
@@ -17,20 +26,20 @@ const EditStallForm = ({ stall, onSubmit }) => {
       setFormData({
         stallNumber: "",
         details: "",
-        status: "true",
+        status: true,
       });
     }
   }, [stall]);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: name === "status" ? value === "true" : value,
+      [name]: name === "status" ? (value === "true" ? true : false) : value,
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
   };
@@ -54,7 +63,6 @@ const EditStallForm = ({ stall, onSubmit }) => {
             value={formData.stallNumber}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-            
           />
         </div>
         <div className="mb-4">
@@ -81,7 +89,7 @@ const EditStallForm = ({ stall, onSubmit }) => {
           </label>
           <select
             name="status"
-            value={formData.status}
+            value={formData.status ? "true" : "false"}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
           >

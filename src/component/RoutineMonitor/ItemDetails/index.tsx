@@ -5,17 +5,14 @@ interface RoutineMonitorInfo {
   ServiceName: string;
   Result: string;
   MonitoringTime: string;
-  unit?: string; // Add this if unit is optional
 }
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   routineMonitor: {
-    serviceName: string;
-    result: string;
-    monitoringTime: string;
     informations: RoutineMonitorInfo[];
+    // Add other RoutineMonitor fields if necessary
   };
 }
 
@@ -83,9 +80,7 @@ const ItemDetailDrawer: React.FC<Props> = ({ isOpen, onClose, routineMonitor }) 
                       <td className="border border-gray-400 px-3 py-2">
                         {info.ServiceName}
                       </td>
-                      <td className="border border-gray-400 px-3 py-2">
-                        {info.Result} {info.unit || ''} {/* Handle unit conditionally */}
-                      </td>
+                      
                       <td className="border border-gray-400 px-3 py-2">
                         {info.MonitoringTime}
                       </td>

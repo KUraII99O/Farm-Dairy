@@ -1,65 +1,90 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { Monitoring, MonitoringService } from "../MonitoringService"; // Updated import
 
-export const MonitoringServiceContext = createContext();
+interface ManageMonitoringContextProps {
+  monitorings: Monitoring[];
+  addMonitoring: (newMonitoring: Omit<Monitoring, 'id'>) => Promise<void>;
+  editMonitoring: (id: string, updatedMonitoring: Partial<Omit<Monitoring, 'id'>>) => Promise<void>;
+  deleteMonitoring: (id: string) => Promise<void>;
+}
 
-export const MonitoringServiceProvider = ({ children }) => {
-  const [monitoringServices, setMonitoringServices] = useState([
-    {
-      id: 1,
-      serviceName: "Monitoring",
-    },
-    {
-      id: 2,
-      serviceName: "Monthly Tika",
-    },
-    {
-      id: 3,
-      serviceName: "Weekly Tika",
-    },
-    // Add more monitoring services as needed
-  ]);
+interface ManageMonitoringProviderProps {
+  children: React.ReactNode;
+}
 
-  const addMonitoringService = (newService) => {
-    const maxId = Math.max(...monitoringServices.map((service) => service.id), 0);
-    const newServiceWithId = { ...newService, id: maxId + 1 };
-    setMonitoringServices([...monitoringServices, newServiceWithId]);
+export const ManageMonitoringContext = createContext<ManageMonitoringContextProps | null>(null);
+
+export const ManageMonitoringProvider: React.FC<ManageMonitoringProviderProps> = ({ children }) => {
+  const [monitorings, setMonitorings] = useState<Monitoring[]>([]);
+
+  useEffect(() => {
+    const fetchMonitoringData = async () => {
+      try {
+        const data = await MonitoringService.fetchMonitorings();
+        setMonitorings(data || []);
+      } catch (error) {
+        console.error("Error fetching monitorings:", error);
+      }
+    };
+
+    fetchMonitoringData();
+  }, []);
+
+  const addMonitoring = async (newMonitoring: Omit<Monitoring, 'id'>) => {
+    try {
+      const data = await MonitoringService.addMonitoring(newMonitoring);
+      setMonitorings(prevMonitorings => [...prevMonitorings, data]);
+    } catch (error) {
+      console.error("Error adding monitoring:", (error as Error).message);
+    }
   };
 
-  const editMonitoringService = (id, updatedService) => {
-    setMonitoringServices((prevServices) =>
-      prevServices.map((service) => (service.id === id ? { ...service, ...updatedService } : service))
-    );
+  const editMonitoring = async (id: string, updatedMonitoring: Partial<Omit<Monitoring, 'id'>>) => {
+    try {
+      const existingMonitoring = monitorings.find(monitoring => monitoring.id === id);
+      if (!existingMonitoring) {
+        throw new Error("Monitoring not found");
+      }
+
+      const mergedMonitoring = { ...existingMonitoring, ...updatedMonitoring };
+      await MonitoringService.editMonitoring(id, mergedMonitoring);
+      setMonitorings(prevMonitorings =>
+        prevMonitorings.map(monitoring =>
+          monitoring.id === id ? mergedMonitoring : monitoring
+        )
+      );
+    } catch (error) {
+      console.error("Error editing monitoring:", (error as Error).message);
+    }
   };
 
-  const deleteMonitoringService = (id) => {
-    const updatedServices = monitoringServices.filter((service) => service.id !== id);
-    setMonitoringServices(updatedServices);
+  const deleteMonitoring = async (id: string) => {
+    try {
+      await MonitoringService.deleteMonitoring(id);
+      setMonitorings(prevMonitorings => prevMonitorings.filter(monitoring => monitoring.id !== id));
+    } catch (error) {
+      console.error("Error deleting monitoring:", (error as Error).message);
+    }
   };
 
-  const getServiceById = (id) => {
-    // Find and return the service with the given ID
-    return monitoringServices.find((service) => service.id === id);
-  };
-
-  const value = {
-    monitoringServices,
-    addMonitoringService,
-    editMonitoringService,
-    deleteMonitoringService,
-    getServiceById,
+  const value: ManageMonitoringContextProps = {
+    monitorings,
+    addMonitoring,
+    editMonitoring,
+    deleteMonitoring
   };
 
   return (
-    <MonitoringServiceContext.Provider value={value}>
+    <ManageMonitoringContext.Provider value={value}>
       {children}
-    </MonitoringServiceContext.Provider>
+    </ManageMonitoringContext.Provider>
   );
 };
 
-export const useMonitoringService = () => {
-  const context = useContext(MonitoringServiceContext);
+export const useMonitoring = () => {
+  const context = useContext(ManageMonitoringContext);
   if (!context) {
-    throw new Error("useMonitoringService must be used within a MonitoringServiceProvider");
+    throw new Error("useMonitoring must be used within a ManageMonitoringProvider");
   }
   return context;
 };

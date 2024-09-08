@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { permissionCategories } from "../Permissions/permissions";
 
 interface EditUserTypeFormProps {
-  userType?: { [key: string]: any }; // Adjust the type according to your actual userType shape
+  userType?: { [key: string]: any } | null; // Allow null as a valid type
   onSubmit: (formData: any) => void; // Adjust the type according to your actual formData shape
   onClose: () => void;
 }
@@ -14,7 +14,7 @@ interface FormData {
 }
 
 const EditUserTypeForm: React.FC<EditUserTypeFormProps> = ({ userType, onSubmit, onClose }) => {
-  const { id } = useParams();
+  useParams();
   const navigate = useNavigate();
   const formRef = useRef<HTMLDivElement>(null);
 

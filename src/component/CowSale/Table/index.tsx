@@ -6,13 +6,36 @@ import { Link } from "react-router-dom";
 import { LiaFileInvoiceSolid } from "react-icons/lia";
 import { FaEye } from "react-icons/fa";
 
-const SalesList = ({
+// Define types for Sale and prop functions
+interface CowSale {
+  id: string;
+  date: string;
+  customerName: string;
+  customerPhone: string;
+  customerEmail: string;
+  address: string;
+  totalPrice: string;
+  totalPaid: string;
+  due: string;
+  note: string;
+}
+
+interface SalesListProps {
+  currentSales: CowSale[];
+  handleSort: (key: string) => void;
+  sortIcon: (key: string) => React.ReactNode;
+  handleDeleteConfirmation: (id: string) => void;
+  translate: (key: string) => string;
+  formClass?: string;
+  handleViewDetails: (sale: CowSale) => void;
+}
+
+const SalesList: React.FC<SalesListProps> = ({
   currentSales,
   handleSort,
   sortIcon,
   handleDeleteConfirmation,
   translate,
-  formClass,
   handleViewDetails,
 }) => (
   <div className="rtl:mirror-x overflow-x-auto">

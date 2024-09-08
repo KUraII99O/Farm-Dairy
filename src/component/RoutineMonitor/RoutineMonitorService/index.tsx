@@ -1,18 +1,27 @@
 import { v4 as uuidv4 } from 'uuid';
 
-export type RoutineMonitor = {
-  id: string;
-  date: string;
-  StallNo: string;
-  healthStatus: string;
-  note: number;
-  reportedBy: string;
-  userId: string;
-  quantity: number;
+export type Information = {
   ServiceName: string;
   Result: string;
   MonitoringTime: string;
-}
+};
+
+export type RoutineMonitor = {
+  id: string;
+  date: string;
+  stallNo: string;
+  healthStatus: string;
+  note: string;
+  reportedBy: string;
+  userId: string;
+  updatedWeight: string;
+  updatedHeight: string;
+  milkPerDay: string;
+  animalID: string;
+  monitoringDate: string;
+  reports: string;
+  informations: Information[];
+};
 
 const RoutineService = {
   fetchRoutineRecords,

@@ -1,8 +1,60 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "../../Translator/Provider";
 
-const CowDetails = ({ formData, cowList }) => {
-  const [selectedCow, setSelectedCow] = useState(null);
+
+
+
+export type  Cow ={
+
+  id: string,
+  image: string,
+  userId: string,
+  animal: string,
+  buyDate: string,
+  stallNumber: string,
+  buyingPrice: string,
+  dateAdded: string,
+  pregnantStatus: string,
+  milkPerDay: string,
+  status: boolean,
+  gender: string,
+  informations: {
+    stallNumber: string,
+    dateOfBirth: string,
+    animalAgeDays: string,
+    weight: string,
+    height: string,
+    color: string,
+    numOfPregnant: string,
+    nextPregnancyApproxTime: string,
+    buyFrom: string,
+    prevVaccineDone: string,
+    note: string,
+    createdBy: string,
+  },
+  vaccinations: {
+    BDV: boolean,
+    PI3: boolean,
+    BRSV: boolean,
+    BVD: boolean,
+    VitaminA: boolean,
+    Anthrax: boolean,
+  },
+};
+
+interface FormData {
+  animalId: string;
+}
+
+interface CowDetailsProps {
+  formData: FormData;
+  cowList: Cow[];
+}
+
+
+
+const CowDetails: React.FC<CowDetailsProps> = ({ formData, cowList }) => {
+  const [selectedCow, setSelectedCow] = useState<Cow | null>(null);
   const { translate } = useTranslation();
 
   useEffect(() => {
@@ -10,7 +62,7 @@ const CowDetails = ({ formData, cowList }) => {
     console.log("cowList:", cowList);
 
     // Filter the cow from the cowList based on the selected animalID
-    const cow = cowList.find(cow => {
+    const cow = cowList.find((cow: Cow) => {
       // Convert both IDs to the same type for comparison
       const animalId = formData.animalId.toString();
       return cow.id.toString() === animalId;
@@ -18,7 +70,7 @@ const CowDetails = ({ formData, cowList }) => {
 
     console.log("Selected Cow:", cow); // Debugging
 
-    setSelectedCow(cow);
+    setSelectedCow(cow || null);
   }, [formData, cowList]);
 
   if (!selectedCow) {
@@ -34,11 +86,10 @@ const CowDetails = ({ formData, cowList }) => {
           <img
             src={selectedCow.image}
             alt="Cow Image"
-            className="w-60 h-auto border" // Adjust width as needed
-            style={{ maxWidth: "100%", height: "auto" }} // Maintain aspect ratio
+            className="w-60 h-auto border"
+            style={{ maxWidth: "100%", height: "auto" }}
           />
         </div>
-        {/* Right half with cow details */}
         <div className="w-1/2">
           <table className="table-auto">
             <tbody>
@@ -79,7 +130,7 @@ const CowDetails = ({ formData, cowList }) => {
                   {translate("animaltype")}
                 </td>
                 <td className="border border-gray-300 px-4 py-2 w-60">
-                  {selectedCow.animalType}
+                  {selectedCow.animal}
                 </td>
               </tr>
               <tr>

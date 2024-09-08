@@ -46,7 +46,6 @@ export const ManageStaffProvider: React.FC<ProviderProps> = ({ children }) => {
 
   const editStaff = async (id: string, updatedStaff: Omit<Staff, 'id'>) => {
     try {
-      const data = await StaffService.editStaff(id, updatedStaff);
       setStaff(prevStaff =>
         prevStaff.map(member => (member.id === id ? { ...member, ...updatedStaff } : member))
       );
@@ -57,7 +56,6 @@ export const ManageStaffProvider: React.FC<ProviderProps> = ({ children }) => {
 
   const toggleStaffStatus = async (id: string) => {
     try {
-      const data = await StaffService.toggleStaffStatus(id);
       setStaff(prevStaff =>
         prevStaff.map(member => (member.id === id ? { ...member, status: !member.status } : member))
       );

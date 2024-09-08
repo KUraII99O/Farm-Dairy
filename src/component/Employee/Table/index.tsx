@@ -9,7 +9,7 @@ interface EmployeeListProps {
   handleSort: (fieldName: string) => void;
   sortIcon: (fieldName: string) => React.ReactNode;
   handleEditDrawerOpen: (employee: any) => void; // Adjust 'any' to the actual type of employee data
-  handleDeleteConfirmation: (id: number) => void;
+  handleDeleteConfirmation: (id: string) => void;
   translate: (key: string) => string;
   formClass: string;
   itemsPerPage: number; // If pagination is involved
@@ -22,11 +22,10 @@ const EmployeeList: React.FC<EmployeeListProps> = ({
   handleDeleteConfirmation,
   handleEditDrawerOpen,
   translate,
-  formClass,
-  
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
+
   // Calculate pagination indexes
   const indexOfLastEmployee = currentPage * itemsPerPage;
   const indexOfFirstEmployee = indexOfLastEmployee - itemsPerPage;
@@ -34,7 +33,8 @@ const EmployeeList: React.FC<EmployeeListProps> = ({
     indexOfFirstEmployee,
     indexOfLastEmployee
   );
-  const handlePageChange = (page:number, itemsPerPage:number) => {
+
+  const handlePageChange = (page: number, itemsPerPage: number) => {
     setCurrentPage(page);
     setItemsPerPage(itemsPerPage);
   };
@@ -100,7 +100,7 @@ const EmployeeList: React.FC<EmployeeListProps> = ({
                   className="h-12 w-12 rounded-full"
                 />
               </Table.Cell>
-              <Table.Cell>{employee.name}</Table.Cell>
+              <Table.Cell>{employee.name}</Table.Cell> {/* Directly accessing name */}
               <Table.Cell>{employee.payDate}</Table.Cell>
               <Table.Cell>{employee.month}</Table.Cell>
               <Table.Cell>{employee.year}</Table.Cell>
@@ -131,8 +131,9 @@ const EmployeeList: React.FC<EmployeeListProps> = ({
       <Pagination
         totalItems={currentEmployees.length}
         defaultItemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
-      />
+        onPageChange={handlePageChange} itemsPerPage={0} currentPage={0} setCurrentPage={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
     </div>
   );
 };

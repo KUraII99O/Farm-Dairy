@@ -1,11 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 
-interface UserType {
+export type UserType = {
   id: string;
   typeName: string;
-  description: string;
   userId: string;
-}
+};
 
 const UserTypeService = {
   fetchUserTypes,
@@ -13,7 +12,6 @@ const UserTypeService = {
   editUserType,
   deleteUserType
 };
-
 
 async function fetchUserTypes(): Promise<UserType[]> {
   const loggedInUser = localStorage.getItem('loggedInUser');
@@ -27,14 +25,18 @@ async function fetchUserTypes(): Promise<UserType[]> {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/userTypes?userId='+ user.id);
+    const response = await fetch(`http://localhost:3000/userTypes?userId=${user.id}`);
     if (!response.ok) {
       throw new Error('Failed to fetch userTypes data');
     }
     const usertypeData: UserType[] = await response.json();
-    return usertypeData
+    return usertypeData;
   } catch (error) {
-    console.error('Error fetching userTypes data:', error.message);
+    if (error instanceof Error) {
+      console.error('Error fetching userTypes data:', error.message);
+    } else {
+      console.error('Unexpected error:', error);
+    }
     return [];
   }
 }
@@ -67,7 +69,11 @@ async function addUserType(newUserType: Omit<UserType, 'id' | 'userId'>): Promis
 
     return userTypeWithId;
   } catch (error) {
-    console.error('Error adding user type:', error.message);
+    if (error instanceof Error) {
+      console.error('Error adding user type:', error.message);
+    } else {
+      console.error('Unexpected error:', error);
+    }
     throw error;
   }
 }
@@ -85,7 +91,11 @@ async function editUserType(id: string, updatedUserType: Omit<UserType, 'id' | '
       throw new Error('Failed to update user type');
     }
   } catch (error) {
-    console.error('Error updating user type:', error.message);
+    if (error instanceof Error) {
+      console.error('Error updating user type:', error.message);
+    } else {
+      console.error('Unexpected error:', error);
+    }
     throw error;
   }
 }
@@ -99,9 +109,13 @@ async function deleteUserType(id: string): Promise<void> {
       throw new Error("Failed to delete user type");
     }
   } catch (error) {
-    console.error("Error deleting user type:", error.message);
+    if (error instanceof Error) {
+      console.error("Error deleting user type:", error.message);
+    } else {
+      console.error("Unexpected error:", error);
+    }
     throw error;
   }
 }
 
-export { UserTypeService, UserType };
+export { UserTypeService };

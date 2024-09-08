@@ -24,7 +24,7 @@ declare global {
 }
 
 const LandingIntro = () => {
-  const { translate, language } = useTranslation();
+  const { translate } = useTranslation();
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 h-screen items-center px-10 md:px-20 lg:px-32">

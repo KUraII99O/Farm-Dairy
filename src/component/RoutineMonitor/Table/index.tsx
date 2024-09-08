@@ -5,31 +5,44 @@ import { Table } from "flowbite-react";
 import { Link } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
 
-interface Monitor {
+interface Information  {
+  ServiceName: string;
+  Result: string;
+  MonitoringTime: string;
+};
+
+interface RoutineMonitor {
   id: string;
   date: string;
   stallNo: string;
-  animalID: string;
+  healthStatus: number; // Change to number
   note: string;
-  healthStatus: number;
-  reportedby: string;
+  reportedBy: string;
+  userId: string;
+  updatedWeight: string;
+  updatedHeight: string;
+  milkPerDay: string;
+  monitoringDate: string;
+  reports: string;
+  animalID: string;
+  informations: Information[];
 }
 
-interface HealthStatus {
+type HealthStatus = {
   color: string;
   condition: string;
-}
+};
 
 interface RoutineMonitorListProps {
-  determineHealthStatus: (healthStatus: number) => HealthStatus;
-  currentMonitors: Monitor[];
-  handleSort: (field: keyof Monitor) => void;
-  sortIcon: (field: keyof Monitor) => JSX.Element;
+  determineHealthStatus: (healthStatus: number) => HealthStatus; // Updated to number
+  currentMonitors: RoutineMonitor[];
+  handleSort: (field: keyof RoutineMonitor) => void;
+  sortIcon: (field: keyof RoutineMonitor) => JSX.Element;
   handleDeleteConfirmation: (id: string) => void;
   translate: (key: string) => string;
   formClass?: string;
-  reportedbyuser: string;
-  handleViewDetails: (monitor: Monitor) => void;
+  reportedByuser: string;
+  handleViewDetails: (monitor: RoutineMonitor) => void;
 }
 
 const RoutineMonitorList: React.FC<RoutineMonitorListProps> = ({
@@ -39,8 +52,7 @@ const RoutineMonitorList: React.FC<RoutineMonitorListProps> = ({
   sortIcon,
   handleDeleteConfirmation,
   translate,
-  formClass,
-  reportedbyuser,
+ 
   handleViewDetails
 }) => {
   return (
@@ -77,10 +89,10 @@ const RoutineMonitorList: React.FC<RoutineMonitorListProps> = ({
               {sortIcon("healthStatus")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("reportedby")}>
+          <Table.HeadCell onClick={() => handleSort("reportedBy")}>
             <div className="flex items-center">
               {translate("Reported by")}
-              {sortIcon("reportedby")}
+              {sortIcon("reportedBy")}
             </div>
           </Table.HeadCell>
           <Table.HeadCell>{translate("Action")}</Table.HeadCell>
@@ -112,7 +124,7 @@ const RoutineMonitorList: React.FC<RoutineMonitorListProps> = ({
                   </span>
                 </div>
               </Table.Cell>
-              <Table.Cell>{monitor.reportedby}</Table.Cell>
+              <Table.Cell>{monitor.reportedBy}</Table.Cell>
               <Table.Cell>
                 <div className="flex items-center">
                   <button

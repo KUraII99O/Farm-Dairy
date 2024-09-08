@@ -10,8 +10,8 @@ interface CalvesListProps {
   currentCalves: any[]; // Update with actual type of calf data
   handleSort: (fieldName: string) => void;
   sortIcon: (fieldName: string) => React.ReactNode;
-  handleToggleStatus: (id: string, newStatus: string) => void; // Assuming calf status is toggled similarly
-  handleDeleteConfirmation: (id: number) => void;
+  handleToggleStatus: (id: string, newStatus: boolean) => void; // Assuming calf status is toggled similarly
+  handleDeleteConfirmation: (id: string) => void;
   handleViewDetails: (calf: any) => void; // Adjust if `calf` data type is different
   translate: (key: string) => string;
   formClass: string;
@@ -167,8 +167,9 @@ const CalvesList: React.FC<CalvesListProps> = ({
       <Pagination
         totalItems={currentCalves.length}
         defaultItemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
-      />
+        onPageChange={handlePageChange} itemsPerPage={0} currentPage={0} setCurrentPage={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
     </div>
   );
 };

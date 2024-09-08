@@ -1,9 +1,13 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext, ReactNode } from "react";
 import { Stall, StallService } from "../StallService";
 
 export const ManageStallContext = createContext<any>(null);
 
-export const ManageStallProvider = ({ children }) => {
+interface ManageStallProviderProps {
+  children: ReactNode;
+}
+
+export const ManageStallProvider: React.FC<ManageStallProviderProps> = ({ children }) => {
   const [stalls, setStalls] = useState<Stall[]>([]);
 
   useEffect(() => {
@@ -27,7 +31,6 @@ export const ManageStallProvider = ({ children }) => {
     fetchStallData();
   }, []);
 
-
   const addStall = async (newStall: Omit<Stall, 'id'>) => {
     try {
       const data = await StallService.addStall(newStall);
@@ -37,9 +40,8 @@ export const ManageStallProvider = ({ children }) => {
     }
   };
 
-  const editStall = async (id: number, updatedStall: Omit<Stall, 'id'>) => {
+  const editStall = async (id: string, updatedStall: Omit<Stall, 'id'>) => {
     try {
-      const data = await StallService.editStall(id, updatedStall);
       setStalls(prevStalls =>
         prevStalls.map(stall => (stall.id === id ? { ...stall, ...updatedStall } : stall))
       );
@@ -48,9 +50,8 @@ export const ManageStallProvider = ({ children }) => {
     }
   };
 
-  const toggleStallStatus = async (id: number) => {
+  const toggleStallStatus = async (id: string) => {
     try {
-      const data = await StallService.toggleStallStatus(id);
       setStalls(prevStalls =>
         prevStalls.map(stall => (stall.id === id ? { ...stall, status: !stall.status } : stall))
       );
@@ -59,7 +60,7 @@ export const ManageStallProvider = ({ children }) => {
     }
   };
 
-  const deleteStall = async (id: number) => {
+  const deleteStall = async (id: string) => {
     try {
       await StallService.deleteStall(id);
       setStalls(prevStalls => prevStalls.filter(stall => stall.id !== id));

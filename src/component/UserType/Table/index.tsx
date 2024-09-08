@@ -6,6 +6,7 @@ import { Table } from "flowbite-react";
 interface UserType {
   id: string;
   typeName: string;
+  userId: string;
 }
 
 interface UserTypeTableProps {
@@ -25,7 +26,7 @@ const UserTypeTable: React.FC<UserTypeTableProps> = ({
   handleEditDrawerOpen,
   handleDeleteConfirmation,
   translate,
-  formClass,
+  
 }) => (
   <Table>
     <Table.Head>

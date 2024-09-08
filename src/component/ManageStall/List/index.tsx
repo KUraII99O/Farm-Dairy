@@ -8,6 +8,7 @@ import EditStallForm from "../Form";
 import { useTranslation } from "../../Translator/Provider";
 import { Drawer, Button } from "flowbite-react";
 import StallTable from "../Table";
+import { Stall } from "../StallService";
 
 const StallList: React.FC = () => {
   const { stalls, deleteStall, addStall, editStall, toggleStallStatus } =
@@ -18,10 +19,10 @@ const StallList: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
-  const [selectedStall, setSelectedStall] = useState(null);
+  const [selectedStall, setSelectedStall] = useState<Stall | null>(null);
   const { translate, language } = useTranslation();
 
-  const handleDeleteConfirmation = async (id: number) => {
+  const handleDeleteConfirmation = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this stall?")) {
       await handleDelete(id);
     }
@@ -29,7 +30,7 @@ const StallList: React.FC = () => {
   const isArabic = language === "ar";
   const formClass = isArabic ? "rtl" : "ltr";
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
       await deleteStall(id);
       toast.success("Stall deleted successfully!");
@@ -58,7 +59,7 @@ const StallList: React.FC = () => {
     };
   }, []);
 
-  const handleToggleStatus = async (id: number, newStatus: string) => {
+  const handleToggleStatus = async (id: string, newStatus: string) => {
     try {
       await toggleStallStatus(id, newStatus);
       toast.success("Stall status updated successfully!");
@@ -83,18 +84,14 @@ const StallList: React.FC = () => {
     return <FaSort />;
   };
 
-  const handleEditDrawerOpen = (stall: any) => {
+  const handleEditDrawerOpen = (stall: Stall | null) => {
     setSelectedStall(stall);
     setIsEditDrawerOpen(true);
   };
 
-  const handleAddNewStall = async (newStallData: any) => {
+  const handleAddNewStall = async (newStallData: Stall) => {
     try {
-      // Set the status based on the user input
-      const status = newStallData.status === "true" ? true : false;
-      // Add the status to the new stall data
-      const stallDataWithStatus = { ...newStallData, status };
-      await addStall(stallDataWithStatus);
+      await addStall(newStallData);
       setIsEditDrawerOpen(false); // Close the drawer after adding
       toast.success("New stall added successfully!");
     } catch (error) {
@@ -102,11 +99,15 @@ const StallList: React.FC = () => {
     }
   };
 
-  const handleUpdateStall = async (updatedStallData: any) => {
+  const handleUpdateStall = async (updatedStallData: Stall) => {
     try {
-      await editStall(selectedStall.id, updatedStallData);
-      setIsEditDrawerOpen(false); // Close the drawer after updating
-      toast.success("Stall updated successfully!");
+      if (selectedStall) {
+        await editStall(selectedStall.id, updatedStallData);
+        setIsEditDrawerOpen(false); // Close the drawer after updating
+        toast.success("Stall updated successfully!");
+      } else {
+        toast.error("No stall selected for updating.");
+      }
     } catch (error) {
       toast.error("An error occurred while updating stall.");
     }
@@ -122,9 +123,9 @@ const StallList: React.FC = () => {
   const currentStalls = stalls.slice(indexOfFirstStall, indexOfLastStall);
 
   const sortedStalls = sortBy
-    ? currentStalls.slice().sort((a, b) => {
-        const aValue = a[sortBy];
-        const bValue = b[sortBy];
+    ? currentStalls.slice().sort((a: Stall, b: Stall) => {
+        const aValue = a[sortBy as keyof Stall] ?? "";
+        const bValue = b[sortBy as keyof Stall] ?? "";
         if (sortOrder === "asc") {
           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
         } else {
@@ -189,6 +190,11 @@ const StallList: React.FC = () => {
         totalItems={stalls.length}
         defaultItemsPerPage={itemsPerPage}
         onPageChange={handlePageChange}
+        itemsPerPage={0}
+        currentPage={0}
+        setCurrentPage={function (): void {
+          throw new Error("Function not implemented.");
+        }}
       />
       <ToastContainer />
     </div>

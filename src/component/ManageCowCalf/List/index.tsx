@@ -7,6 +7,7 @@ import CalvesList from "../Table";
 import ItemDetailDrawer from "../ItemDetails/";
 import { ManageCowCalfContext } from "../Provider"; // Corrected import
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
+import { Calf } from "../CalfService";
 
 const CalfList: React.FC = () => {
   const { calves, deleteCalf, toggleCalfStatus } = useContext(ManageCowCalfContext);
@@ -14,8 +15,8 @@ const CalfList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [selectedCalf, setSelectedCalf] = useState(null);
+  const [, setIsDeleting] = useState(false);
+  const [selectedCalf, setSelectedCalf]= useState<Calf | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -64,16 +65,16 @@ const CalfList: React.FC = () => {
   const isArabic = language === "ar";
   const formClass = isArabic ? "rtl" : "ltr";
 
-  const filteredCalves = calves.filter((calf: any) =>
+  const filteredCalves = calves.filter((calf: Calf) =>
     Object.values(calf).some((field) =>
       field.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
 
   const sortedCalves = sortBy
-    ? filteredCalves.slice().sort((a, b) => {
-        const aValue = a[sortBy];
-        const bValue = b[sortBy];
+    ? filteredCalves.slice().sort((a:Calf, b:Calf) => {
+        const aValue = a[sortBy as keyof Calf];
+        const bValue = b[sortBy as keyof Calf];
         if (sortOrder === "asc") {
           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
         } else {
@@ -146,8 +147,7 @@ const CalfList: React.FC = () => {
         handleDeleteConfirmation={handleDeleteConfirmation}
         translate={translate}
         formClass={formClass}
-        handleToggleStatus={handleToggleStatus}
-      />
+        handleToggleStatus={handleToggleStatus} itemsPerPage={0}      />
 
       {selectedCalf && (
         <ItemDetailDrawer

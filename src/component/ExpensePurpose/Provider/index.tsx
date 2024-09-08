@@ -1,12 +1,15 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { ExpensePurpose, ExpensePurposeService } from "../ExpensePurposeService";
 
+interface ExpensePurposeProviderProps {
+  children: React.ReactNode;
+}
+
 export const ExpensePurposeContext = createContext<any>(null);
 
-export const ExpensePurposeProvider = ({ children }) => {
+export const ExpensePurposeProvider: React.FC<ExpensePurposeProviderProps> = ({ children }) => {
   const [expensePurposes, setExpensePurposes] = useState<ExpensePurpose[]>([]);
 
- 
   useEffect(() => {
     const fetchExpensePurposesData = async () => {
       try {
@@ -18,7 +21,7 @@ export const ExpensePurposeProvider = ({ children }) => {
         console.log("User ID:", user.id); // Log user ID
   
         const data = await ExpensePurposeService.fetchExpensePurposes();
-        console.log("Staff data:", data); // Log staff data
+        console.log("Expense purposes data:", data); // Log expense purposes data
         setExpensePurposes(data || []);
       } catch (error) {
         console.error("Error fetching Expense Purposes:", error);

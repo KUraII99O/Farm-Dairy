@@ -2,21 +2,25 @@ import React, { useRef, useEffect } from "react";
 import { useTranslation } from "../../Translator/Provider";
 
 // Define the types for the props
-interface VaccineMonitorInfo {
-  VaccineName: string;
-  Remarks: string;
-  GivenTime: string;
-}
 
 interface VaccineMonitor {
-  date: string;
+  id: string;
   stallNo: string;
   animalID: string;
+  date: string;
   note: string;
-  healthStatus: string;
-  reportedBy: string;
-  informations: VaccineMonitorInfo[];
+  reportedby: string;
+  userId: string;
+  informations: Array<{
+    VaccineName: string;
+    Dose: string;
+    Repeat: string;
+    Remarks: string;
+    GivenTime: string;
+  }>;
 }
+
+
 
 interface Props {
   isOpen: boolean;

@@ -1,17 +1,43 @@
 import { v4 as uuidv4 } from 'uuid';
 
-interface Cow {
-  id: string;
-  userId: string;
-  name: string;
-  breed: string;
-  birthDate: string;
-  status: boolean;
-  pregnantStatus: string;
-  gender: string;
-  image: string;
-  stallNumber: string;
-}
+export type  Cow ={
+
+    id: string,
+    image: string,
+    userId: string,
+    animal: string,
+    buyDate: string,
+    stallNumber: string,
+    buyingPrice: string,
+    dateAdded: string,
+    pregnantStatus: string,
+    milkPerDay: string,
+    status: boolean,
+    gender: string,
+    informations: {
+      stallNumber: string,
+      dateOfBirth: string,
+      animalAgeDays: string,
+      weight: string,
+      height: string,
+      color: string,
+      numOfPregnant: string,
+      nextPregnancyApproxTime: string,
+      buyFrom: string,
+      prevVaccineDone: string,
+      note: string,
+      createdBy: string,
+    },
+    vaccinations: {
+      BDV: boolean,
+      PI3: boolean,
+      BRSV: boolean,
+      BVD: boolean,
+      VitaminA: boolean,
+      Anthrax: boolean,
+    },
+  };
+
 
 const CowService = {
   fetchCows,
@@ -138,4 +164,4 @@ async function deleteCow(id: string): Promise<void> {
   }
 }
 
-export { CowService, Cow };
+export { CowService };

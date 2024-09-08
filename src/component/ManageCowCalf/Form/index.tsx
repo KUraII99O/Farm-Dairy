@@ -7,6 +7,71 @@ import { useTranslation } from "../../Translator/Provider";
 import { ManageCowContext } from "../../Cow/Provider";
 import { toast } from "react-toastify";
 
+export type Calf = {
+  id: string;
+  image: File; // Add image property
+  gender: string;
+  animalType: string;
+  buyDate: string;
+  buyingPrice: string;
+  milkPerDay: string;
+  status: boolean;
+  stallNumber: string;
+  dateOfBirth: string;
+  animalAgeDays: string;
+  weight: string;
+  height: string;
+  color: string;
+  numOfPregnant: string;
+  buyFrom: string;
+  prevVaccineDone: string;
+  note: string;
+  CreatedBy: string;
+  userId: string;
+};
+
+interface Stall {
+  id: string;
+  stallNumber: string;
+}
+
+export type Cow = {
+  id: string;
+  image: string;
+  userId: string;
+  animal: string;
+  buyDate: string;
+  stallNumber: string;
+  buyingPrice: string;
+  dateAdded: string;
+  pregnantStatus: string;
+  milkPerDay: string;
+  status: boolean;
+  gender: string;
+  informations: {
+    stallNumber: string;
+    dateOfBirth: string;
+    animalAgeDays: string;
+    weight: string;
+    height: string;
+    color: string;
+    numOfPregnant: string;
+    nextPregnancyApproxTime: string;
+    buyFrom: string;
+    prevVaccineDone: string;
+    note: string;
+    createdBy: string;
+  };
+  vaccinations: {
+    BDV: boolean;
+    PI3: boolean;
+    BRSV: boolean;
+    BVD: boolean;
+    VitaminA: boolean;
+    Anthrax: boolean;
+  };
+};
+
 // Modified Checkbox component to handle checked state and onChange event
 const Checkbox = ({
   label,
@@ -32,22 +97,18 @@ const Checkbox = ({
 
 const EditCalfForm = () => {
   const { id } = useParams<{ id: string }>();
-  const { calves, addCalf, editCalf } =
-    useContext(ManageCowCalfContext);
-  const [selectedImage] = useState<string | null>(null);
+  const { calves, addCalf, editCalf } = useContext(ManageCowCalfContext);
   const navigate = useNavigate();
   const { translate, language } = useTranslation();
-  const [user, setUser] = useState<{ name: string }>({
+  const [, setUser] = useState<{ name: string }>({
     name: "",
   });
   const { cows } = useContext(ManageCowContext);
 
-  const [stallList, setStallList] = useState([]); // State to store staff data
-  const isArabic = language === "ar"; // Assuming 'ar' represents Arabic language
-
+  const [stallList, setStallList] = useState<Stall[]>([]); // State to store stall data   // Assuming 'ar' represents Arabic language
+  const isArabic = language === "ar";
   const isEditMode = !!id;
-  const cowIDs = cows.map((cow) => cow.id);
-
+  const cowIDs: string[] = cows.map((cow: Cow) => cow.id);
   const [formData, setFormData] = useState({
     image: "",
     animalType: "",
@@ -78,13 +139,9 @@ const EditCalfForm = () => {
     },
   });
 
+  const [, setLoading] = useState(false); // Define loading state
 
-  const [planLimitations, setPlanLimitations] = useState<any>({});
-  const [loading, setLoading] = useState(false); // Define loading state
-
-
-
-  const handleFileChange = (e) => {
+  const handleFileChange = (e: any) => {
     const file = e.target.files[0];
     setFormData({
       ...formData,
@@ -98,7 +155,7 @@ const EditCalfForm = () => {
 
   useEffect(() => {
     if (isEditMode && id && calves.length > 0) {
-      const selectedCalf = calves.find((item) => item.id === id); // Ensure id is of the same type as item.id
+      const selectedCalf = calves.find((item: any) => item.id === id); // Ensure id is of the same type as item.id
       if (selectedCalf) {
         setFormData(selectedCalf);
       }
@@ -151,7 +208,7 @@ const EditCalfForm = () => {
     fetchStallData();
   }, []);
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const { name, value } = e.target;
 
     if (name in formData.informations) {
@@ -178,12 +235,12 @@ const EditCalfForm = () => {
       },
     });
   };
- 
-  const handleSubmit = async (e) => {
+
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-  
+
     setLoading(true);
-  
+
     try {
       if (isEditMode) {
         await editCalf(id, formData);
@@ -191,7 +248,7 @@ const EditCalfForm = () => {
         navigate("/manage-cow-calf?result=success");
       } else {
         const error = await addCalf(formData);
-  
+
         if (error && error.message === "Limit has been reached") {
           toast.error("Limit has been reached");
           setLoading(false);
@@ -225,7 +282,6 @@ const EditCalfForm = () => {
               value={formData.informations.dateOfBirth}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
             />
           </div>
 
@@ -238,7 +294,6 @@ const EditCalfForm = () => {
               value={formData.informations.weight}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
-              required
             />
           </div>
 
@@ -251,7 +306,6 @@ const EditCalfForm = () => {
               value={formData.informations.height}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
-              required
             />
           </div>
 
@@ -279,7 +333,6 @@ const EditCalfForm = () => {
               value={formData.animalType}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
-              required
             />
           </div>
 
@@ -308,7 +361,6 @@ const EditCalfForm = () => {
                 value={formData.buyingPrice} // Use formData.buyingPrice directly
                 onChange={handleChange}
                 className="pl-8 w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                required
               />
             </div>
           </div>
@@ -322,7 +374,6 @@ const EditCalfForm = () => {
               value={formData.buyDate}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
-              required
             />
           </div>
 
@@ -334,7 +385,6 @@ const EditCalfForm = () => {
               value={formData.informations.stallNumber}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 -md focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
-              required
             >
               <option value="">{translate("selectStallNumber")}</option>
               {stallList.map((stall) => (

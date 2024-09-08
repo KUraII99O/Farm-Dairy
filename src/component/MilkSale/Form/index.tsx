@@ -1,8 +1,23 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FaUserPlus } from "react-icons/fa";
 import { useTranslation } from "../../Translator/Provider";
 import { ManageMilkSaleContext } from "../Provider";
+
+interface MilkSaleRecord {
+  id: string;
+  Date: string;
+  userId: string;
+  AccountNo: string;
+  StallNo: string;
+  AnimalID: string;
+  Liter: string;
+  Fate: string;
+  Price: string;
+  Total: string;
+  CollectedFrom: string;
+  addedBy: string;
+}
+
 
 const EditMilkSale = () => {
   const { id } = useParams<{ id: string }>();
@@ -26,8 +41,8 @@ const EditMilkSale = () => {
     invoice: ""
   });
   const [loading, setLoading] = useState(false);
-  const [successPopup, setSuccessPopup] = useState(false);
-  const { translate, language } = useTranslation();
+  const [, setSuccessPopup] = useState(false);
+  const { translate } = useTranslation();
 
   useEffect(() => {
     const date = new Date();
@@ -40,7 +55,7 @@ const EditMilkSale = () => {
 
   useEffect(() => {
     if (id && milkSaleRecords.length > 0) {
-      const selectedMilkSale = milkSaleRecords.find(milkSale => milkSale.id === id);
+      const selectedMilkSale = milkSaleRecords.find((milkSale: MilkSaleRecord) => milkSale.id === id);
       if (selectedMilkSale) {
         setFormData(selectedMilkSale);
       }
@@ -59,7 +74,7 @@ const EditMilkSale = () => {
     }
   }, []);
 
-  const handleChange = (e) => {
+  const handleChange = (e:any) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
       ...prevState,
@@ -67,7 +82,7 @@ const EditMilkSale = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e:any) => {
     e.preventDefault();
     setLoading(true);
 

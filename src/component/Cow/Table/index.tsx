@@ -5,6 +5,7 @@ import { Table } from "flowbite-react";
 import { Link } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
 import Pagination from "../../Pagination";
+import { Cow } from "../CowService";
 
 
 
@@ -14,11 +15,12 @@ interface CowListProps {
   handleSort: (fieldName: string) => void;
   sortIcon: (fieldName: string) => React.ReactNode;
   handleToggleStatus: (id: string, newStatus: string) => void; // Assuming cow status is toggled similarly
-  handleDeleteConfirmation: (id: number) => void;
+  handleDeleteConfirmation: (id: string) => void;
   translate: (key: string) => string;
   formClass: string;
   itemsPerPage: number; // If pagination is involved
-  handleViewDetails: (id: string) => void;
+  handleViewDetails: (id: Cow) => void;
+  toggleCowStatus: (id: string, newStatus: boolean) => void; // Add this line to include toggleCowStatus
 }
 
 const CowList: React.FC<CowListProps> = ({
@@ -179,8 +181,9 @@ const CowList: React.FC<CowListProps> = ({
       <Pagination
         totalItems={currentCows.length}
         defaultItemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
-      />
+        onPageChange={handlePageChange} itemsPerPage={0} currentPage={0} setCurrentPage={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
     </div>
   );
 };

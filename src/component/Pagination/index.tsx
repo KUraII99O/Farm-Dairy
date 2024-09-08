@@ -5,6 +5,9 @@ import { useTranslation } from "../Translator/Provider"; // Import the translati
 
 interface PaginationProps {
   totalItems: number;
+  itemsPerPage: number; // Add this line
+  currentPage: number; // Add this line
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>; // Add this line
   itemsPerPageOptions?: number[];
   defaultItemsPerPage?: number;
   onPageChange: (page: number, itemsPerPage: number) => void;
@@ -12,42 +15,43 @@ interface PaginationProps {
 
 const Pagination: React.FC<PaginationProps> = ({
   totalItems,
+  itemsPerPage,
+  currentPage,
+  setCurrentPage,
   itemsPerPageOptions = [5, 10, 20],
   defaultItemsPerPage = 5,
   onPageChange,
 }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(defaultItemsPerPage);
-  const { translate, language } = useTranslation(); // Get the translation function and current language
+  const [localItemsPerPage, setLocalItemsPerPage] = useState(defaultItemsPerPage);
+  const { translate, language } = useTranslation();
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const handlePageChange = (page: number) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
-    onPageChange(page, itemsPerPage);
+    onPageChange(page, localItemsPerPage);
   };
 
   const handleItemsPerPageChange = (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const newItemsPerPage = parseInt(e.target.value);
-    setItemsPerPage(newItemsPerPage);
+    setLocalItemsPerPage(newItemsPerPage);
     onPageChange(1, newItemsPerPage);
     setCurrentPage(1);
   };
 
-  // Determine the direction based on the current language
-  const isRTL = language === "ar"; // Adjust to your RTL language code if different
+  const isRTL = language === "ar";
 
   return (
     <div className={`flex justify-between items-center mt-4 ${isRTL ? 'rtl' : ''}`}>
       <div className="flex items-center">
         <span className={`mr-2 ${isRTL ? 'ml-2' : ''}`}>
-          {translate("itemsPerPage")}: {/* Translate "Items per page" */}
+          {translate("itemsPerPage")}:
         </span>
         <select
-          value={itemsPerPage}
+          value={localItemsPerPage}
           onChange={handleItemsPerPageChange}
           className={`border border-gray-300 rounded-md px-2 py-1 ${isRTL ? 'rtl' : ''}`}
         >
@@ -66,7 +70,7 @@ const Pagination: React.FC<PaginationProps> = ({
         >
           {isRTL ? <HiArrowNarrowRight /> : <HiArrowLeft />}
         </button>
-        <span className="mr-2">{`${translate("page")} ${currentPage}  `}</span>
+        <span className="mr-2">{`${translate("page")} ${currentPage}`}</span>
         <button
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}

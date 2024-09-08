@@ -8,10 +8,10 @@ import { toast } from "react-toastify";
 
 const EditStaff = () => {
   const { id } = useParams<{ id: string }>();
-  const { staff, addStaff, editStaff } = useContext(ManageStaffContext);
+  const { addStaff, editStaff } = useContext(ManageStaffContext);
   const { translate, language } = useTranslation();
   const navigate = useNavigate();
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [] = useState<string | null>(null);
   const isEditMode = !!id;
 
   const [formData, setFormData] = useState({
@@ -31,7 +31,7 @@ const EditStaff = () => {
     status: "true",
   });
 
-  const [planLimitations, setPlanLimitations] = useState<any>({});
+  const [, setPlanLimitations] = useState<any>({});
   const [loading, setLoading] = useState(false); // Define loading state
 
   useEffect(() => {
@@ -59,7 +59,7 @@ const EditStaff = () => {
     });
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e:any) => {
     const { name, value } = e.target;
     if (name === "status") {
       const statusValue = value === "true";
@@ -75,7 +75,7 @@ const EditStaff = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e:any) => {
     e.preventDefault();
   
     setLoading(true);

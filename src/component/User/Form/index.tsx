@@ -10,7 +10,6 @@ const EditUser = () => {
   const { users, addUser, editUser } = useContext(ManageUserContext);
   const { translate, language } = useTranslation();
   const navigate = useNavigate();
-  const [selectedImage, setSelectedImage] = useState<string | null>(null); // State to store selected image path
 
   const isEditMode = !!id;
 
@@ -31,11 +30,11 @@ const EditUser = () => {
     status: "true",
   });
 
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
 
   useEffect(() => {
     if (isEditMode && id && users.length > 0) {
-      const selectedUser = users.find((item) => item.id === id); // Ensure id is of the same type as item.id
+      const selectedUser = users.find((item: { id: string; }) => item.id === id); // Ensure id is of the same type as item.id
       if (selectedUser) {
         setFormData(selectedUser);
       }

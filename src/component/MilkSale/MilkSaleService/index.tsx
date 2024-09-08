@@ -1,19 +1,24 @@
 import { v4 as uuidv4 } from 'uuid';
 
-export interface MilkSaleRecord {
+export type MilkSaleRecord = {
   id: string;
   Date: string;
   userId: string;
   AccountNo: string;
   StallNo: string;
   AnimalID: string;
-  Liter: number;
+  Liter: string;
   Fate: string;
-  Price: number;
-  Total: number;
+  Price: string;
+  Total: string;
   CollectedFrom: string;
   addedBy: string;
+  Invoice: string;
+  Due: string;
+  Paid: string;
 }
+
+
 
 const MilkSaleService = {
   fetchMilkSaleRecords,
@@ -41,7 +46,7 @@ async function fetchMilkSaleRecords(): Promise<MilkSaleRecord[]> {
     const milkSaleRecordsData: MilkSaleRecord[] = await response.json();
     return milkSaleRecordsData;
   } catch (error) {
-    console.error('Error fetching milk sale records data:', error.message);
+    console.error('Error fetching milk sale records data:', error);
     return [];
   }
 }
@@ -74,7 +79,7 @@ async function addMilkSaleRecord(newMilkSaleRecord: Omit<MilkSaleRecord, 'id' | 
 
     return milkSaleRecordWithId;
   } catch (error) {
-    console.error('Error adding milk sale record:', error.message);
+    console.error('Error adding milk sale record:', error);
     throw error;
   }
 }
@@ -102,7 +107,7 @@ async function editMilkSaleRecord(id: string, updatedMilkSaleRecord: Omit<MilkSa
       throw new Error('Failed to update milk sale record');
     }
   } catch (error) {
-    console.error('Error updating milk sale record:', error.message);
+    console.error('Error updating milk sale record:', error);
     throw error;
   }
 }
@@ -126,9 +131,9 @@ async function deleteMilkSaleRecord(id: string): Promise<void> {
       throw new Error('Failed to delete milk sale record');
     }
   } catch (error) {
-    console.error('Error deleting milk sale record:', error.message);
+    console.error('Error deleting milk sale record:', error);
     throw error;
   }
 }
 
-export { MilkSaleService, MilkSaleRecord };
+export { MilkSaleService, };

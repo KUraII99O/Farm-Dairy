@@ -2,15 +2,26 @@ import React from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { BsPencil } from "react-icons/bs";
 import { Table } from "flowbite-react";
+import { Designation } from "../DesignationService";
 
-const DesignationTable = ({
+
+interface DesignationTableProps {
+  sortedDesignations: Designation[];
+  handleSort: (column: string) => void;
+  sortIcon: (column: string) => React.ReactNode;
+  handleEditDrawerOpen: (designation: Designation) => void;
+  handleDeleteConfirmation: (id: string) => void;
+  translate: (key: string) => string;
+  formClass?: string; // Optional prop, if applicable
+}
+
+const DesignationTable: React.FC<DesignationTableProps> = ({
   sortedDesignations,
   handleSort,
   sortIcon,
   handleEditDrawerOpen,
   handleDeleteConfirmation,
   translate,
-  formClass,
 }) => (
   <Table>
     <Table.Head>
@@ -26,7 +37,6 @@ const DesignationTable = ({
           {sortIcon("name")}
         </div>
       </Table.HeadCell>
-      
       <Table.HeadCell>{translate("action")}</Table.HeadCell>
     </Table.Head>
     <Table.Body className="divide-y">
@@ -41,7 +51,6 @@ const DesignationTable = ({
           <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
             {designation.name}
           </Table.Cell>
-          
           <Table.Cell>
             <div className="flex items-center">
               <button
@@ -51,7 +60,7 @@ const DesignationTable = ({
                 <BsPencil className="w-5 h-5 ml-2" />
               </button>
               <button
-                onClick={() => handleDeleteConfirmation(designation.id)}
+                onClick={() => handleDeleteConfirmation(designation.id!)}
                 className="text-red-500 hover:text-red-700 focus:outline-none flex items-center"
               >
                 <AiOutlineDelete className="w-5 h-5 mr-1" />

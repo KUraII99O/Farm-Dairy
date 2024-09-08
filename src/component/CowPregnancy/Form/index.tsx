@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PregnancyRecordsList from "../PregnancyRecords";
 import CowDetails from "../List";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "../../Translator/Provider";
-import { ManagePregnancyContext } from "../Provider";
+import {  useManagePregnancy } from "../Provider";
 import { PregnancyService } from "../CowPregnancyService";
 
 // Define TypeScript interfaces
 interface FormData {
-  stallNo: string;
+  stallNumber: string;
   animalId: string;
   pregnancyType: string;
   semenType: string;
@@ -17,7 +17,11 @@ interface FormData {
   semenCost: string;
   otherCost: string;
   note: string;
+  userId: string;
+  image: string;
+  due: string;
   pregnancyStatus: string;
+  animalAgeDays: string;
 }
 
 interface Stall {
@@ -25,20 +29,52 @@ interface Stall {
   stallNumber: string;
 }
 
-interface Cow {
-  id: string;
-  animalId: string;
-}
+export type  Cow ={
+
+  id: string,
+  image: string,
+  userId: string,
+  animal: string,
+  buyDate: string,
+  stallNumber: string,
+  buyingPrice: string,
+  dateAdded: string,
+  pregnantStatus: string,
+  milkPerDay: string,
+  status: boolean,
+  gender: string,
+  informations: {
+    stallNumber: string,
+    dateOfBirth: string,
+    animalAgeDays: string,
+    weight: string,
+    height: string,
+    color: string,
+    numOfPregnant: string,
+    nextPregnancyApproxTime: string,
+    buyFrom: string,
+    prevVaccineDone: string,
+    note: string,
+    createdBy: string,
+  },
+  vaccinations: {
+    BDV: boolean,
+    PI3: boolean,
+    BRSV: boolean,
+    BVD: boolean,
+    VitaminA: boolean,
+    Anthrax: boolean,
+  },
+};
 
 const CowPregnancyForm: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  useParams<{ id: string; }>();
 
-  const { addPregnancy } = useContext(ManagePregnancyContext);
+  const { addPregnancy } = useManagePregnancy();
   const { fetchPregnancies } = PregnancyService;
   const { translate } = useTranslation();
 
   const [formData, setFormData] = useState<FormData>({
-    stallNo: "",
     animalId: "",
     pregnancyType: "",
     semenType: "",
@@ -48,6 +84,11 @@ const CowPregnancyForm: React.FC = () => {
     otherCost: "",
     note: "",
     pregnancyStatus: "",
+    stallNumber: "",
+    userId: "",
+    image: "",
+    due: "",
+    animalAgeDays: "",
   });
   const [showCowDetails, setShowCowDetails] = useState(false);
   const [stallList, setStallList] = useState<Stall[]>([]);
@@ -59,6 +100,10 @@ const CowPregnancyForm: React.FC = () => {
 
   const PREGNANCY_DURATION = 283; // Total pregnancy duration in days
 
+
+
+
+
   useEffect(() => {
     const fetchStallData = async () => {
       try {
@@ -69,11 +114,16 @@ const CowPregnancyForm: React.FC = () => {
         const data: Stall[] = await response.json();
         setStallList(data);
       } catch (error) {
-        console.error("Error fetching stall data:", error);
-        setError(error.message);
+        if (error instanceof Error) {
+          console.error("Error fetching stall data:", error.message);
+          setError(error.message);
+        } else {
+          console.error("Unknown error fetching stall data:", error);
+          setError("An unknown error occurred while fetching stall data.");
+        }
       }
     };
-
+  
     fetchStallData();
   }, []);
 
@@ -83,19 +133,19 @@ const CowPregnancyForm: React.FC = () => {
       setCowList([]);
       return;
     }
-
+  
     console.log(`Fetching cow data for Stall Number: ${stallNumber}`);
-
+  
     try {
       const response = await fetch(`http://localhost:3000/cows?stallNumber=${stallNumber}`);
-
+  
       if (!response.ok) {
         throw new Error(`Failed to fetch cow data. Status: ${response.status}`);
       }
-
+  
       const data = await response.json();
       console.log("Fetched data:", data); // Log the raw data
-
+  
       if (!data || data.length === 0) {
         console.warn("Received empty cow data.");
         setCowList([]);
@@ -103,19 +153,24 @@ const CowPregnancyForm: React.FC = () => {
         setCowList(data);
       }
     } catch (error) {
-      console.error("Error fetching cow data:", error.message);
-      setError(`An error occurred while fetching cow data: ${error.message}`);
+      if (error instanceof Error) {
+        console.error("Error fetching cow data:", error.message);
+        setError(`An error occurred while fetching cow data: ${error.message}`);
+      } else {
+        console.error("Unknown error fetching cow data:", error);
+        setError("An unknown error occurred while fetching cow data.");
+      }
     }
   };
 
   useEffect(() => {
-    if (formData.stallNo !== "") {
-      fetchCowData(formData.stallNo);
+    if (formData.stallNumber !== "") {
+      fetchCowData(formData.stallNumber);
     }
-  }, [formData.stallNo]);
+  }, [formData.stallNumber]);
 
   useEffect(() => {
-    if (formData.stallNo !== "" && formData.animalId !== "") {
+    if (formData.stallNumber !== "" && formData.animalId !== "") {
       setShowCowDetails(true);
       fetchPregnancies(formData.animalId);
     } else {
@@ -165,6 +220,7 @@ const CowPregnancyForm: React.FC = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log("chpeeeeet")
     e.preventDefault();
     setLoading(true);
     setError(null); // Clear previous errors
@@ -182,7 +238,7 @@ const CowPregnancyForm: React.FC = () => {
   return (
     <div>
       {error && <div className="error-message">{error}</div>}
-      <form onSubmit={handleSubmit}>
+      <form >
         <div>
           <label htmlFor="stallNo" className="block mb-1 text-sm">
             {translate("stallNo")} *:
@@ -192,7 +248,7 @@ const CowPregnancyForm: React.FC = () => {
             id="stallNo"
             name="stallNo"
             className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            value={formData.stallNo}
+            value={formData.stallNumber}
             onChange={handleStallChange}
             required
           >
@@ -229,7 +285,7 @@ const CowPregnancyForm: React.FC = () => {
 
       {showCowDetails && <CowDetails formData={formData} cowList={cowList} />}
       {showCowDetails && <PregnancyRecordsList />}
-
+            <form onSubmit={handleSubmit} >
       <div ref={editFormRef}>
         <div className="col-span-3">
           <h2 className="text-xl font-bold mb-4">{translate("animalpregnancydetails")}:</h2>
@@ -355,13 +411,17 @@ const CowPregnancyForm: React.FC = () => {
                 type="submit"
                 className="w-full py-2 px-4 bg-blue-500 text-white font-bold rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 disabled={loading}
+
               >
                 {loading ? translate("loading") : translate("submit")}
               </button>
+              
             </div>
+            
           </div>
         </div>
       </div>
+      </form>
       
       {/* Progress bar */}
       {formData.pregnancyStartDate && (

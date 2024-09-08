@@ -8,13 +8,50 @@ import { toast, ToastContainer } from "react-toastify";
 import { useTranslation } from "../../Translator/Provider";
 import CowList from "../Table";
 
+interface Cow {
+  id: string,
+  image: string,
+  userId: string,
+  animal: string,
+  buyDate: string,
+  stallNumber: string,
+  buyingPrice: string,
+  dateAdded: string,
+  pregnantStatus: string,
+  milkPerDay: string,
+  status: boolean,
+  gender: string,
+  informations: {
+    stallNumber: string,
+    dateOfBirth: string,
+    animalAgeDays: string,
+    weight: string,
+    height: string,
+    color: string,
+    numOfPregnant: string,
+    nextPregnancyApproxTime: string,
+    buyFrom: string,
+    prevVaccineDone: string,
+    note: string,
+    createdBy: string,
+  },
+  vaccinations: {
+    BDV: boolean,
+    PI3: boolean,
+    BRSV: boolean,
+    BVD: boolean,
+    VitaminA: boolean,
+    Anthrax: boolean,
+  },
+};
+
 const AnimalList: React.FC = () => {
   const { cows, deleteCow, toggleCowStatus } = useContext(ManageCowContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
   const [, setIsDeleting] = useState(false);
-  const [selectedCow, setSelectedCow] = useState(null);
+  const [selectedCow, setSelectedCow] = useState<Cow | null>(null);
   const { translate, language } = useTranslation();
   const isArabic = language === "ar";
   const formClass = isArabic ? "rtl" : "ltr";
@@ -28,11 +65,10 @@ const AnimalList: React.FC = () => {
 
   useEffect(() => {
     if (query.get("result") === "success") {
-      toast.success("Milk Entry  Added successfully!");
+      toast.success("Milk Entry Added successfully!");
       navigate(location.pathname, { replace: true });
     }
   }, [query, location.pathname, navigate]);
-
 
   const handleSort = (fieldName: string) => {
     if (sortBy === fieldName) {
@@ -50,16 +86,16 @@ const AnimalList: React.FC = () => {
     return <FaSort />;
   };
 
-  const filteredCows = cows.filter((cow) =>
+  const filteredCows = cows.filter((cow: Cow) =>
     Object.values(cow).some((field) =>
       field.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
 
   const sortedCows = sortBy
-    ? filteredCows.slice().sort((a, b) => {
-        const aValue = a[sortBy];
-        const bValue = b[sortBy];
+    ? filteredCows.slice().sort((a: Cow, b: Cow) => {
+        const aValue = a[sortBy as keyof Cow];
+        const bValue = b[sortBy as keyof Cow];
         if (sortOrder === "asc") {
           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
         } else {
@@ -68,13 +104,13 @@ const AnimalList: React.FC = () => {
       })
     : filteredCows;
 
-  const handleDeleteConfirmation = (id: number) => {
+  const handleDeleteConfirmation = (id: string) => {
     if (window.confirm("Are you sure you want to delete this cow?")) {
       handleDelete(id);
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     setIsDeleting(true);
     try {
       await deleteCow(id);
@@ -86,7 +122,7 @@ const AnimalList: React.FC = () => {
     }
   };
 
-  const handleViewDetails = (cow) => {
+  const handleViewDetails = (cow: Cow) => {
     setSelectedCow(cow);
   };
 
@@ -127,7 +163,10 @@ const AnimalList: React.FC = () => {
         translate={translate}
         formClass={formClass}
         toggleCowStatus={toggleCowStatus}
-      />
+        itemsPerPage={5} // Update this value if necessary
+        handleToggleStatus={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
       {selectedCow && (
         <ItemDetailDrawer
           isOpen={true}

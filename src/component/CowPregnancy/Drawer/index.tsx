@@ -1,15 +1,26 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "../../Translator/Provider";
+import { Pregnancy } from "../CowPregnancyService";
 
-const EditPregnancyForm = ({ pregnancy, onAdd, onUpdate, onClose }) => {
-  const { id } = useParams();
+
+
+
+interface EditPregnancyFormProps {
+pregnancy?: Pregnancy | null; // Make this optional if it's not always provided
+  onAdd: (formData: Pregnancy) => void;
+  onUpdate: (formData: Pregnancy) => void;
+  onClose: () => void;
+}
+
+const EditPregnancyForm: React.FC<EditPregnancyFormProps> = ({ pregnancy, onAdd, onUpdate, onClose }) => {
   const navigate = useNavigate();
-  const formRef = useRef(null);
-
+  const formRef = useRef<HTMLDivElement>(null); // Specify the type here
+  
   const [formData, setFormData] = useState({
-    stallNo: "",
-    animalID: "",
+    id: "", 
+    userId: "",
+    stallNumber: "",
     pregnancyType: "",
     semenType: "",
     semenPushDate: "",
@@ -17,7 +28,10 @@ const EditPregnancyForm = ({ pregnancy, onAdd, onUpdate, onClose }) => {
     semenCost: "",
     otherCost: "",
     note: "",
+    due: "",
     pregnancyStatus: "",
+    image:"",
+    animalAgeDays:"",
   });
   const { translate } = useTranslation();
 
@@ -27,12 +41,12 @@ const EditPregnancyForm = ({ pregnancy, onAdd, onUpdate, onClose }) => {
     }
   }, [pregnancy]);
 
-  const handleChange = (e) => {
+  const handleChange = (e:any) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e:React.FormEvent) => {
     e.preventDefault();
     if (pregnancy) {
       onUpdate(formData);
@@ -46,12 +60,12 @@ const EditPregnancyForm = ({ pregnancy, onAdd, onUpdate, onClose }) => {
     navigate("/Animal-Pregnancy");
   };
 
-  const handleOutsideClick = (e) => {
-    if (formRef.current && !formRef.current.contains(e.target)) {
+  const handleOutsideClick = (e: MouseEvent) => {
+    // Ensure formRef.current is not null
+    if (formRef.current && !formRef.current.contains(e.target as Node)) {
       handleCloseDrawer();
     }
   };
-
   useEffect(() => {
     document.addEventListener("mousedown", handleOutsideClick);
     return () => {

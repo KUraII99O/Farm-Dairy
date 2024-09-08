@@ -1,14 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
 
 export type Vaccine = {
-    id: string;
-    vaccineName: string;
-    userId: string;
-    periodDays: string;
-    repeatVaccine: boolean;
-    dose: string;
-    note: string;
-};
+  id?: string;
+  vaccineName: string;
+  periodDays: string;
+  repeatVaccine: boolean;
+  dose: string;
+  note: string;
+  userId?: string|null;
+}
 
 const VaccineService = {
   fetchVaccines,

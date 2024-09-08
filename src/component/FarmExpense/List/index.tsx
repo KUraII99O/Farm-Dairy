@@ -1,14 +1,13 @@
 import React, { useState, useContext } from "react";
-import { BsPencil } from "react-icons/bs";
-import { AiOutlineDelete } from "react-icons/ai";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
-import Pagination from "../../Pagination";
 import { BiListUl } from "react-icons/bi";
 import { ExpenseContext } from "../Provider";
 import { toast, ToastContainer } from "react-toastify";
 import EditExpenseForm from "../Form";
 import ExpenseList from "../Table";
 import { useTranslation } from "../../Translator/Provider";
+import { Expense } from "../FarmExpenseService";
+
 
 const ExpenseTable: React.FC = () => {
   const { expenses, deleteExpense, addExpense, editExpense } =
@@ -16,10 +15,8 @@ const ExpenseTable: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
-  const [selectedExpense, setSelectedExpense] = useState(null);
+  const [selectedExpense, setSelectedExpense] =  useState<Expense | null>(null);
   const { translate, language } = useTranslation();
   const isArabic = language === "ar";
   const formClass = isArabic ? "rtl" : "ltr";
@@ -47,8 +44,9 @@ const ExpenseTable: React.FC = () => {
     }
   };
 
-  const handleUpdateExpense = async (updatedExpenseData: any) => {
+  const handleUpdateExpense = async (updatedExpenseData: Expense) => {
     try {
+      if(selectedExpense)
       await editExpense(selectedExpense.id, updatedExpenseData);
       setIsEditDrawerOpen(false);
       toast.success("Expense updated successfully!");
@@ -57,7 +55,7 @@ const ExpenseTable: React.FC = () => {
     }
   };
 
-  const handleDeleteConfirmation = async (id: number) => {
+  const handleDeleteConfirmation = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this expense?")) {
       try {
         await deleteExpense(id);
@@ -75,29 +73,17 @@ const ExpenseTable: React.FC = () => {
     return <FaSort />;
   };
 
-  const dynamicSort = (property: string) => {
-    const sortOrderValue = sortOrder === "asc" ? 1 : -1;
-    return function (a: any, b: any) {
-      if (a[property] < b[property]) {
-        return -1 * sortOrderValue;
-      } else if (a[property] > b[property]) {
-        return 1 * sortOrderValue;
-      } else {
-        return 0;
-      }
-    };
-  };
 
-  const filteredExpenses = expenses.filter((expense) =>
+  const filteredExpenses = expenses.filter((expense:Expense) =>
     Object.values(expense).some((field) =>
       field.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
 
   const sortedExpenses = sortBy
-    ? filteredExpenses.slice().sort((a, b) => {
-        const aValue = a[sortBy];
-        const bValue = b[sortBy];
+    ? filteredExpenses.slice().sort((a:Expense, b:Expense) => {
+        const aValue = a[sortBy as keyof Expense]?? "";
+        const bValue = b[sortBy as keyof Expense]?? "";
         if (sortOrder === "asc") {
           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
         } else {
@@ -111,7 +97,7 @@ const ExpenseTable: React.FC = () => {
     <>
       {isEditDrawerOpen && (
         <EditExpenseForm
-          expense={selectedExpense}
+          expense={selectedExpense || undefined}
           onSubmit={selectedExpense ? handleUpdateExpense : handleAddNewExpense}
           onClose={() => setIsEditDrawerOpen(false)}
         />
@@ -146,8 +132,7 @@ const ExpenseTable: React.FC = () => {
           handleEditDrawerOpen={handleEditDrawerOpen}
           handleDeleteConfirmation={handleDeleteConfirmation}
           translate={translate}
-          formClass={formClass} 
-          
+          formClass={formClass} itemsPerPage={0}          
           />
 
         <ToastContainer />

@@ -7,9 +7,10 @@ import ContactUs from '../ContactUs';
 import LandingFooter from '../LandingFooter';
 
 const Landing = () => {
-  const pricingRef = useRef(null);
-  const servicesRef = useRef(null);
-  const contactRef = useRef(null);
+  // Typing the refs as React.RefObject<HTMLDivElement>
+  const pricingRef = useRef<HTMLDivElement>(null);
+  const servicesRef = useRef<HTMLDivElement>(null);
+  const contactRef = useRef<HTMLDivElement>(null);
 
   const scrollToPricing = () => {
     if (pricingRef.current) {

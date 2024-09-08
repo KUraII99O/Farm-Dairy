@@ -1,16 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 
-interface Designation {
-  id: string;
+export type Designation = {
+  id?: string;
   name: string; // Assuming you have a similar field for designations
-  userId: string;
+  userId?: string;
 }
 
 const DesignationService = {
   fetchDesignations,
   addDesignation,
   editDesignation,
-  toggleDesignationStatus,
   deleteDesignation
 };
 
@@ -34,7 +33,7 @@ async function fetchDesignations(): Promise<Designation[]> {
     const designationsData: Designation[] = await response.json();
     return designationsData
   } catch (error) {
-    console.error('Error fetching Designation data:', error.message);
+   throw new Error ('Error fetching Designation data:');
     return [];
   }
 }
@@ -68,7 +67,7 @@ async function addDesignation(newDesignation: Omit<Designation, 'id' | 'userId'>
 
     return designationWithId;
   } catch (error) {
-    console.error('Error adding designation:', error.message);
+   throw new Error ('Error adding designation:');
     throw error;
   }
 }
@@ -86,25 +85,12 @@ async function editDesignation(id: string, updatedDesignation: Omit<Designation,
       throw new Error('Failed to update designation');
     }
   } catch (error) {
-    console.error('Error updating designation:', error.message);
+   throw new Error ('Error updating designation:');
     throw error;
   }
 }
 
-async function toggleDesignationStatus(id: string): Promise<Designation> {
-  try {
-    const response = await fetch(`http://localhost:3000/designations/${id}/toggle-status`, {
-      method: "PUT",
-    });
-    if (!response.ok) {
-      throw new Error("Failed to toggle designation status");
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error toggling designation status:", error.message);
-    throw error;
-  }
-}
+
 
 async function deleteDesignation(id: string): Promise<void> {
   try {
@@ -115,9 +101,9 @@ async function deleteDesignation(id: string): Promise<void> {
       throw new Error("Failed to delete designation");
     }
   } catch (error) {
-    console.error("Error deleting designation:", error.message);
+   throw new Error ("Error deleting designation:");
     throw error;
   }
 }
 
-export { DesignationService, Designation };
+export { DesignationService };

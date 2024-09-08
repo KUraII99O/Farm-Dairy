@@ -1,7 +1,6 @@
 import React, { useState, useContext } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Employee } from "../types";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import EditEmployeeForm from "../Form";
 import { toast } from "react-toastify";
@@ -9,6 +8,8 @@ import { useTranslation } from "../../Translator/Provider";
 import { ManageEmployeeContext } from "../Provider";
 import EmployeeList from "../Table";
 import { Drawer } from "flowbite-react";
+import { Employee } from "../EmployeeService";
+
 
 const EmployeeTable: React.FC = () => {
   const { employees, deleteEmployee, addEmployee, editEmployee } = useContext(
@@ -19,7 +20,6 @@ const EmployeeTable: React.FC = () => {
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
-  const [isAddDrawerOpen, setIsAddDrawerOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
     null
   );
@@ -27,19 +27,28 @@ const EmployeeTable: React.FC = () => {
   const isArabic = language === "ar";
   const formClass = isArabic ? "rtl" : "ltr";
 
-  const filteredEmployees = employees.filter((employee) =>
-    Object.values(employee).some((field) =>
-      field.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    )
+  const filteredEmployees = employees.filter((employee: Employee) =>
+    Object.values(employee).some((field) => {
+      if (
+        typeof field === "string" ||
+        typeof field === "number" ||
+        typeof field === "boolean"
+      ) {
+        return field
+          .toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+      }
+      return false;
+    })
   );
-
   const sortedEmployees = sortBy
-    ? filteredEmployees.sort((a, b) =>
+    ? filteredEmployees.sort((a: Employee, b: Employee) =>
         sortOrder === "asc"
-          ? a[sortBy] > b[sortBy]
+          ? a[sortBy as keyof Employee] > b[sortBy as keyof Employee]
             ? 1
             : -1
-          : a[sortBy] < b[sortBy]
+          : a[sortBy as keyof Employee] < b[sortBy as keyof Employee]
           ? 1
           : -1
       )
@@ -61,13 +70,13 @@ const EmployeeTable: React.FC = () => {
     return <FaSort />;
   };
 
-  const handleDeleteConfirmation = (id: number) => {
+  const handleDeleteConfirmation = (id: string) => {
     if (window.confirm("Are you sure you want to delete this employee?")) {
       handleDelete(id);
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
       await deleteEmployee(id);
       toast.success("Employee deleted successfully!");
@@ -89,7 +98,8 @@ const EmployeeTable: React.FC = () => {
 
   const handleUpdateEmployee = async (updatedEmployeeData: any) => {
     try {
-      await editEmployee(selectedEmployee.id, updatedEmployeeData);
+      if (selectedEmployee)
+        await editEmployee(selectedEmployee.id, updatedEmployeeData);
       setIsEditDrawerOpen(false);
       toast.success("Employee updated successfully!");
     } catch (error) {
@@ -102,7 +112,7 @@ const EmployeeTable: React.FC = () => {
     setSelectedEmployee(null);
   };
 
-  const handleEditDrawerOpen = (employee: any) => {
+  const handleEditDrawerOpen = (employee: Employee | null) => {
     setSelectedEmployee(employee);
     setIsEditDrawerOpen(true);
   };
@@ -136,9 +146,9 @@ const EmployeeTable: React.FC = () => {
           handleEditDrawerOpen={handleEditDrawerOpen}
           handleDeleteConfirmation={handleDeleteConfirmation}
           translate={translate}
-          formClass={formClass} 
-          
-          />
+          formClass={formClass}
+          itemsPerPage={0}
+        />
 
         <Drawer
           open={isEditDrawerOpen}
@@ -149,11 +159,9 @@ const EmployeeTable: React.FC = () => {
           <Drawer.Header title="Drawer" />
           <Drawer.Items>
             <EditEmployeeForm
-              employee={selectedEmployee}
+              employee={selectedEmployee ?? undefined} // Pass undefined if selectedEmployee is null
               onSubmit={
-                selectedEmployee
-                  ? handleUpdateEmployee
-                  : handleAddNewEmployee
+                selectedEmployee ? handleUpdateEmployee : handleAddNewEmployee
               }
             />
           </Drawer.Items>

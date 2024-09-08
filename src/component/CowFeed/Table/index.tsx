@@ -5,13 +5,25 @@ import { Table } from "flowbite-react";
 import { Link } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
 
+
+interface CowFeedInfo {
+  foodItem: string;
+  quantity: string;
+  feedingTime: string;
+  unit: string;
+}
+
 interface CowFeed {
   id: string;
   date: string;
-  stallNo: string;
+  StallNo: string;
   cowNumber: string;
   note: string;
+  userId: string;
+  informations: CowFeedInfo[]; // This should be an array
 }
+
+
 
 interface CowFeedListProps {
   currentCowFeeds: CowFeed[];
@@ -29,7 +41,6 @@ const CowFeedList: React.FC<CowFeedListProps> = ({
   sortIcon,
   handleDeleteConfirmation,
   translate,
-  formClass,
   handleViewDetails
 }) => {
   return (
@@ -42,10 +53,10 @@ const CowFeedList: React.FC<CowFeedListProps> = ({
               {sortIcon("date")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("stallNo")}>
+          <Table.HeadCell onClick={() => handleSort("StallNo")}>
             <div className="flex items-center">
               {translate("Stall No")}
-              {sortIcon("stallNo")}
+              {sortIcon("StallNo")}
             </div>
           </Table.HeadCell>
           <Table.HeadCell onClick={() => handleSort("cowNumber")}>
@@ -66,7 +77,7 @@ const CowFeedList: React.FC<CowFeedListProps> = ({
           {currentCowFeeds.map((cowFeed) => (
             <Table.Row key={cowFeed.id}>
               <Table.Cell>{cowFeed.date}</Table.Cell>
-              <Table.Cell>{cowFeed.stallNo}</Table.Cell>
+              <Table.Cell>{cowFeed.StallNo}</Table.Cell>
               <Table.Cell>{cowFeed.cowNumber}</Table.Cell>
               <Table.Cell>{cowFeed.note}</Table.Cell>
               <Table.Cell>

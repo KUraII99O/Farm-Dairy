@@ -8,15 +8,35 @@ import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import { ManageMilkContext } from "../Provider";
 import MilkList from "../Table";
 
+interface MilkRecord {
+  id: string;
+  Date: string;
+  userId: string;
+  AccountNo: string;
+  StallNo: string;
+  AnimalID: string;
+  Liter: string;
+  Fate: string;
+  Price: string;
+  Total: string;
+  CollectedFrom: string;
+  addedBy: string;
+}
+
 const MilkTable: React.FC = () => {
   const { milkRecords, deleteMilkRecord } = useContext(ManageMilkContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [user, setUser] = useState<{ username: string }>({
+  const [, setIsDeleting] = useState(false);
+  const [, setUser] = useState<{ username: string }>({
     username: "",
   });
+  const [, setFormData] = useState({
+    AddedBy: "",
+    Date: ""
+  });
+
   const { translate, language } = useTranslation();
   const isArabic = language === "ar";
   const location = useLocation();
@@ -24,7 +44,7 @@ const MilkTable: React.FC = () => {
   const formClass = isArabic ? "rtl" : "ltr";
 
   const filteredMilks = milkRecords.filter(
-    (milk) =>
+    (milk: MilkRecord) =>
       Object.values(milk).some(
         (field) =>
           field &&
@@ -32,6 +52,7 @@ const MilkTable: React.FC = () => {
           field.toLowerCase().includes(searchTerm.toLowerCase())
       )
   );
+
   const useQuery = () => {
     return new URLSearchParams(location.search);
   };
@@ -65,15 +86,15 @@ const MilkTable: React.FC = () => {
         console.error("Error fetching user data from local storage:", error);
       }
     };
-  
+
     fetchUserData();
   }, []);
 
   const sortedMilks = sortBy
-    ? filteredMilks.sort((a, b) =>
+    ? filteredMilks.sort((a: MilkRecord, b: MilkRecord) =>
         sortOrder === "asc"
-          ? a[sortBy].localeCompare(b[sortBy])
-          : b[sortBy].localeCompare(a[sortBy])
+          ? a[sortBy as keyof MilkRecord].localeCompare(b[sortBy as keyof MilkRecord])
+          : b[sortBy as keyof MilkRecord].localeCompare(a[sortBy as keyof MilkRecord])
       )
     : filteredMilks;
 
@@ -141,7 +162,9 @@ const MilkTable: React.FC = () => {
         sortIcon={sortIcon}
         handleDeleteConfirmation={handleDeleteConfirmation}
         translate={translate}
-        formClass={formClass}
+        formClass={formClass} 
+        itemsPerPage={0} 
+        AddedByUser={""}      
       />
       {/* Toast container for notifications */}
       <ToastContainer />

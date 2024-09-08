@@ -1,8 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 
-interface Color {
+export type  Color ={
   id: string;
   userId: string;
+  name: string;
 }
 
 const ColorService = {
@@ -117,4 +118,4 @@ async function deleteColor(id: string): Promise<void> {
   }
 }
 
-export { ColorService, Color };
+export { ColorService };

@@ -228,20 +228,20 @@ const EditCowForm = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+  
     // Include selectedImage in formData if it exists
     const formDataToSend = { ...formData };
     if (selectedImage) {
       formDataToSend.image = selectedImage;
     }
-
+  
     try {
       if (isEditMode) {
         await editCow(id, formDataToSend);
       } else {
         await addCow(formDataToSend);
       }
-
+  
       navigate("/manage-cow?result=success");
     } catch (error) {
       if (error instanceof Error) {
@@ -277,7 +277,7 @@ const EditCowForm = () => {
               value={formData.informations.dateOfBirth}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
+              
             />
           </div>
 
@@ -290,7 +290,7 @@ const EditCowForm = () => {
               value={formData.informations.weight}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
-              required
+              
             />
           </div>
 
@@ -303,7 +303,7 @@ const EditCowForm = () => {
               value={formData.informations.height}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
-              required
+              
             />
           </div>
 
@@ -331,7 +331,7 @@ const EditCowForm = () => {
               value={formData.animalType}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
-              required
+              
             />
           </div>
 
@@ -387,7 +387,7 @@ const EditCowForm = () => {
                 value={formData.buyingPrice} // Use formData.buyingPrice directly
                 onChange={handleChange}
                 className="pl-8 w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                required
+                
               />
             </div>
           </div>
@@ -401,7 +401,7 @@ const EditCowForm = () => {
               value={formData.buyDate}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
-              required
+              
             />
           </div>
 
@@ -412,7 +412,7 @@ const EditCowForm = () => {
               value={formData.stallNumber}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 -md focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
-              required
+              
             >
               <option value="">{translate("selectStallNumber")}</option>
               {stallList.map((stall) => (
@@ -480,14 +480,15 @@ const EditCowForm = () => {
             ></input>
           </div>
 
-          <div className="col-span-3">
+          <div className="col-span-1">
             <h2 className="text-sm mb-4">{translate("note")} :</h2>
-            <textarea
+            <input
+              style={{ height: "2.5rem" }}
               name="note"
               value={formData.informations.note}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
-            />
+            ></input>
           </div>
           <div className="col-span-3">
             <h2 className="text-xl font-bold mt-8 flex items-center">
@@ -596,22 +597,23 @@ const EditCowForm = () => {
             </div>
           </div>
         </div>
-      </form>
-
-      <button
+        <button
         onClick={handleClick}
         className="bg-secondary text-white px-4 py-2  hover:bg-primary mr-8"
       >
         {translate("goback")}
       </button>
       <button
-        onClick={handleSubmit}
         style={{ width: "150px" }}
         type="submit"
         className="bg-secondary text-white px-4 py-2  hover:bg-primary ml-6"
       >
         {isEditMode ? translate("Update Cow") : translate("Add Cow")}
       </button>
+
+      </form>
+
+      
     </div>
   );
 };

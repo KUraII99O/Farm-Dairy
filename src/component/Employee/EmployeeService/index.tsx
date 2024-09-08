@@ -1,16 +1,16 @@
 import { v4 as uuidv4 } from 'uuid';
 
-export interface Employee {
+export type Employee ={
   id: string;
   image: string;
   userId: string;
   name: string;
   payDate: string; // Assuming payDate is a string representing a date
   month: string;
-  year: number;
-  salaryAmount: number;
-  additionAmount: number;
-  total: number;
+  year: string;
+  monthlySalary: string;
+  additionMoney: string;
+  total: string;
 }
 
 const EmployeeService = {
@@ -39,7 +39,7 @@ async function fetchEmployees(): Promise<Employee[]> {
     const employeeData: Employee[] = await response.json();
     return employeeData;
   } catch (error) {
-    console.error('Error fetching employee data:', error.message);
+    throw new Error ('Error fetching employee data:');
     return [];
   }
 }
@@ -72,7 +72,7 @@ async function addEmployee(newEmployee: Omit<Employee, 'id' | 'userId'>): Promis
 
     return employeeWithId;
   } catch (error) {
-    console.error('Error adding employee:', error.message);
+    throw new Error ('Error adding employee:');
     throw error;
   }
 }
@@ -100,7 +100,7 @@ async function editEmployee(id: string, updatedEmployee: Omit<Employee, 'id'>): 
       throw new Error('Failed to update employee');
     }
   } catch (error) {
-    console.error('Error updating employee:', error.message);
+    throw new Error ('Error updating employee:');
     throw error;
   }
 }
@@ -124,9 +124,9 @@ async function deleteEmployee(id: string): Promise<void> {
       throw new Error('Failed to delete employee');
     }
   } catch (error) {
-    console.error('Error deleting employee:', error.message);
+    throw new Error ('Error deleting employee:');
     throw error;
   }
 }
 
-export { EmployeeService, Employee };
+export { EmployeeService };

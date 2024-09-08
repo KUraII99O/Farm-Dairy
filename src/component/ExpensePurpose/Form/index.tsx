@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "../../Translator/Provider";
+import { ExpensePurpose } from "../ExpensePurposeService";
 
-const EditPurposeForm = ({ purpose, onSubmit }) => {
-  const [formData, setFormData] = useState({
-    id: "",
+interface EditPurposeFormProps {
+  purpose?: ExpensePurpose ;
+  onSubmit: (formData: ExpensePurpose) => void; 
+}
+
+const EditPurposeForm: React.FC<EditPurposeFormProps> = ({ purpose, onSubmit }) => {
+  const [formData, setFormData] = useState<ExpensePurpose>({
     name: "",
+    description: "",
   });
+
   const { translate } = useTranslation();
 
   useEffect(() => {
@@ -14,13 +21,13 @@ const EditPurposeForm = ({ purpose, onSubmit }) => {
     } else {
       // If purpose is not provided (i.e., adding a new purpose), reset formData
       setFormData({
-        id: "",
         name: "",
+        description: "",
       });
     }
   }, [purpose]);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -28,7 +35,7 @@ const EditPurposeForm = ({ purpose, onSubmit }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
   };
@@ -54,8 +61,6 @@ const EditPurposeForm = ({ purpose, onSubmit }) => {
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
-        
-
         <div className="flex justify-end">
           <button
             type="submit"

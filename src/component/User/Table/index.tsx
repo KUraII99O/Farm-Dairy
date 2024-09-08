@@ -170,8 +170,9 @@ const UserList: React.FC<UserListProps> = ({
       <Pagination
         totalItems={currentUser.length}
         defaultItemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
-      />
+        onPageChange={handlePageChange} itemsPerPage={0} currentPage={0} setCurrentPage={function (): void {
+          throw new Error("Function not implemented.");
+        } }      />
     </div>
   );
 };

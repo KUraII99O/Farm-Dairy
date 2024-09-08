@@ -45,7 +45,6 @@ export const ManageMilkProvider: React.FC<ProviderProps> = ({ children }) => {
 
   const editMilkRecord = async (id: string, updatedMilkRecord: Omit<MilkRecord, 'id'>) => {
     try {
-      const data = await MilkService.editMilkRecord(id, updatedMilkRecord);
       setMilkRecords(prevMilkRecords =>
         prevMilkRecords.map(record => (record.id === id ? { ...record, ...updatedMilkRecord } : record))
       );

@@ -1,7 +1,12 @@
 import React, { createContext, useState, useEffect, useContext, ReactNode } from "react";
 import { Pregnancy, PregnancyService } from "../CowPregnancyService";
 
-export const ManagePregnancyContext = createContext<any>(null);
+export const ManagePregnancyContext = createContext<{
+  pregnancies: Pregnancy[];
+  addPregnancy: (newPregnancy: Omit<Pregnancy, 'id'>) => Promise<void>;
+  editPregnancy: (id: string, updatedPregnancy: Omit<Pregnancy, 'id'>) => Promise<void>;
+  deletePregnancy: (id: string) => Promise<void>;
+} | undefined>(undefined);
 
 type ProviderProps = {
   children: ReactNode;
@@ -9,6 +14,7 @@ type ProviderProps = {
 
 export const ManagePregnancyProvider: React.FC<ProviderProps> = ({ children }) => {
   const [pregnancies, setPregnancies] = useState<Pregnancy[]>([]);
+  const [animalId] = useState<string>(""); // Add state for animalId
 
   useEffect(() => {
     const fetchPregnanciesData = async () => {
@@ -19,17 +25,18 @@ export const ManagePregnancyProvider: React.FC<ProviderProps> = ({ children }) =
         }
         const user = JSON.parse(loggedInUser);
         console.log("User ID:", user.id); // Log user ID
-  
-        const data = await PregnancyService.fetchPregnancies();
-        console.log("Pregnancies data:", data); // Log pregnancies data
-        setPregnancies(data || []);
+        if (animalId) {
+          const data = await PregnancyService.fetchPregnancies(animalId); // Pass animalId
+          console.log("Pregnancies data:", data); // Log pregnancies data
+          setPregnancies(data || []);
+        }
       } catch (error) {
         console.error("Error fetching pregnancies:", error);
       }
     };
 
     fetchPregnanciesData();
-  }, []);
+  }, [animalId]); // Dependency on animalId
 
   const addPregnancy = async (newPregnancy: Omit<Pregnancy, 'id'>) => {
     console.log("Adding pregnancy:", newPregnancy);

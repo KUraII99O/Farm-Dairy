@@ -1,34 +1,27 @@
 import React, { useState } from "react";
-import { useVaccine } from "../Provider"; // Updated import
+import { useVaccine } from "../Provider";
 import Pagination from "../../Pagination";
 import { ToastContainer, toast } from "react-toastify";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import { BiListUl } from "react-icons/bi";
-import EditVaccineForm from "../Form"; // Updated import
+import EditVaccineForm from "../Form";
 import VaccineTable from "../Table";
 import { useTranslation } from "../../Translator/Provider";
 import { Drawer } from "flowbite-react";
+import { Vaccine } from "../VaccineService";
 
-interface Vaccine {
-  id: string;
-  vaccineName: string;
-  periodDays: string; // Assuming period is in days
-  repeatVaccine: boolean;
-  dose: string;
-  note: string;
-  userId: string;
-}
 
 const VaccineList: React.FC = () => {
-  const { vaccines, deleteVaccine, addVaccine, editVaccine } = useVaccine(); // Updated context import and usage
+  const { vaccines, deleteVaccine, addVaccine, editVaccine } = useVaccine();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
-  const [selectedVaccine, setSelectedVaccine] = useState<Vaccine | null>(null); // Updated state type
+  const [selectedVaccine, setSelectedVaccine] = useState<Vaccine | null>(null);
   const { translate, language } = useTranslation();
+  
 
   const isArabic = language === "ar";
   const formClass = isArabic ? "rtl" : "ltr";
@@ -41,7 +34,7 @@ const VaccineList: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      await deleteVaccine(id); // Updated function call
+      await deleteVaccine(id);
       toast.success("Vaccine deleted successfully!");
     } catch (error) {
       toast.error("An error occurred while deleting vaccine.");
@@ -58,25 +51,25 @@ const VaccineList: React.FC = () => {
     setIsEditDrawerOpen(true);
   };
 
-  const handleAddNewVaccine = async (newVaccineData: Vaccine) => {
+  const handleAddNewVaccine = async (newVaccineData: Omit<Vaccine, 'id' >) => {
     try {
       await addVaccine(newVaccineData);
-      setIsEditDrawerOpen(false); // Close the drawer after adding
+      setIsEditDrawerOpen(false);
       toast.success("New vaccine added successfully!");
     } catch (error) {
       toast.error("An error occurred while adding new vaccine.");
     }
   };
 
-  const handleUpdateVaccine = async (updatedVaccineData: Vaccine) => {
-    try {
-      if (selectedVaccine) {
-        await editVaccine(selectedVaccine.id, updatedVaccineData);
-        setIsEditDrawerOpen(false); // Close the drawer after updating
+  const handleUpdateVaccine = async (updatedVaccineData: Omit<Vaccine, 'id' >) => {
+    if (selectedVaccine) {
+      try {
+        await editVaccine(selectedVaccine.id!, updatedVaccineData);
+        setIsEditDrawerOpen(false);
         toast.success("Vaccine updated successfully!");
+      } catch (error) {
+        toast.error("An error occurred while updating vaccine.");
       }
-    } catch (error) {
-      toast.error("An error occurred while updating vaccine.");
     }
   };
 
@@ -107,8 +100,8 @@ const VaccineList: React.FC = () => {
 
   const sortedVaccines = sortBy
     ? currentVaccines.slice().sort((a: Vaccine, b: Vaccine) => {
-        const aValue = a[sortBy as keyof Vaccine];
-        const bValue = b[sortBy as keyof Vaccine];
+        const aValue = a[sortBy as keyof Vaccine] ?? "";
+        const bValue = b[sortBy as keyof Vaccine] ?? "";
         if (sortOrder === "asc") {
           return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
         } else {
@@ -120,8 +113,7 @@ const VaccineList: React.FC = () => {
   return (
     <div className="overflow-x-auto">
       <div className="flex justify-between items-center mb-4">
-      <div className="flex items-center"></div>
-
+        <div className="flex items-center"></div>
         <div className="flex items-center">
           <input
             type="text"
@@ -154,17 +146,21 @@ const VaccineList: React.FC = () => {
       <Drawer
         open={isEditDrawerOpen}
         onClose={handleCloseDrawer}
-        position="right" // Set the position to "right"
+        position="right"
       >
         <Drawer.Header>
           <h2 className="text-xl font-bold">
-            {selectedVaccine ? translate("editVaccine") : translate("addNewVaccine")}
+            {selectedVaccine
+              ? translate("editVaccine")
+              : translate("addNewVaccine")}
           </h2>
         </Drawer.Header>
         <Drawer.Items>
           <EditVaccineForm
-            vaccine={selectedVaccine ?? undefined} // Ensure compatibility with the type
-            onSubmit={selectedVaccine ? handleUpdateVaccine : handleAddNewVaccine}
+            vaccine={selectedVaccine ?? undefined}
+            onSubmit={
+              selectedVaccine ? handleUpdateVaccine : handleAddNewVaccine
+            }
             onClose={handleCloseDrawer}
           />
         </Drawer.Items>
@@ -173,6 +169,9 @@ const VaccineList: React.FC = () => {
         totalItems={vaccines.length}
         defaultItemsPerPage={itemsPerPage}
         onPageChange={handlePageChange}
+        itemsPerPage={itemsPerPage}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
       />
       <ToastContainer />
     </div>

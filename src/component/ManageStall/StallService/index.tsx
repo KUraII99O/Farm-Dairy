@@ -1,12 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
 
 
-interface Stall {
-    id: string;
+export type  Stall ={
+    id?: string;
     stallNumber: string;
     status: boolean;
     details: string;
-    userId: string;
+    userId?: string;
 
   }
   
@@ -37,7 +37,7 @@ interface Stall {
       const stallData: Stall[] = await response.json();
       return stallData;
     } catch (error) {
-      console.error('Error fetching stall data:', error.message);
+      console.error('Error fetching stall data:', error);
       return [];
     }
   }
@@ -71,7 +71,7 @@ interface Stall {
   
       return stallWithId;
     } catch (error) {
-      console.error('Error adding stall:', error.message);
+      console.error('Error adding stall:', error);
       throw error;
     }
   }
@@ -89,7 +89,7 @@ interface Stall {
         throw new Error('Failed to update stall');
       }
     } catch (error) {
-      console.error('Error updating stall:', error.message);
+      console.error('Error updating stall:', error);
       throw error;
     }
   }
@@ -104,7 +104,7 @@ interface Stall {
       }
       return await response.json();
     } catch (error) {
-      console.error("Error toggling stall status:", error.message);
+      console.error("Error toggling stall status:", error);
       throw error;
     }
   }
@@ -118,10 +118,10 @@ interface Stall {
         throw new Error("Failed to delete stall");
       }
     } catch (error) {
-      console.error("Error deleting stall:", error.message);
+      console.error("Error deleting stall:", error);
       throw error;
     }
   }
   
-  export { StallService, Stall };
+  export { StallService };
   

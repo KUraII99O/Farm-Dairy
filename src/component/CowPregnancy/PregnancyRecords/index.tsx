@@ -1,20 +1,25 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useTranslation } from "../../Translator/Provider";
-import { ManagePregnancyContext } from "../Provider";
+import { useManagePregnancy } from "../Provider";
 import { toast } from "react-toastify";
 import EditPregnancyForm from "../Drawer";
 import { Table } from "flowbite-react";
 import { BsPencil } from "react-icons/bs";
+import { Pregnancy } from "../CowPregnancyService";
+
+
+
+
 
 const PregnancyRecordsTable: React.FC = () => {
   const { pregnancies, addPregnancy, deletePregnancy, editPregnancy } =
-    useContext(ManagePregnancyContext);
-  const { translate,language } = useTranslation();
+  useManagePregnancy();
+  const { translate } = useTranslation();
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false); // State to manage edit drawer visibility
-  const [selectedPregnancy, setSelectedPregnancy] = useState(null); // State to store selected pregnancy for editing
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [selectedPregnancy] = useState<Pregnancy | null>(null);
+  const [, setIsDeleting] = useState(false);
 
   const handleDeleteConfirmation = (id: string) => {
     if (window.confirm("Are you sure you want to delete this pregnancy?")) {
@@ -22,10 +27,6 @@ const PregnancyRecordsTable: React.FC = () => {
     }
   };
 
-  const handleEditDrawerOpen = (pregnancy: any) => {
-    setSelectedPregnancy(pregnancy);
-    setIsEditDrawerOpen(true);
-  };
 
   const handleAddNewPregnancy = async (newPregnancyData: any) => {
     try {
@@ -38,8 +39,9 @@ const PregnancyRecordsTable: React.FC = () => {
     }
   };
 
-  const handleUpdatePregnancy = async (updatedPregnancyData: any) => {
+  const handleUpdatePregnancy = async (updatedPregnancyData: Pregnancy) => {
     try {
+      if (selectedPregnancy)
       await editPregnancy(selectedPregnancy.id, updatedPregnancyData);
 
       setIsEditDrawerOpen(false); // Close the drawer after updating
@@ -49,16 +51,22 @@ const PregnancyRecordsTable: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     setIsDeleting(true);
-
+  
     try {
       await deletePregnancy(id);
       setIsDeleting(false);
       toast.success("Pregnancy record deleted successfully!");
     } catch (error) {
-      console.error("Error deleting pregnancy:", error.message);
-      toast.error("An error occurred while deleting pregnancy record.");
+      setIsDeleting(false); // Ensure that isDeleting is set to false on error
+      if (error instanceof Error) {
+        console.error("Error deleting pregnancy:", error.message);
+        toast.error("An error occurred while deleting pregnancy record.");
+      } else {
+        console.error("Unexpected error:", error);
+        toast.error("An unexpected error occurred.");
+      }
     }
   };
 
@@ -106,7 +114,7 @@ const PregnancyRecordsTable: React.FC = () => {
         <Table.HeadCell>{translate("action")}</Table.HeadCell>
       </Table.Head>
       <Table.Body className="divide-y">
-        {pregnancies.map((pregnancy) => (
+        {pregnancies.map((pregnancy:Pregnancy) => (
           <Table.Row key={pregnancy.id}>
             <Table.Cell>{pregnancy.stallNumber}</Table.Cell>
             <Table.Cell>{pregnancy.pregnancyType}</Table.Cell>
@@ -136,7 +144,7 @@ const PregnancyRecordsTable: React.FC = () => {
     </Table>
       {isEditDrawerOpen && (
         <EditPregnancyForm
-          pregnancy={selectedPregnancy}
+          pregnancy={selectedPregnancy || undefined}
           onClose={() => setIsEditDrawerOpen(false)}
           onAdd={handleAddNewPregnancy}
           onUpdate={handleUpdatePregnancy}

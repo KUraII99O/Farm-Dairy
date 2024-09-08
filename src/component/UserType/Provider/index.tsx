@@ -1,15 +1,27 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext, ReactNode } from "react";
 import { UserType, UserTypeService } from "../UserTypeService";
 
-export const UserTypeContext = createContext<any>(null);
+// Define the context type
+interface UserTypeContextType {
+  userTypes: UserType[];
+  addUserType: (newUserType: Omit<UserType, 'id'>) => Promise<void>;
+  editUserType: (id: string, updatedUserType: Omit<UserType, 'id'>) => Promise<void>;
+  deleteUserType: (id: string) => Promise<void>;
+}
 
-export const UserTypeProvider = ({ children }) => {
+// Initialize context with default value as `null`
+export const UserTypeContext = createContext<UserTypeContextType | null>(null);
+
+// Define the props type for the provider component
+interface UserTypeProviderProps {
+  children: ReactNode;
+}
+
+export const UserTypeProvider: React.FC<UserTypeProviderProps> = ({ children }) => {
   const [userTypes, setUserTypes] = useState<UserType[]>([]);
 
- 
-
   useEffect(() => {
-    const UserTypeProvider = async () => {
+    const fetchUserTypes = async () => {
       try {
         const loggedInUser = localStorage.getItem('loggedInUser');
         if (!loggedInUser) {
@@ -19,16 +31,15 @@ export const UserTypeProvider = ({ children }) => {
         console.log("User ID:", user.id); // Log user ID
   
         const data = await UserTypeService.fetchUserTypes();
-        console.log("UserTypes data:", data); // Log staff data
+        console.log("UserTypes data:", data); // Log userTypes data
         setUserTypes(data || []);
       } catch (error) {
-        console.error("Error fetching staff:", error);
+        console.error("Error fetching user types:", error);
       }
     };
   
-    UserTypeProvider();
+    fetchUserTypes();
   }, []);
-
 
   const addUserType = async (newUserType: Omit<UserType, 'id'>) => {
     try {
@@ -76,7 +87,7 @@ export const UserTypeProvider = ({ children }) => {
 export const useManageUserType = () => {
   const context = useContext(UserTypeContext);
   if (!context) {
-    throw new Error("useManageUserType must be used within a ManageUserTypeProvider");
+    throw new Error("useManageUserType must be used within a UserTypeProvider");
   }
   return context;
 };
