@@ -51,7 +51,7 @@ const SignUpForm: React.FC<{ planId?: number }> = ({}) => {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const response = await fetch("http://localhost:5000/api/register", {
+        const response = await fetch("https://auth-m0ippwv3p-kuraii99os-projects.vercel.app/api/register", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
