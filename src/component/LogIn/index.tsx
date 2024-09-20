@@ -25,7 +25,7 @@ const LogIn: React.FC<LogInProps> = ({ onLogin }) => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:5000/api/login", {
+      const response = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
