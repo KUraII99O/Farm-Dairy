@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Button,
   Navbar,
   NavbarBrand,
   NavbarCollapse,
@@ -73,9 +72,13 @@ const LandingNav: React.FC<LandingNavProps> = ({
           </Link>
         </NavbarBrand>
         <div className="flex items-center justify-end md:order-2">
-          <Button className="bg-primary mr-4 sm:mr-8">
+          <Link
+            to="/app/login"
+            className="inline-block px-6 py-2 mr-3 bg-primary text-white font-semibold rounded hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+          >
             {translate("getstarted")}
-          </Button>
+          </Link>
+
           <div className="flex items-center ">
             <select
               value={language}
@@ -102,22 +105,13 @@ const LandingNav: React.FC<LandingNavProps> = ({
               <Link to="/solutions/desktop">{translate("desktop")}</Link>
             </Dropdown.Item>
           </Dropdown>
-          <NavbarLink
-            className="cursor-pointer"
-            onClick={handleServiceClick}
-          >
+          <NavbarLink className="cursor-pointer" onClick={handleServiceClick}>
             {translate("services")}
           </NavbarLink>
-          <NavbarLink
-            className="cursor-pointer"
-            onClick={handlePricingClick}
-          >
+          <NavbarLink className="cursor-pointer" onClick={handlePricingClick}>
             {translate("pricing")}
           </NavbarLink>
-          <NavbarLink
-            className="cursor-pointer"
-            onClick={handleContactClick}
-          >
+          <NavbarLink className="cursor-pointer" onClick={handleContactClick}>
             {translate("contact")}
           </NavbarLink>
         </NavbarCollapse>

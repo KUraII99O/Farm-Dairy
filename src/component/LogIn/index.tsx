@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import MoooImage from "../../assets/images/Mooo.png";
 import { useTranslation } from "../Translator/Provider";
 
@@ -25,7 +25,7 @@ const LogIn: React.FC<LogInProps> = ({ onLogin }) => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:3000/login", {
+      const response = await fetch("http://localhost:5000/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -133,16 +133,13 @@ const LogIn: React.FC<LogInProps> = ({ onLogin }) => {
                       </div>
                       <div className="flex items-center justify-between pb-6">
                         <p className="mb-0 mr-2"></p>
-                        <a href="/Signup">{translate("no_account")}</a>
-                        <button
-                          type="button"
+
+                        <Link
+                          to="/app/signup"
                           className="inline-block rounded border-2 border-danger px-6 pb-[6px] pt-2 text-xs font-medium uppercase leading-normal text-danger transition duration-150 ease-in-out hover:border-danger-600 hover:bg- hover:bg-opacity-10 hover:text-danger-600 focus:border-danger-600 focus:text-danger-600 focus:outline-none focus:ring-0 active:border-danger-700 active:text-danger-700 dark:hover:bg-neutral-100 dark:hover:bg-opacity-10"
-                          onClick={() => {
-                            window.location.href = "/Signup";
-                          }}
                         >
                           {translate("register_account")}
-                        </button>
+                        </Link>
                       </div>
                     </form>
                   </div>

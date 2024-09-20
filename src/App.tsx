@@ -159,13 +159,13 @@ const App: React.FC = () => {
                                                               }
                                                             />
                                                             <Route
-                                                              path="/Signup"
+                                                              path="/app/signup"
                                                               element={
                                                                 <SignUpPage />
                                                               }
                                                             />
                                                             <Route
-                                                              path="/LogIn"
+                                                              path="/app/login"
                                                               element={
                                                                 <LogInPage />
                                                               }

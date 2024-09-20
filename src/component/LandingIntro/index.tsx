@@ -1,7 +1,7 @@
 import React from "react";
-import { Button } from "flowbite-react";
 import { HiOutlineArrowRight } from "react-icons/hi";
 import { useTranslation } from "../Translator/Provider";
+import { Link } from "react-router-dom";
 
 // Define a custom interface for the lottie-player element
 interface LottiePlayerProps extends React.HTMLAttributes<HTMLElement> {
@@ -38,12 +38,14 @@ const LandingIntro = () => {
             "AtGescowwerededicatedtomodernizingfarmmanagementOurtalentedteamhascraftedacomprehensivesolutiontostreamlinecowmanagementpregnancytrackingandstafforganization"
           )}
         </h1>
-        <a href="SignUp">
-          <Button className="bg-primary px-8 py-2 max-w-max">
-            {translate("getstarted")}
-            <HiOutlineArrowRight className="ml-2 h-5 w-5" />
-          </Button>
-        </a>
+        <Link
+          to="/app/signup"
+          className="max-w-max inline-flex items-center px-8 py-2 mr-3 bg-primary text-white font-semibold rounded hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+        >
+          {translate("getstarted")}
+          <HiOutlineArrowRight className="mr-2 ml-2 h-5 w-5" />
+          
+        </Link>
       </div>
       <div className="p-10">
         <lottie-player

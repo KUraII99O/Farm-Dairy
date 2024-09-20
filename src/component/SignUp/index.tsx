@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import MoooImage from "../../assets/images/Mooo.png";
 import { FaRegEyeSlash, FaRegEye } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "../Translator/Provider";
-import { useLocation } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
 
-const SignUpForm: React.FC<{ planId?: number }> = ({ }) => {
+const SignUpForm: React.FC<{ planId?: number }> = ({}) => {
   const { translate, setLanguage, language } = useTranslation();
 
   const [mobile, setMobile] = useState("");
@@ -51,23 +51,30 @@ const SignUpForm: React.FC<{ planId?: number }> = ({ }) => {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const response = await fetch("http://localhost:3000/register", {
+        const response = await fetch("http://localhost:5000/api/register", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ mobile, username, email, password, planId: plan?.id }),
+          body: JSON.stringify({
+            mobile,
+            username,
+            email,
+            password,
+            planId: plan?.id,
+          }),
         });
-  
+
         if (!response.ok) {
           const errorResponse = await response.json();
-          const errorMessage = errorResponse.error || "An unknown error occurred";
+          const errorMessage =
+            errorResponse.error || "An unknown error occurred";
           throw new Error(errorMessage);
         }
-  
+
         const data = await response.json();
         console.log(data.message); // Print success message or handle it as needed
-  
+
         // Navigate to the login page after registration
         setTimeout(() => {
           navigate("/login");
@@ -85,7 +92,6 @@ const SignUpForm: React.FC<{ planId?: number }> = ({ }) => {
     }
   };
 
-  
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -143,7 +149,9 @@ const SignUpForm: React.FC<{ planId?: number }> = ({ }) => {
                       direction: rtl;
                                }
                       `}</style>
-                      <p className="mb-4 font-bold">{translate("register_account")}</p>
+                      <p className="mb-4 font-bold">
+                        {translate("register_account")}
+                      </p>
                       {/* Mobile input */}
                       {errors.mobile && (
                         <p className="text-red-500">{errors.mobile}</p>
@@ -155,7 +163,6 @@ const SignUpForm: React.FC<{ planId?: number }> = ({ }) => {
                         value={mobile}
                         onChange={(e) => setMobile(e.target.value)}
                       />
-
                       {/* Username input */}
                       {errors.username && (
                         <p className="text-red-500">{errors.username}</p>
@@ -167,7 +174,6 @@ const SignUpForm: React.FC<{ planId?: number }> = ({ }) => {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                       />
-
                       {/* Email input */}
                       {errors.email && (
                         <p className="text-red-500">{errors.email}</p>
@@ -179,7 +185,6 @@ const SignUpForm: React.FC<{ planId?: number }> = ({ }) => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                       />
-
                       {/* Password input */}
                       {errors.password && (
                         <p className="text-red-500">{errors.password}</p>
@@ -203,7 +208,6 @@ const SignUpForm: React.FC<{ planId?: number }> = ({ }) => {
                           {showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
                         </div>
                       </div>
-
                       {/* Confirm Password input */}
                       {errors.confirmPassword && (
                         <p className="text-red-500">{errors.confirmPassword}</p>
@@ -231,7 +235,6 @@ const SignUpForm: React.FC<{ planId?: number }> = ({ }) => {
                           )}
                         </div>
                       </div>
-
                       {/* Submit button */}
                       <div className="mb-12 pb-1 pt-1 text-center">
                         <button
@@ -241,20 +244,18 @@ const SignUpForm: React.FC<{ planId?: number }> = ({ }) => {
                           {translate("sign_up")}
                         </button>
                       </div>
-
                       {/* Register button */}
                       <div className="flex items-center justify-between pb-6">
                         <a href="/login" className="mb-0 mr-2">
                           {translate("have_account")}
                         </a>
-                        <a href="/login">
-                          <button
-                            type="button"
-                            className="inline-block rounded border-2 border-danger px-6 pb-[6px] pt-2 text-xs font-medium uppercase leading-normal text-danger transition duration-150 ease-in-out hover:border-danger-600 hover:bg-neutral-500 hover:bg-opacity-10 hover:text-danger-600 focus:border-danger-600 focus:text-danger-600 focus:outline-none focus:ring-0 active:border-danger-700 active:text-danger-700 dark:hover:bg-neutral-100 dark:hover:bg-opacity-10"
-                          >
-                            {translate("login")}
-                          </button>
-                        </a>
+
+                        <Link
+                          to="/app/login"
+                          className="inline-block rounded border-2 border-danger px-6 pb-[6px] pt-2 text-xs font-medium uppercase leading-normal text-danger transition duration-150 ease-in-out hover:border-danger-600 hover:bg-neutral-500 hover:bg-opacity-10 hover:text-danger-600 focus:border-danger-600 focus:text-danger-600 focus:outline-none focus:ring-0 active:border-danger-700 active:text-danger-700 dark:hover:bg-neutral-100 dark:hover:bg-opacity-10"
+                        >
+                          {translate("login")}
+                        </Link>
                       </div>
                     </form>
                   </div>

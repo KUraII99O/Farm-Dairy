@@ -30,7 +30,7 @@ async function fetchBranches(): Promise<Branch[]> {
     }
 
     try {
-        const response = await fetch(`http://localhost:3000/branches?userId=${user.id}`);
+        const response = await fetch(`http://localhost:3000/api/branches?userId=${user.id}`);
         if (!response.ok) {
             throw new Error('Failed to fetch Branch data');
         }
@@ -59,7 +59,7 @@ async function addBranch(newBranch: Omit<Branch, 'id' | 'userId'>): Promise<Bran
 
     try {
         const branchWithId: Branch = { id: uuidv4(), userId: user.id, ...newBranch };
-        const response = await fetch('http://localhost:3000/branches', {
+        const response = await fetch('http://localhost:3000/api/branches', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -84,7 +84,7 @@ async function addBranch(newBranch: Omit<Branch, 'id' | 'userId'>): Promise<Bran
 
 async function editBranch(id: string, updatedBranch: Omit<Branch, 'id'>): Promise<void> {
     try {
-        const response = await fetch(`http://localhost:3000/branches/${id}`, {
+        const response = await fetch(`http://localhost:3000/api/branches/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -106,7 +106,7 @@ async function editBranch(id: string, updatedBranch: Omit<Branch, 'id'>): Promis
 
 async function deleteBranch(id: string): Promise<void> {
     try {
-        const response = await fetch(`http://localhost:3000/branches/${id}`, {
+        const response = await fetch(`http://localhost:3000/api/branches/${id}`, {
             method: 'DELETE',
         });
         if (!response.ok) {
