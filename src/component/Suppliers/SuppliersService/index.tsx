@@ -33,7 +33,7 @@ async function fetchSuppliers(): Promise<Supplier[]> {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/suppliers?userId=' + user.id);
+    const response = await fetch('http://https://auth-api-woad.vercel.app/api/suppliers?userId=' + user.id);
     if (!response.ok) {
       throw new Error('Failed to fetch Supplier data');
     }
@@ -59,7 +59,7 @@ async function addSupplier(newSupplier: Omit<Supplier, 'id' | 'userId'>): Promis
 
   try {
     const supplierWithId: Supplier = { id: uuidv4(), userId: user.id, ...newSupplier };
-    const response = await fetch('http://localhost:3000/suppliers', {
+    const response = await fetch('http://https://auth-api-woad.vercel.app/api/suppliers', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ async function addSupplier(newSupplier: Omit<Supplier, 'id' | 'userId'>): Promis
 // Edit Supplier function
 async function editSupplier(id: string, updatedSupplier: Omit<Supplier, 'id'>): Promise<void> {
   try {
-    const response = await fetch(`http://localhost:3000/suppliers/${id}`, {
+    const response = await fetch(`http://https://auth-api-woad.vercel.app/api/suppliers/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -100,7 +100,7 @@ async function editSupplier(id: string, updatedSupplier: Omit<Supplier, 'id'>): 
 // Delete Supplier function
 async function deleteSupplier(id: string): Promise<void> {
   try {
-    const response = await fetch(`http://localhost:3000/suppliers/${id}`, {
+    const response = await fetch(`http://https://auth-api-woad.vercel.app/api/suppliers/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) {

@@ -16,7 +16,7 @@ const ImageUploadForm = () => {
     formData.append('image', file);
 
     try {
-      const response = await fetch('http://localhost:3000/upload', {
+      const response = await fetch('https://auth-api-woad.vercel.app/api/upload', {
         method: 'POST',
         body: formData,
       });

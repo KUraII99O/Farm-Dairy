@@ -42,7 +42,7 @@ async function fetchRoutineRecords(): Promise<RoutineMonitor[]> {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/routines?userId=' + user.id);
+    const response = await fetch('https://auth-api-woad.vercel.app/api/routines?userId=' + user.id);
     if (!response.ok) {
       throw new Error('Failed to fetch routine records data');
     }
@@ -68,7 +68,7 @@ async function addRoutineRecord(newRoutineRecord: Omit<RoutineMonitor, 'id' | 'u
   try {
     const routineRecordWithId: RoutineMonitor = { id: uuidv4(), userId: user.id, ...newRoutineRecord };
 
-    const response = await fetch('http://localhost:3000/routines', {
+    const response = await fetch('https://auth-api-woad.vercel.app/api/routines', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ async function editRoutineRecord(id: string, updatedRoutineRecord: Omit<RoutineM
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/routines/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/routines/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -127,7 +127,7 @@ async function deleteRoutineRecord(id: string): Promise<void> {
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/routines/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/routines/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) {

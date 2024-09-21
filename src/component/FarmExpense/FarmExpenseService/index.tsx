@@ -29,7 +29,7 @@ async function fetchExpenses(): Promise<Expense[]> {
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/expenses?userId=${user.id}`);
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/expenses?userId=${user.id}`);
     if (!response.ok) {
       throw new Error('Failed to fetch expenses data');
     }
@@ -55,7 +55,7 @@ async function addExpense(newExpense: Omit<Expense, 'id' | 'userId'>): Promise<E
   try {
     const expenseWithId: Expense = { id: uuidv4(), userId: user.id, ...newExpense };
 
-    const response = await fetch('http://localhost:3000/expenses', {
+    const response = await fetch('https://auth-api-woad.vercel.app/api/expenses', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ async function editExpense(id: string, updatedExpense: Omit<Expense, 'id' | 'use
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/expenses/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/expenses/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -114,7 +114,7 @@ async function deleteExpense(id: string): Promise<void> {
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/expenses/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/expenses/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) {

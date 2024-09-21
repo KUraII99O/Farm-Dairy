@@ -12,7 +12,7 @@ const ResetPassword: React.FC = () => {
     if (isEmailValid) {
       try {
         // Send a POST request to your backend endpoint to request password reset
-        const response = await fetch("http://localhost:3000/reset-password-request", {
+        const response = await fetch("https://auth-api-woad.vercel.app/api/reset-password-request", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

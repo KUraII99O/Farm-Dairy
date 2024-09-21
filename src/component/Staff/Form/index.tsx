@@ -40,7 +40,7 @@ const EditStaff = () => {
 
   const fetchPlanDetails = async () => {
     try {
-      const response = await fetch("http://localhost:3000/plans");
+      const response = await fetch("https://auth-api-woad.vercel.app/api/plans");
       if (!response.ok) {
         throw new Error("Failed to fetch plan details");
       }

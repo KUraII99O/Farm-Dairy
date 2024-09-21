@@ -35,7 +35,7 @@ const CalfService = {
 
 async function fetchCalves(userId: string): Promise<Calf[]> {
   try {
-    const response = await fetch(`http://localhost:3000/calfs?userId=${userId}`);
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/calfs?userId=${userId}`);
     if (!response.ok) {
       throw new Error('Failed to fetch calf data');
     }
@@ -61,7 +61,7 @@ async function addCalf(newCalf: Omit<Calf, 'id' | 'userId'>): Promise<Calf> {
   try {
     const calfWithId: Calf = { id: uuidv4(), userId: user.id, ...newCalf };
 
-    const response = await fetch('http://localhost:3000/calfs', {
+    const response = await fetch('https://auth-api-woad.vercel.app/api/calfs', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -85,7 +85,7 @@ async function addCalf(newCalf: Omit<Calf, 'id' | 'userId'>): Promise<Calf> {
 
 async function editCalf(id: string, updatedCalf: Omit<Calf, 'id' | 'userId'>): Promise<void> {
   try {
-    const response = await fetch(`http://localhost:3000/calfs/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/calfs/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -103,7 +103,7 @@ async function editCalf(id: string, updatedCalf: Omit<Calf, 'id' | 'userId'>): P
 
 async function toggleCalfStatus(id: string): Promise<Calf> {
   try {
-    const response = await fetch(`http://localhost:3000/calfs/${id}/toggle-status`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/calfs/${id}/toggle-status`, {
       method: 'PUT',
     });
     if (!response.ok) {
@@ -118,7 +118,7 @@ async function toggleCalfStatus(id: string): Promise<Calf> {
 
 async function deleteCalf(id: string): Promise<void> {
   try {
-    const response = await fetch(`http://localhost:3000/calfs/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/calfs/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) {

@@ -47,7 +47,7 @@ const SubscriptionDetails: React.FC = () => {
 
     const fetchAllPlans = async () => {
       try {
-        const response = await fetch('http://localhost:3000/plans');
+        const response = await fetch('https://auth-api-woad.vercel.app/api/plans');
         if (!response.ok) {
           throw new Error('Failed to fetch plans');
         }
@@ -76,7 +76,7 @@ const SubscriptionDetails: React.FC = () => {
       const loggedInUser = JSON.parse(storedUser);
       const loggedInUserId = loggedInUser.id; // Adjust to how your user ID is stored
   
-      const response = await fetch(`http://localhost:3000/upgrade/${loggedInUserId}`, {
+      const response = await fetch(`https://auth-api-woad.vercel.app/api/upgrade/${loggedInUserId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ const SubscriptionDetails: React.FC = () => {
       const loggedInUser = JSON.parse(storedUser);
       const loggedInUserId = loggedInUser.id; // Adjust to how your user ID is stored
   
-      const response = await fetch(`http://localhost:3000/cancel/${loggedInUserId}`, {
+      const response = await fetch(`https://auth-api-woad.vercel.app/api/cancel/${loggedInUserId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

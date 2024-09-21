@@ -29,7 +29,7 @@ async function fetchVaccines(): Promise<Vaccine[]> {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/vaccines?userId=' + user.id);
+    const response = await fetch('https://auth-api-woad.vercel.app/api/vaccines?userId=' + user.id);
     if (!response.ok) {
       throw new Error('Failed to fetch Vaccine data');
     }
@@ -54,7 +54,7 @@ async function addVaccine(newVaccine: Omit<Vaccine, 'id' | 'userId'>): Promise<V
 
   try {
     const vaccineWithId: Vaccine = { id: uuidv4(), userId: user.id, ...newVaccine };
-    const response = await fetch('http://localhost:3000/vaccines', {
+    const response = await fetch('https://auth-api-woad.vercel.app/api/vaccines', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ async function addVaccine(newVaccine: Omit<Vaccine, 'id' | 'userId'>): Promise<V
 
 async function editVaccine(id: string, updatedVaccine: Omit<Vaccine, 'id'>): Promise<void> {
   try {
-    const response = await fetch(`http://localhost:3000/vaccines/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/vaccines/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -93,7 +93,7 @@ async function editVaccine(id: string, updatedVaccine: Omit<Vaccine, 'id'>): Pro
 
 async function deleteVaccine(id: string): Promise<void> {
   try {
-    const response = await fetch(`http://localhost:3000/vaccines/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/vaccines/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) {

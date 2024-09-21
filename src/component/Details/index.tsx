@@ -25,7 +25,7 @@ const Details: React.FC = () => {
   useEffect(() => {
     const fetchInvoice = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/invoices/${id}`);
+        const response = await fetch(`https://auth-api-woad.vercel.app/api/invoices/${id}`);
         if (!response.ok) {
           throw new Error("Failed to fetch invoice details");
         }

@@ -29,7 +29,7 @@ const FoodItemService = {
     }
   
     try {
-      const response = await fetch(`http://localhost:3000/food-items?userId=${user.id}`);
+      const response = await fetch(`https://auth-api-woad.vercel.app/api/food-items?userId=${user.id}`);
       if (!response.ok) {
         throw new Error('Failed to fetch Food Item data');
       }
@@ -55,7 +55,7 @@ const FoodItemService = {
   
     try {
       const foodItemWithId: FoodItem = { id: uuidv4(), userId: user.id,  ...newFoodItem };
-      const response = await fetch('http://localhost:3000/food-items', {
+      const response = await fetch('https://auth-api-woad.vercel.app/api/food-items', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ const FoodItemService = {
   // Edit FoodItem function
   async function editFoodItem(id: string, updatedFoodItem: Omit<FoodItem, 'id' | 'userId' | 'date'>): Promise<void> {
     try {
-      const response = await fetch(`http://localhost:3000/food-items/${id}`, {
+      const response = await fetch(`https://auth-api-woad.vercel.app/api/food-items/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ const FoodItemService = {
   // Delete FoodItem function
   async function deleteFoodItem(id: string): Promise<void> {
     try {
-      const response = await fetch(`http://localhost:3000/food-items/${id}`, {
+      const response = await fetch(`https://auth-api-woad.vercel.app/api/food-items/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {

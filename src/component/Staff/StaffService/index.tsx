@@ -33,7 +33,7 @@ async function fetchStaff(): Promise<Staff[]> {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/staffs?userId=' + user.id);
+    const response = await fetch('https://auth-api-woad.vercel.app/api/staffs?userId=' + user.id);
     if (!response.ok) {
       throw new Error('Failed to fetch staff data');
     }
@@ -59,7 +59,7 @@ async function addStaff(newStaff: Omit<Staff, 'id' | 'userId'>): Promise<Staff> 
   try {
     const staffWithId: Staff = { id: uuidv4(), userId: user.id, ...newStaff };
 
-    const response = await fetch('http://localhost:3000/staffs', {
+    const response = await fetch('https://auth-api-woad.vercel.app/api/staffs', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ async function editStaff(id: string, updatedStaff: Omit<Staff, 'id' | 'userId'>)
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/staffs/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/staffs/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -120,7 +120,7 @@ async function toggleStaffStatus(id: string): Promise<Staff> {
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/staffs/${id}/toggle-status`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/staffs/${id}/toggle-status`, {
       method: 'PUT',
     });
     if (!response.ok) {
@@ -145,7 +145,7 @@ async function deleteStaff(id: string): Promise<void> {
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/staffs/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/staffs/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) {

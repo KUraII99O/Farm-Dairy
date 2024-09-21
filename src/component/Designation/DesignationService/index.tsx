@@ -26,7 +26,7 @@ async function fetchDesignations(): Promise<Designation[]> {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/designations?userId='+ user.id);
+    const response = await fetch('https://auth-api-woad.vercel.app/api/designations?userId='+ user.id);
     if (!response.ok) {
       throw new Error('Failed to fetch Designation data');
     }
@@ -53,7 +53,7 @@ async function addDesignation(newDesignation: Omit<Designation, 'id' | 'userId'>
   try {
     const designationWithId: Designation = { id: uuidv4(), userId: user.id, ...newDesignation };
 
-    const response = await fetch('http://localhost:3000/designations', {
+    const response = await fetch('https://auth-api-woad.vercel.app/api/designations', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ async function addDesignation(newDesignation: Omit<Designation, 'id' | 'userId'>
 
 async function editDesignation(id: string, updatedDesignation: Omit<Designation, 'id' | 'userId'>): Promise<void> {
   try {
-    const response = await fetch(`http://localhost:3000/designations/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/designations/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -94,7 +94,7 @@ async function editDesignation(id: string, updatedDesignation: Omit<Designation,
 
 async function deleteDesignation(id: string): Promise<void> {
   try {
-    const response = await fetch(`http://localhost:3000/designations/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/designations/${id}`, {
       method: "DELETE",
     });
     if (!response.ok) {

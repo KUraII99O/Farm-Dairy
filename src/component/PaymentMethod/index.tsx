@@ -29,7 +29,7 @@ const PaymentMethodPopup: React.FC<PaymentMethodPopupProps> = ({ onClose, invoic
           throw new Error("User ID not found");
         }
 
-        const response = await fetch(`http://localhost:3000/users/${user.id}/payment-methods`);
+        const response = await fetch(`https://auth-api-woad.vercel.app/api/users/${user.id}/payment-methods`);
         if (!response.ok) {
           throw new Error("Failed to fetch payment methods");
         }
@@ -66,7 +66,7 @@ const PaymentMethodPopup: React.FC<PaymentMethodPopupProps> = ({ onClose, invoic
           throw new Error("User ID not found");
         }
 
-        const response = await fetch(`http://localhost:3000/invoices/pay/${invoiceId}`, {
+        const response = await fetch(`https://auth-api-woad.vercel.app/api/invoices/pay/${invoiceId}`, {
           method: "POST",
           headers: {
             'Content-Type': 'application/json',

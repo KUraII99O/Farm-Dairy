@@ -28,7 +28,7 @@ const Pricing: React.FC = () => {
 
   const fetchPlans = async () => {
     try {
-      const response = await fetch('http://localhost:3000/plans'); // Replace with your backend API endpoint
+      const response = await fetch('https://auth-api-woad.vercel.app/api/plans'); // Replace with your backend API endpoint
       if (!response.ok) {
         throw new Error('Failed to fetch plans');
       }

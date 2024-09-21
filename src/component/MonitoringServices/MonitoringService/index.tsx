@@ -28,7 +28,7 @@ async function fetchMonitorings(): Promise<Monitoring[]> {
     }
 
     try {
-        const response = await fetch(`http://localhost:3000/monitorings?userId=${user.id}`);
+        const response = await fetch(`https://auth-api-woad.vercel.app/api/monitorings?userId=${user.id}`);
         if (!response.ok) {
             throw new Error('Failed to fetch Monitoring data');
         }
@@ -54,7 +54,7 @@ async function addMonitoring(newMonitoring: Omit<Monitoring, 'id' | 'userId'>): 
 
     try {
         const monitoringWithId: Monitoring = { id: uuidv4(), userId: user.id, ...newMonitoring };
-        const response = await fetch('http://localhost:3000/monitorings', {
+        const response = await fetch('https://auth-api-woad.vercel.app/api/monitorings', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ async function addMonitoring(newMonitoring: Omit<Monitoring, 'id' | 'userId'>): 
 // Edit Monitoring function
 async function editMonitoring(id: string, updatedMonitoring: Omit<Monitoring, 'id' | 'userId'>): Promise<void> {
     try {
-        const response = await fetch(`http://localhost:3000/monitorings/${id}`, {
+        const response = await fetch(`https://auth-api-woad.vercel.app/api/monitorings/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -95,7 +95,7 @@ async function editMonitoring(id: string, updatedMonitoring: Omit<Monitoring, 'i
 // Delete Monitoring function
 async function deleteMonitoring(id: string): Promise<void> {
     try {
-        const response = await fetch(`http://localhost:3000/monitorings/${id}`, {
+        const response = await fetch(`https://auth-api-woad.vercel.app/api/monitorings/${id}`, {
             method: 'DELETE',
         });
         if (!response.ok) {

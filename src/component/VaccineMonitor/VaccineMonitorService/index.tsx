@@ -38,7 +38,7 @@ async function fetchVaccineRecords(): Promise<VaccineMonitor[]> {
 
   try {
     const response = await fetch(
-      "http://localhost:3000/vaccines-monitor?userId=" + user.id
+      "https://auth-api-woad.vercel.app/api/vaccines-monitor?userId=" + user.id
     );
     if (!response.ok) {
       throw new Error("Failed to fetch vaccine records data");
@@ -75,7 +75,7 @@ async function addVaccineRecord(
       ...newVaccineRecord,
     };
 
-    const response = await fetch("http://localhost:3000/vaccines-monitor", {
+    const response = await fetch("https://auth-api-woad.vercel.app/api/vaccines-monitor", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -114,7 +114,7 @@ async function editVaccineRecord(
 
   try {
     const response = await fetch(
-      `http://localhost:3000/vaccines-monitor/${id}`,
+      `https://auth-api-woad.vercel.app/api/vaccines-monitor/${id}`,
       {
         method: "PUT",
         headers: {
@@ -149,7 +149,7 @@ async function deleteVaccineRecord(id: string): Promise<void> {
 
   try {
     const response = await fetch(
-      `http://localhost:3000/vaccines-monitor/${id}`,
+      `https://auth-api-woad.vercel.app/api/vaccines-monitor/${id}`,
       {
         method: "DELETE",
       }

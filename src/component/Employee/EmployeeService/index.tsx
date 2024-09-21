@@ -32,7 +32,7 @@ async function fetchEmployees(): Promise<Employee[]> {
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/employees?userId=${user.id}`);
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/employees?userId=${user.id}`);
     if (!response.ok) {
       throw new Error('Failed to fetch employee data');
     }
@@ -58,7 +58,7 @@ async function addEmployee(newEmployee: Omit<Employee, 'id' | 'userId'>): Promis
   try {
     const employeeWithId: Employee = { id: uuidv4(), userId: user.id, ...newEmployee };
 
-    const response = await fetch('http://localhost:3000/employees', {
+    const response = await fetch('https://auth-api-woad.vercel.app/api/employees', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ async function editEmployee(id: string, updatedEmployee: Omit<Employee, 'id'>): 
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/employees/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/employees/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -117,7 +117,7 @@ async function deleteEmployee(id: string): Promise<void> {
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/employees/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/employees/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) {

@@ -40,7 +40,7 @@ async function fetchSales(): Promise<CowSales[]> {
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/cowSales?userId=${user.id}`);
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/cowSales?userId=${user.id}`);
     if (!response.ok) {
       throw new Error('Failed to fetch sales data');
     }
@@ -70,7 +70,7 @@ async function addSale(newSale: Omit<CowSales, 'id' | 'userId'>): Promise<CowSal
   try {
     const saleWithId: CowSales = { id: uuidv4(), userId: user.id, ...newSale };
 
-    const response = await fetch('http://localhost:3000/cowSales', {
+    const response = await fetch('https://auth-api-woad.vercel.app/api/cowSales', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -105,7 +105,7 @@ async function editSale(id: string, updatedSale: Omit<CowSales, 'id' | 'userId'>
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/cowSales/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/cowSales/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -137,7 +137,7 @@ async function deleteSale(id: string): Promise<void> {
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/cowSales/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/cowSales/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) {

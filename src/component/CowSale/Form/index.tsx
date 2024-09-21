@@ -82,7 +82,7 @@ const EditSaleForm = () => {
 
   useEffect(() => {
     // Fetch stall data from the endpoint
-    fetch("http://localhost:3000/stalls")
+    fetch("https://auth-api-woad.vercel.app/api/stalls")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch stall data");
@@ -99,7 +99,7 @@ const EditSaleForm = () => {
 
   useEffect(() => {
     // Fetch cow data from the endpoint
-    fetch("http://localhost:3000/cows")
+    fetch("https://auth-api-woad.vercel.app/api/cows")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch cow data");

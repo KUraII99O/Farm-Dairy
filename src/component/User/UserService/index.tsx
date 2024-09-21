@@ -33,7 +33,7 @@ async function fetchUsers(): Promise<User[]> {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/users?userId=' + user.id);
+    const response = await fetch('https://auth-api-woad.vercel.app/api/users?userId=' + user.id);
     if (!response.ok) {
       throw new Error('Failed to fetch user data');
     }
@@ -60,7 +60,7 @@ async function addUser(newUser: Omit<User, 'id' | 'userId'>): Promise<User> {
   try {
     const userWithId: User = { id: uuidv4(), userId: user.id, ...newUser };
 
-    const response = await fetch('http://localhost:3000/users', {
+    const response = await fetch('https://auth-api-woad.vercel.app/api/users', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ async function editUser(id: string, updatedUser: Omit<User, 'id' | 'userId'>): P
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/users/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/users/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -121,7 +121,7 @@ async function toggleUserStatus(id: string): Promise<User> {
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/users/${id}/toggle-status`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/users/${id}/toggle-status`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -154,7 +154,7 @@ async function deleteUser(id: string): Promise<void> {
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/users/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/users/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) {

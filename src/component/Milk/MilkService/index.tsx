@@ -34,7 +34,7 @@ async function fetchMilkRecords(): Promise<MilkRecord[]> {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/milks?userId=' + user.id);
+    const response = await fetch('https://auth-api-woad.vercel.app/api/milks?userId=' + user.id);
     if (!response.ok) {
       throw new Error('Failed to fetch milk records data');
     }
@@ -60,7 +60,7 @@ async function addMilkRecord(newMilkRecord: Omit<MilkRecord, 'id' | 'userId'>): 
   try {
     const milkRecordWithId: MilkRecord = { id: uuidv4(), userId: user.id, ...newMilkRecord };
 
-    const response = await fetch('http://localhost:3000/milks', {
+    const response = await fetch('https://auth-api-woad.vercel.app/api/milks', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -91,7 +91,7 @@ async function editMilkRecord(id: string, updatedMilkRecord: Omit<MilkRecord, 'i
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/milks/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/milks/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ async function deleteMilkRecord(id: string): Promise<void> {
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/milks/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/milks/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) {

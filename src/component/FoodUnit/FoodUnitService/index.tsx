@@ -28,7 +28,7 @@ async function fetchFoodUnits(): Promise<FoodUnit[]> {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/food-units?userId=' + user.id);
+    const response = await fetch('https://auth-api-woad.vercel.app/api/food-units?userId=' + user.id);
     if (!response.ok) {
       throw new Error('Failed to fetch Food Unit data');
     }
@@ -54,7 +54,7 @@ async function addFoodUnit(newFoodUnit: Omit<FoodUnit, 'id' | 'userId'>): Promis
 
   try {
     const foodUnitWithId: FoodUnit = { id: uuidv4(), userId: user.id, ...newFoodUnit };
-    const response = await fetch('http://localhost:3000/food-units', {
+    const response = await fetch('https://auth-api-woad.vercel.app/api/food-units', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ async function addFoodUnit(newFoodUnit: Omit<FoodUnit, 'id' | 'userId'>): Promis
 // Edit FoodUnit function
 async function editFoodUnit(id: string, updatedFoodUnit: Omit<FoodUnit, 'id'>): Promise<void> {
   try {
-    const response = await fetch(`http://localhost:3000/food-units/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/food-units/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -95,7 +95,7 @@ async function editFoodUnit(id: string, updatedFoodUnit: Omit<FoodUnit, 'id'>): 
 // Delete FoodUnit function
 async function deleteFoodUnit(id: string): Promise<void> {
   try {
-    const response = await fetch(`http://localhost:3000/food-units/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/food-units/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) {

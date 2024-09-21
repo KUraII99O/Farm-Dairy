@@ -37,7 +37,7 @@ const EditEmployeeForm: React.FC<EditEmployeeFormProps> = ({
   const [, setInputValue] = useState<string>("");
 
   useEffect(() => {
-    fetch("http://localhost:3000/staffs")
+    fetch("https://auth-api-woad.vercel.app/api/staffs")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch staff data");

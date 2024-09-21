@@ -46,7 +46,7 @@ const Invoice: React.FC = () => {
       }
 
       console.log(`Fetching plan for user ID: ${user.id}`);
-      const response = await fetch(`http://localhost:3000/users/${user.id}/plan`);
+      const response = await fetch(`https://auth-api-woad.vercel.app/api/users/${user.id}/plan`);
       if (!response.ok) {
         throw new Error("Failed to fetch user plan");
       }
@@ -71,7 +71,7 @@ const Invoice: React.FC = () => {
       }
 
       console.log(`Fetching invoices for user ID: ${user.id}`);
-      const response = await fetch(`http://localhost:3000/users/${user.id}/invoices`);
+      const response = await fetch(`https://auth-api-woad.vercel.app/api/users/${user.id}/invoices`);
       if (!response.ok) {
         throw new Error("Failed to fetch invoices");
       }

@@ -51,7 +51,7 @@ const SignUpForm: React.FC<{ planId?: number }> = ({}) => {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const response = await fetch("https://auth-api-woad.vercel.app/api/register", {
+        const response = await fetch("https://https://auth-api-woad.vercel.app/api/register", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -74,7 +74,7 @@ const SignUpForm: React.FC<{ planId?: number }> = ({}) => {
 
         const data = await response.json();
         console.log(data.message); // Print success message or handle it as needed
-
+        console.log({ email, password });
         // Navigate to the login page after registration
         setTimeout(() => {
           navigate("/login");

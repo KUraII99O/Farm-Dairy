@@ -30,7 +30,7 @@ export type  Stall ={
     }
   
     try {
-      const response = await fetch('http://localhost:3000/stalls?userId=' + user.id);
+      const response = await fetch('https://auth-api-woad.vercel.app/api/stalls?userId=' + user.id);
       if (!response.ok) {
         throw new Error('Failed to fetch stall data');
       }
@@ -57,7 +57,7 @@ export type  Stall ={
     try {
       const stallWithId: Stall = { id: uuidv4(), userId: user.id, ...newStall };
   
-      const response = await fetch('http://localhost:3000/stalls', {
+      const response = await fetch('https://auth-api-woad.vercel.app/api/stalls', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,7 +78,7 @@ export type  Stall ={
   
   async function editStall(id: string, updatedStall: Omit<Stall, 'id' | 'userId'>): Promise<void> {
     try {
-      const response = await fetch(`http://localhost:3000/stalls/${id}`, {
+      const response = await fetch(`https://auth-api-woad.vercel.app/api/stalls/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ export type  Stall ={
   
   async function toggleStallStatus(id: string): Promise<Stall> {
     try {
-      const response = await fetch(`http://localhost:3000/stalls/${id}/toggle-status`, {
+      const response = await fetch(`https://auth-api-woad.vercel.app/api/stalls/${id}/toggle-status`, {
         method: "PUT",
       });
       if (!response.ok) {
@@ -111,7 +111,7 @@ export type  Stall ={
   
   async function deleteStall(id: string): Promise<void> {
     try {
-      const response = await fetch(`http://localhost:3000/stalls/${id}`, {
+      const response = await fetch(`https://auth-api-woad.vercel.app/api/stalls/${id}`, {
         method: "DELETE",
       });
       if (!response.ok) {

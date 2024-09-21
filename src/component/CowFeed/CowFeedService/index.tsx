@@ -32,7 +32,7 @@ async function fetchCowFeedRecords(): Promise<CowFeed[]> {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/cowfeeds?userId=' + user.id);
+    const response = await fetch('https://auth-api-woad.vercel.app/api/cowfeeds?userId=' + user.id);
     if (!response.ok) {
       throw new Error('Failed to fetch cow feed records data');
     }
@@ -62,7 +62,7 @@ async function addCowFeedRecord(newCowFeedRecord: Omit<CowFeed, 'id'| 'userId'>)
   try {
     const cowFeedRecordWithId: CowFeed = { id: uuidv4(), userId: user.id, ...newCowFeedRecord };
 
-    const response = await fetch('http://localhost:3000/cowfeeds', {
+    const response = await fetch('https://auth-api-woad.vercel.app/api/cowfeeds', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ async function editCowFeedRecord(id: string, updatedCowFeedRecord: Omit<CowFeed,
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/cowfeeds/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/cowfeeds/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -129,7 +129,7 @@ async function deleteCowFeedRecord(id: string): Promise<void> {
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/cowfeeds/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/cowfeeds/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) {

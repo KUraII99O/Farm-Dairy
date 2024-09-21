@@ -25,7 +25,7 @@ async function fetchUserTypes(): Promise<UserType[]> {
   }
 
   try {
-    const response = await fetch(`https://auth-api-woad.vercel.app/api/userTypes?userId=${user.id}`);
+    const response = await fetch(`https://https://auth-api-woad.vercel.app/api/userTypes?userId=${user.id}`);
     if (!response.ok) {
       throw new Error('Failed to fetch userTypes data');
     }
@@ -55,7 +55,7 @@ async function addUserType(newUserType: Omit<UserType, 'id' | 'userId'>): Promis
   try {
     const userTypeWithId: UserType = { id: uuidv4(), userId: user.id, ...newUserType };
 
-    const response = await fetch('https://auth-api-woad.vercel.app/api/userTypes', {
+    const response = await fetch('https://https://auth-api-woad.vercel.app/api/userTypes', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ async function addUserType(newUserType: Omit<UserType, 'id' | 'userId'>): Promis
 
 async function editUserType(id: string, updatedUserType: Omit<UserType, 'id' | 'userId'>): Promise<void> {
   try {
-    const response = await fetch(`https://auth-api-woad.vercel.app/api/userTypes/${id}`, {
+    const response = await fetch(`https://https://auth-api-woad.vercel.app/api/userTypes/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -102,7 +102,7 @@ async function editUserType(id: string, updatedUserType: Omit<UserType, 'id' | '
 
 async function deleteUserType(id: string): Promise<void> {
   try {
-    const response = await fetch(`https://auth-api-woad.vercel.app/api/userTypes/${id}`, {
+    const response = await fetch(`https://https://auth-api-woad.vercel.app/api/userTypes/${id}`, {
       method: "DELETE",
     });
     if (!response.ok) {

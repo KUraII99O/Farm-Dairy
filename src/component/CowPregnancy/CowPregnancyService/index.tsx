@@ -37,7 +37,7 @@ async function fetchPregnancies(animalId: string): Promise<Pregnancy[]> {
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/pregnancies?userId=${user.id}&animalId=${animalId}`);
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/pregnancies?userId=${user.id}&animalId=${animalId}`);
     if (!response.ok) {
       throw new Error('Failed to fetch pregnancy data');
     }
@@ -63,7 +63,7 @@ async function addPregnancy(newPregnancy: Omit<Pregnancy, 'id' | 'userId'>): Pro
 try {
   const pregnancyWithId: Pregnancy = { id: uuidv4(), userId: user.id, ...newPregnancy };
 
-  const response = await fetch('http://localhost:3000/pregnancies', {
+  const response = await fetch('https://auth-api-woad.vercel.app/api/pregnancies', {
     method: 'POST',
 
     headers: {
@@ -99,7 +99,7 @@ async function editPregnancy(id: string, updatedPregnancy: Omit<Pregnancy, 'id' 
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/pregnancies/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/pregnancies/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -127,7 +127,7 @@ async function deletePregnancy(id: string): Promise<void> {
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/pregnancies/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/pregnancies/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

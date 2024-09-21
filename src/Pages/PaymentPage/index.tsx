@@ -18,7 +18,7 @@ const PaymentPage = () => {
 
       console.log(`Fetching invoices for user ID: ${user.id}`);
       const response = await fetch(
-        `http://localhost:3000/users/${user.id}/invoices`
+        `https://auth-api-woad.vercel.app/api/users/${user.id}/invoices`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch invoices");

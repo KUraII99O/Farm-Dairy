@@ -49,7 +49,7 @@ const CowService = {
 
 async function fetchCows(userId: string): Promise<Cow[]> {
   try {
-    const response = await fetch(`http://localhost:3000/cows?userId=${userId}`);
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/cows?userId=${userId}`);
     if (!response.ok) {
       throw new Error('Failed to fetch cow data');
     }
@@ -82,7 +82,7 @@ async function addCow(newCow: Omit<Cow, 'id' | 'userId'>): Promise<Cow> {
     // Log the cow data being sent for debugging
     console.log("Adding cow with data:", cowWithId);
 
-    const response = await fetch('http://localhost:3000/cows', {
+    const response = await fetch('https://auth-api-woad.vercel.app/api/cows', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -107,7 +107,7 @@ async function addCow(newCow: Omit<Cow, 'id' | 'userId'>): Promise<Cow> {
 
 async function editCow(id: string, updatedCow: Omit<Cow, 'id' | 'userId'>): Promise<void> {
   try {
-    const response = await fetch(`http://localhost:3000/cows/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/cows/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -129,7 +129,7 @@ async function editCow(id: string, updatedCow: Omit<Cow, 'id' | 'userId'>): Prom
 
 async function toggleCowStatus(id: string): Promise<Cow> {
   try {
-    const response = await fetch(`http://localhost:3000/cows/${id}/toggle-status`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/cows/${id}/toggle-status`, {
       method: 'PUT',
     });
     if (!response.ok) {
@@ -148,7 +148,7 @@ async function toggleCowStatus(id: string): Promise<Cow> {
 
 async function deleteCow(id: string): Promise<void> {
   try {
-    const response = await fetch(`http://localhost:3000/cows/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/cows/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) {

@@ -25,7 +25,7 @@ async function fetchColors(): Promise<Color[]> {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/colors?userId=' + user.id);
+    const response = await fetch('https://auth-api-woad.vercel.app/api/colors?userId=' + user.id);
     if (!response.ok) {
       throw new Error('Failed to fetch color data');
     }
@@ -55,7 +55,7 @@ async function addColor(newColor: Omit<Color, 'id' | 'userId'>): Promise<Color> 
   try {
     const colorWithId: Color = { id: uuidv4(), userId: user.id, ...newColor };
 
-    const response = await fetch('http://localhost:3000/colors', {
+    const response = await fetch('https://auth-api-woad.vercel.app/api/colors', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ async function addColor(newColor: Omit<Color, 'id' | 'userId'>): Promise<Color> 
 
 async function editColor(id: string, updatedColor: Omit<Color, 'id' | 'userId'>): Promise<void> {
   try {
-    const response = await fetch(`http://localhost:3000/colors/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/colors/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -102,7 +102,7 @@ async function editColor(id: string, updatedColor: Omit<Color, 'id' | 'userId'>)
 
 async function deleteColor(id: string): Promise<void> {
   try {
-    const response = await fetch(`http://localhost:3000/colors/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/colors/${id}`, {
       method: "DELETE",
     });
     if (!response.ok) {

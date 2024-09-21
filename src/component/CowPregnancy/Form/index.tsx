@@ -107,7 +107,7 @@ const CowPregnancyForm: React.FC = () => {
   useEffect(() => {
     const fetchStallData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/stalls");
+        const response = await fetch("https://auth-api-woad.vercel.app/api/stalls");
         if (!response.ok) {
           throw new Error("Failed to fetch stall data");
         }
@@ -137,7 +137,7 @@ const CowPregnancyForm: React.FC = () => {
     console.log(`Fetching cow data for Stall Number: ${stallNumber}`);
   
     try {
-      const response = await fetch(`http://localhost:3000/cows?stallNumber=${stallNumber}`);
+      const response = await fetch(`https://auth-api-woad.vercel.app/api/cows?stallNumber=${stallNumber}`);
   
       if (!response.ok) {
         throw new Error(`Failed to fetch cow data. Status: ${response.status}`);
