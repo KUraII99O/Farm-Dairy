@@ -14,10 +14,10 @@ const LogIn: React.FC<LogInProps> = ({ onLogin }) => {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false); // State for password visibility
   const navigate = useNavigate();
 
   const handleChangeLanguage = (newLanguage: string) => {
-    console.log("Changing language to:", newLanguage);
     setLanguage(newLanguage);
   };
 
@@ -40,10 +40,10 @@ const LogIn: React.FC<LogInProps> = ({ onLogin }) => {
 
       const responseBody = await response.json();
       localStorage.setItem("loggedInUser", JSON.stringify(responseBody.user));
-      onLogin(); // Assuming this function sets some state indicating the user is logged in
-      setErrorMessage(""); // Reset error message state
+      onLogin();
+      setErrorMessage("");
       setTimeout(() => {
-        navigate("/dashboard"); // Navigate to dashboard using useNavigate hook
+        navigate("/dashboard");
       }, 1000);
     } catch (error) {
       setErrorMessage(translate("login_error"));
@@ -78,24 +78,18 @@ const LogIn: React.FC<LogInProps> = ({ onLogin }) => {
                         onChange={(e) => handleChangeLanguage(e.target.value)}
                         className="mr-2"
                       >
-                        <option value="en">🇺🇸</option> {/* USA flag emoji */}
-                        <option value="fr">🇫🇷</option> {/* France flag emoji */}
-                        <option value="ar">🇹🇳</option>{" "}
-                        {/* Tunisia flag emoji */}
+                        <option value="en">🇺🇸</option>
+                        <option value="fr">🇫🇷</option>
+                        <option value="ar">🇹🇳</option>
                       </select>
                     </div>
-                    <form
-                      onSubmit={handleSubmit}
-                      className={`flex flex-col ${formClass}`}
-                    >
+                    <form onSubmit={handleSubmit} className={`flex flex-col ${formClass}`}>
                       <style>{`
                         .rtl {
                           direction: rtl;
                         }
                       `}</style>
-                      <p className="mb-4 font-bold">
-                        {translate("login_title")}
-                      </p>
+                      <p className="mb-4 font-bold">{translate("login_title")}</p>
                       <input
                         type="text"
                         className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
@@ -110,13 +104,47 @@ const LogIn: React.FC<LogInProps> = ({ onLogin }) => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                       />
-                      <input
-                        type="password"
-                        className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
-                        placeholder={translate("password")}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                      />
+                      <div className="relative mb-4">
+                        <input
+                          type={isPasswordVisible ? "text" : "password"}
+                          className="w-full border border-gray-300 rounded px-3 py-2"
+                          placeholder={translate("password")}
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                          className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600"
+                        >
+                          {isPasswordVisible ? (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth={2}
+                              stroke="currentColor"
+                              className="w-5 h-5"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M3 12c0 3.866 4.478 9 9 9s9-5.134 9-9-4.478-9-9-9-9 5.134-9 9z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12c0-1.104-.896-2-2-2s-2 .896-2 2 .896 2 2 2 2-.896 2-2z" />
+                            </svg>
+                          ) : (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth={2}
+                              stroke="currentColor"
+                              className="w-5 h-5"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M3 12c0 3.866 4.478 9 9 9s9-5.134 9-9-4.478-9-9-9-9 5.134-9 9z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 12c-1.104 0-2-.896-2-2s.896-2 2-2 2 .896 2 2-.896 2-2 2z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.021 9.021 0 01-7.5-4 9.021 9.021 0 017.5-4 9.021 9.021 0 017.5 4A9.021 9.021 0 0112 21z" />
+                            </svg>
+                          )}
+                        </button>
+                      </div>
                       {errorMessage && (
                         <p className="text-red-500 mb-4">{errorMessage}</p>
                       )}
@@ -127,13 +155,10 @@ const LogIn: React.FC<LogInProps> = ({ onLogin }) => {
                         >
                           {translate("login")}
                         </button>
-                        <a href="/Rest-Password">
-                          {translate("forgot_password")}
-                        </a>
+                        <a href="/Rest-Password">{translate("forgot_password")}</a>
                       </div>
                       <div className="flex items-center justify-between pb-6">
                         <p className="mb-0 mr-2"></p>
-
                         <Link
                           to="/app/signup"
                           className="inline-block rounded border-2 border-danger px-6 pb-[6px] pt-2 text-xs font-medium uppercase leading-normal text-danger transition duration-150 ease-in-out hover:border-danger-600 hover:bg- hover:bg-opacity-10 hover:text-danger-600 focus:border-danger-600 focus:text-danger-600 focus:outline-none focus:ring-0 active:border-danger-700 active:text-danger-700 dark:hover:bg-neutral-100 dark:hover:bg-opacity-10"
@@ -147,8 +172,7 @@ const LogIn: React.FC<LogInProps> = ({ onLogin }) => {
                 <div
                   className="flex items-center rounded-b-lg lg:w-6/12 lg:rounded-r-lg lg:rounded-bl-none"
                   style={{
-                    background:
-                      "linear-gradient(to bottom right, #309975, #58b368)",
+                    background: "linear-gradient(to bottom right, #309975, #58b368)",
                   }}
                 >
                   <div className="px-4 py-6 text-white md:mx-6 md:p-12">
