@@ -45,7 +45,7 @@ export const ManageEmployeeProvider: React.FC<ProviderProps> = ({ children }) =>
     try {
       await EmployeeService.editEmployee(id, updatedEmployee);
       setEmployees(prevEmployees =>
-        prevEmployees.map(member => (member.id === id ? { ...member, ...updatedEmployee } : member))
+        prevEmployees.map(employee => (employee.id === id ? { ...employee, ...updatedEmployee } : employee))
       );
     } catch (error) {
       console.error("Error editing employee:", error);
@@ -55,7 +55,7 @@ export const ManageEmployeeProvider: React.FC<ProviderProps> = ({ children }) =>
   const deleteEmployee = async (id: string) => {
     try {
       await EmployeeService.deleteEmployee(id);
-      setEmployees(prevEmployees => prevEmployees.filter(member => member.id !== id));
+      setEmployees(prevEmployees => prevEmployees.filter(employee => employee.id !== id));
     } catch (error) {
       console.error("Error deleting employee:", error);
     }
