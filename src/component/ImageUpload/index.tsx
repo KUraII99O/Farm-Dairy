@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { readAndCompressImage } from 'browser-image-resizer';
 
+// Placeholder image for the default profile picture (you can replace this with an actual blank profile image URL)
+const defaultProfilePicture = "https://via.placeholder.com/150?text=Profile+Picture";
+
 interface ImageUploadProps {
   onImageUpload: (base64Image: string) => void;
 }
@@ -60,14 +63,36 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUpload }) => {
   }
 
   return (
-    <div className="flex w-full items-center justify-center">
-      <label htmlFor="uploadInput" className="cursor-pointer border my-6 border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white hover:bg-gray-100 text-center">
-        {selectedImage ? (
-          <img src={selectedImage} alt="Uploaded" className="w-full h-full object-cover" />
-        ) : (
-          "Select Image"
-        )}
-      </label>
+    <div className="flex flex-col items-center justify-center">
+      <div className="relative">
+        {/* Display either the selected image or the default profile picture */}
+        <img
+          src={selectedImage || defaultProfilePicture}
+          alt="Uploaded"
+          className="w-32 h-32 rounded-full object-cover border-2 border-gray-300"
+        />
+        {/* Upload button, styled like a camera icon overlay */}
+        <label
+          htmlFor="uploadInput"
+          className="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-500 text-white rounded-full p-2 cursor-pointer shadow-lg"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15 10l4.8 4.8M5 12l5-5L20 12M4 4h6l2 2h8v12H4z"
+            />
+          </svg>
+        </label>
+      </div>
+
       <input
         type="file"
         name="image"

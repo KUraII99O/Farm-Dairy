@@ -9,7 +9,7 @@ interface StaffListProps {
   staff: any[]; // Update with actual type of staff data
   handleSort: (fieldName: string) => void;
   sortIcon: (fieldName: string) => React.ReactNode;
-  handleToggleStatus: (id: number, newStatus: string) => void;
+  handleToggleStatus: (id: string, newStatus: string) => void;
   handleDeleteConfirmation: (id: number) => void;
   translate: (key: string) => string;
   formClass: string;

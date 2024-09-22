@@ -95,7 +95,7 @@ const StaffTable: React.FC = () => {
     return <FaSort />;
   };
 
-  const handleToggleStatus = async (id: number, newStatus: string) => {
+  const handleToggleStatus = async (id: string, newStatus: string) => {
     try {
       await toggleStaffStatus(id, newStatus);
       toast.success("Staff status updated successfully!");
