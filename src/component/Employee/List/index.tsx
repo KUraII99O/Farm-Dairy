@@ -43,16 +43,20 @@ const EmployeeTable: React.FC = () => {
     })
   );
   const sortedEmployees = sortBy
-    ? filteredEmployees.sort((a: Employee, b: Employee) =>
-        sortOrder === "asc"
-          ? a[sortBy as keyof Employee] > b[sortBy as keyof Employee]
-            ? 1
-            : -1
-          : a[sortBy as keyof Employee] < b[sortBy as keyof Employee]
-          ? 1
-          : -1
-      )
-    : filteredEmployees;
+  ? filteredEmployees.sort((a: Employee, b: Employee) => {
+      const aValue = a[sortBy as keyof Employee];
+      const bValue = b[sortBy as keyof Employee];
+
+      // Ensure aValue and bValue are defined
+      if (aValue === undefined && bValue === undefined) return 0;
+      if (aValue === undefined) return 1; // Consider undefined to be "greater" for sorting
+      if (bValue === undefined) return -1; // Consider undefined to be "lesser" for sorting
+
+      const comparison = aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+
+      return sortOrder === "asc" ? comparison : -comparison;
+    })
+  : filteredEmployees;
 
   const handleSort = (fieldName: string) => {
     if (sortBy === fieldName) {
