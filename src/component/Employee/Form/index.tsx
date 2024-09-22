@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "../../Translator/Provider";
 import AutocompleteInput from "../../autocomplete";
 import { Employee } from "../EmployeeService";
+import ImageUpload from "../../ImageUpload";
+import { FaImage } from "react-icons/fa";
 
 
 interface Staff {
@@ -59,6 +61,16 @@ const EditEmployeeForm: React.FC<EditEmployeeFormProps> = ({
     }
   }, [employee]);
 
+
+  const handleImageUpload = (imageData: string) => {
+    setFormData({
+      ...formData,
+      image: imageData,
+    });
+  };
+
+
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevFormData) => ({
@@ -198,6 +210,15 @@ const EditEmployeeForm: React.FC<EditEmployeeFormProps> = ({
           {employee ? translate("editEmployee") : translate("addEmployee")}
         </button>
       </form>
+
+      <div className="col-span-3 mb-4">
+            <label className="text-xl font-bold mt-8 flex items-center">
+              <FaImage className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
+              {translate("profileImages")}:
+            </label>
+            <ImageUpload onImageUpload={handleImageUpload} />
+          </div>
+          
     </div>
   );
 };
