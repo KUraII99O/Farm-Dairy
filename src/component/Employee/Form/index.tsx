@@ -5,7 +5,6 @@ import { Employee } from "../EmployeeService";
 import ImageUpload from "../../ImageUpload";
 import { FaImage } from "react-icons/fa";
 
-
 interface Staff {
   id: string;
   name: string; // Ensure this matches the staff data field
@@ -61,7 +60,6 @@ const EditEmployeeForm: React.FC<EditEmployeeFormProps> = ({
     }
   }, [employee]);
 
-
   const handleImageUpload = (imageData: string) => {
     setFormData({
       ...formData,
@@ -69,8 +67,6 @@ const EditEmployeeForm: React.FC<EditEmployeeFormProps> = ({
     });
   };
 
-
-  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevFormData) => ({
@@ -209,16 +205,14 @@ const EditEmployeeForm: React.FC<EditEmployeeFormProps> = ({
         >
           {employee ? translate("editEmployee") : translate("addEmployee")}
         </button>
+        <div className="col-span-3 mb-4">
+          <label className="text-xl font-bold mt-8 flex items-center">
+            <FaImage className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
+            {translate("profileImages")}:
+          </label>
+          <ImageUpload onImageUpload={handleImageUpload} />
+        </div>
       </form>
-
-      <div className="col-span-3 mb-4">
-            <label className="text-xl font-bold mt-8 flex items-center">
-              <FaImage className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
-              {translate("profileImages")}:
-            </label>
-            <ImageUpload onImageUpload={handleImageUpload} />
-          </div>
-          
     </div>
   );
 };
