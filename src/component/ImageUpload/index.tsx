@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { readAndCompressImage } from 'browser-image-resizer';
 
 // Placeholder image for the default profile picture (you can replace this with an actual blank profile image URL)
@@ -6,10 +6,18 @@ const defaultProfilePicture = "https://via.placeholder.com/150?text=Profile+Pict
 
 interface ImageUploadProps {
   onImageUpload: (base64Image: string) => void;
+  prefillImage?: string; // Optional prop to prefill with an existing image
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUpload }) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUpload, prefillImage }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null); // State to store selected image path
+
+  // Use the prefillImage when the component mounts, or default to null
+  useEffect(() => {
+    if (prefillImage) {
+      setSelectedImage(prefillImage);
+    }
+  }, [prefillImage]);
 
   const imageConfig = {
     quality: 0.7,
@@ -65,7 +73,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUpload }) => {
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="relative">
-        {/* Display either the selected image or the default profile picture */}
+        {/* Display either the selected image, the prefill image, or the default profile picture */}
         <img
           src={selectedImage || defaultProfilePicture}
           alt="Uploaded"
