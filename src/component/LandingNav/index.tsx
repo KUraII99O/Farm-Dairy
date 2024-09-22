@@ -96,7 +96,7 @@ const LandingNav: React.FC<LandingNavProps> = ({
           <NavbarLink href="/">{translate("home")}</NavbarLink>
           <Dropdown label={translate("solutions")} inline>
             <Dropdown.Item>
-              <Link to="/solutions/web">{translate("web")}</Link>
+              <Link to="/">{translate("web")}</Link>
             </Dropdown.Item>
             <Dropdown.Item>
               <Link to="/solutions/mobile">{translate("mobile")}</Link>
