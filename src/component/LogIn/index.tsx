@@ -25,7 +25,7 @@ const LogIn: React.FC<LogInProps> = ({ onLogin }) => {
     e.preventDefault();
 
     try {
-      const response = await fetch("https://https://auth-api-woad.vercel.app/api/login", {
+      const response = await fetch("https://auth-api-woad.vercel.app/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
