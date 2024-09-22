@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 
 export type Employee ={
-  id: string;
+  id?: string;
   image: string;
-  userId: string;
+  userId?: string;
   name: string;
   payDate: string; // Assuming payDate is a string representing a date
   month: string;

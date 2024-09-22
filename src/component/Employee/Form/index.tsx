@@ -11,7 +11,7 @@ interface Staff {
 }
 
 interface EditEmployeeFormProps {
-  employee?: Employee | null;
+  employee: Employee | null;
   onSubmit: (formData: Employee) => void;
 }
 
@@ -22,7 +22,7 @@ const EditEmployeeForm: React.FC<EditEmployeeFormProps> = ({
   const { translate, language } = useTranslation();
 
   const [formData, setFormData] = useState<Employee>({
-    id: "",
+    
     payDate: "",
     month: "",
     year: "",
@@ -31,7 +31,7 @@ const EditEmployeeForm: React.FC<EditEmployeeFormProps> = ({
     additionMoney: "",
     total: "",
     image: "",
-    userId: "",
+   
   });
 
   const [staffList, setStaffList] = useState<Staff[]>([]);

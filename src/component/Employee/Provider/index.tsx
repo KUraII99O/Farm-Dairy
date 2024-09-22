@@ -32,10 +32,8 @@ export const ManageEmployeeProvider: React.FC<ProviderProps> = ({ children }) =>
   }, []);
 
   const addEmployee = async (newEmployee: Omit<Employee, 'id'>) => {
-    console.log("Adding employee:", newEmployee);
     try {
       const data = await EmployeeService.addEmployee(newEmployee);
-      console.log("Employee added successfully:", data);
       setEmployees(prevEmployees => [...prevEmployees, data]);
       return null;
     } catch (error) {
