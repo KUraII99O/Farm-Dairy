@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 
 const EditStaff = () => {
   const { id } = useParams<{ id: string }>();
-  const { staff,addStaff, editStaff } = useContext(ManageStaffContext);
+  const { staff, addStaff, editStaff } = useContext(ManageStaffContext);
   const { translate, language } = useTranslation();
   const navigate = useNavigate();
   const [] = useState<string | null>(null);
@@ -40,7 +40,9 @@ const EditStaff = () => {
 
   const fetchPlanDetails = async () => {
     try {
-      const response = await fetch("https://auth-api-woad.vercel.app/api/plans");
+      const response = await fetch(
+        "https://auth-api-woad.vercel.app/api/plans"
+      );
       if (!response.ok) {
         throw new Error("Failed to fetch plan details");
       }
@@ -59,7 +61,7 @@ const EditStaff = () => {
     });
   };
 
-  const handleChange = (e:any) => {
+  const handleChange = (e: any) => {
     const { name, value } = e.target;
     if (name === "status") {
       const statusValue = value === "true";
@@ -75,11 +77,11 @@ const EditStaff = () => {
     }
   };
 
-  const handleSubmit = async (e:any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-  
+
     setLoading(true);
-  
+
     try {
       if (isEditMode) {
         await editStaff(id, formData);
@@ -87,7 +89,7 @@ const EditStaff = () => {
         navigate("/staff?result=success");
       } else {
         const error = await addStaff(formData);
-  
+
         if (error && error.message === "Limit has been reached") {
           toast.error("Limit has been reached");
           setLoading(false);
@@ -105,13 +107,14 @@ const EditStaff = () => {
 
   useEffect(() => {
     if (isEditMode && id && staff.length > 0) {
-      const selectedStaff = staff.find((item: { id: string; }) => item.id === id); // Ensure id is of the same type as item.id
+      const selectedStaff = staff.find(
+        (item: { id: string }) => item.id === id
+      ); // Ensure id is of the same type as item.id
       if (selectedStaff) {
         setFormData(selectedStaff);
       }
     }
   }, [id, isEditMode, staff]);
-
 
   return (
     <div>
@@ -132,7 +135,6 @@ const EditStaff = () => {
               value={formData.name}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              
             />
           </div>
 
@@ -145,7 +147,6 @@ const EditStaff = () => {
               value={formData.email}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
-              
             />
           </div>
 
@@ -158,7 +159,6 @@ const EditStaff = () => {
               value={formData.mobile}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
-              
             />
           </div>
 
@@ -170,8 +170,7 @@ const EditStaff = () => {
               value={formData.nid}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
-            
-              />
+            />
           </div>
 
           <div className="col-span-1">
@@ -182,8 +181,7 @@ const EditStaff = () => {
               value={formData.designation}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
-              
-              >
+            >
               <option value="">{translate("select")}</option>
               <option value="Manager">Accountant</option>
               <option value="Supervisor">Executive</option>
@@ -198,7 +196,7 @@ const EditStaff = () => {
               value={formData.userType}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
-              >
+            >
               <option value="">{translate("select")}</option>
               <option value="Admin">Accountant</option>
               <option value="Employee">Admin</option>
@@ -243,7 +241,6 @@ const EditStaff = () => {
                 value={formData.basicSalary}
                 onChange={handleChange}
                 className="pl-8 w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                
               />
             </div>
           </div>
@@ -257,21 +254,19 @@ const EditStaff = () => {
               value={formData.grossSalary}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
-              
             />
           </div>
 
           <div className="col-span-1">
             <h2 className="text-sm  mb-4">{translate("joiningDate")}* :</h2>
             <input
-             type="date"
+              type="date"
               style={{ height: "2.5rem" }}
               name="joiningDate"
               value={formData.joiningDate || ""}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 -md focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
-              
-              />
+            />
           </div>
 
           <div className="col-span-1">
@@ -279,7 +274,6 @@ const EditStaff = () => {
             <input
               style={{ height: "2.5rem" }}
               type="date"
-
               name="resignDate"
               value={formData.resignDate || ""}
               onChange={handleChange}
@@ -295,35 +289,33 @@ const EditStaff = () => {
               value={formData.status}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 mb-4"
-            
-              >
-                <option value="true">{translate("active")}</option>
-                <option value="false">{translate("inactive")}</option>
-              </select>
+            >
+              <option value="true">{translate("active")}</option>
+              <option value="false">{translate("inactive")}</option>
+            </select>
           </div>
 
-          
           <div>
-          <label className="text-xl font-bold mt-8 flex items-center">
-            <FaImage className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
-            {translate("profilemages")}:
-          </label>
-          <ImageUpload onImageUpload={handleImageUpload} />
+          <div className="col-span-3 mb-4">
+            <label className="text-xl font-bold mt-8 flex items-center">
+              <FaImage className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
+              {translate("profileImages")}:
+            </label>
+            <ImageUpload onImageUpload={handleImageUpload} />
+          </div>
+          </div>
         </div>
-            
-            </div>
 
-            <button
-              type="submit"
-              className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary"
-              disabled={loading}
-            >
-              {isEditMode ? translate("update") : translate("add")}
-              {translate("staff")}
-            </button>
-          </form>
-        </div>
-   
+        <button
+          type="submit"
+          className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary"
+          disabled={loading}
+        >
+          {isEditMode ? translate("update") : translate("add")}
+          {translate("staff")}
+        </button>
+      </form>
+    </div>
   );
 };
 export default EditStaff;
