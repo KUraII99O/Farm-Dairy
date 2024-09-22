@@ -11,7 +11,7 @@ import EmployeeTable from "../Table"; // Update table component for employees
 import { Employee } from "../EmployeeService"; // Update to Employee interface
 
 const EmployeeList: React.FC = () => {
-  const { employees, deleteEmployee, addEmployee, editEmployee, toggleEmployeeStatus } =
+  const { employees, deleteEmployee, addEmployee, editEmployee, } =
     useContext(ManageEmployeeContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
@@ -60,14 +60,7 @@ const EmployeeList: React.FC = () => {
     };
   }, []);
 
-  const handleToggleStatus = async (id: string, newStatus: string) => {
-    try {
-      await toggleEmployeeStatus(id, newStatus);
-      toast.success("Employee status updated successfully!");
-    } catch (error) {
-      toast.error("An error occurred while updating employee status.");
-    }
-  };
+  
 
   const handleSort = (fieldName: string) => {
     if (sortBy === fieldName) {
@@ -166,7 +159,6 @@ const EmployeeList: React.FC = () => {
         sortedEmployees={sortedEmployees}
         handleSort={handleSort}
         sortIcon={sortIcon}
-        handleToggleStatus={handleToggleStatus}
         handleEditDrawerOpen={handleEditDrawerOpen}
         handleDeleteConfirmation={handleDeleteConfirmation}
         translate={translate}

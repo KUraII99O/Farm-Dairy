@@ -13,7 +13,6 @@ interface EmployeeTableProps {
   sortIcon: (field: keyof Employee) => React.ReactNode;
   handleEditDrawerOpen: (employee: Employee) => void;
   handleDeleteConfirmation: (id: string) => void;
-  handleToggleStatus: (id: string, status: string) => void;
 
   translate: (key: string) => string;
   formClass?: string;

@@ -106,15 +106,7 @@ async function editEmployee(id: string, updatedEmployee: Omit<Employee, 'id'>): 
 }
 
 async function deleteEmployee(id: string): Promise<void> {
-  const loggedInUser = localStorage.getItem('loggedInUser');
-  if (!loggedInUser) {
-    throw new Error("User not logged in");
-  }
-
-  const user = JSON.parse(loggedInUser);
-  if (!user || !user.id) {
-    throw new Error("User ID not found");
-  }
+ 
 
   try {
     const response = await fetch(`https://auth-api-woad.vercel.app/api/employees/${id}`, {
