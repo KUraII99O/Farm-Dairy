@@ -1,16 +1,22 @@
 import { v4 as uuidv4 } from 'uuid';
 
 export type Staff = {
-  id: string;
-  userId: string;
-  employeeName: string;
-  email: string;
-  mobile: string;
-  designation: string;
-  joiningDate: string;
-  grossSalary: string;
-  status: boolean;
-  image: string;
+  id: string,  // Ensure id is a string
+employeeName: string,
+email: string,
+mobile: string,
+designation: string,
+joiningDate: string,
+permanentAddress: string,
+nid: string,
+image: string,
+userType: string,
+presentAddress: string,
+basicSalary: string,
+grossSalary: string,
+resignDate: string,
+status: boolean,
+userId: string,
 }
 
 const StaffService = {
