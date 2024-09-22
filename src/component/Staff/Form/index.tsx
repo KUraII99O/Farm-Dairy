@@ -15,7 +15,7 @@ const EditStaff = () => {
   const isEditMode = !!id;
 
   const [formData, setFormData] = useState({
-    name: "",
+    employeeName: "",
     email: "",
     mobile: "",
     designation: "",
@@ -132,7 +132,7 @@ const EditStaff = () => {
               style={{ height: "2.5rem" }}
               type="text"
               name="name"
-              value={formData.name}
+              value={formData.employeeName}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />

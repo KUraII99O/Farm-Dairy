@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 export type Staff = {
   id: string;
   userId: string;
-  name: string;
+  employeeName: string;
   email: string;
   mobile: string;
   designation: string;

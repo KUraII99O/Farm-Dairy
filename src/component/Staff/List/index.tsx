@@ -11,7 +11,7 @@ import * as XLSX from "xlsx";
 interface  Staff {
   id: string;
   userId: string;
-  name: string;
+  employeeName: string;
   email: string;
   mobile: string;
   designation: string;
@@ -104,13 +104,13 @@ const StaffTable: React.FC = () => {
     }
   };
 
-  const handleDeleteConfirmation = async (id: number) => {
+  const handleDeleteConfirmation = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this staff member?")) {
       await handleDelete(id);
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
       await deleteStaff(id);
       toast.success("Staff member deleted successfully!");

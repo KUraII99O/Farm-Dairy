@@ -10,7 +10,7 @@ interface StaffListProps {
   handleSort: (fieldName: string) => void;
   sortIcon: (fieldName: string) => React.ReactNode;
   handleToggleStatus: (id: string, newStatus: string) => void;
-  handleDeleteConfirmation: (id: number) => void;
+  handleDeleteConfirmation: (id: string) => void;
   translate: (key: string) => string;
   formClass: string;
   itemsPerPage: number;
@@ -95,7 +95,7 @@ const StaffList: React.FC<StaffListProps> = ({
                   className="h-12 w-12 rounded-full"
                 />
               </Table.Cell>
-              <Table.Cell>{staffMember.name}</Table.Cell>
+              <Table.Cell>{staffMember.employeeName}</Table.Cell>
               <Table.Cell>{staffMember.email}</Table.Cell>
               <Table.Cell>{staffMember.mobile}</Table.Cell>
               <Table.Cell>{staffMember.designation}</Table.Cell>
