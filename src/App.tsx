@@ -1,33 +1,25 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode } from "react";
 import {
   BrowserRouter as Router,
   Route,
   Routes,
   Navigate,
-
 } from "react-router-dom";
 import DashboardPage from "./Pages/DashboardPage";
 import SettingPage from "./Pages/SettingPage";
 import Layout from "./component/Layout";
-import {
-  ManageUserProvider,
-} from "./component/User/Provider";
-import {
-  ManageEmployeeProvider,
-} from "./component/Employee/Provider";
+import { ManageUserProvider } from "./component/User/Provider";
+import { ManageEmployeeProvider } from "./component/Employee/Provider";
 import { ManageMilkProvider } from "./component/Milk/Provider";
 import EditStaffPage from "./Pages/EditStaffPage";
 import StaffListPage from "./Pages/StaffListPage";
 import UserListPage from "./Pages/UserListPage";
 import EditUserPage from "./Pages/EditUserPage";
 import EmloyeeListPage from "./Pages/EmloyeeListPage";
-import EditEmployeePage from "./Pages/EditEmployeePage";
 import MilkListPage from "./Pages/MilkListPage";
 import EditMilkPage from "./Pages/EditMilkPage";
 import MilkSaleListPage from "./Pages/MilkSaleListPage";
-import {
-  ManageMilkSaleProvider,
-} from "./component/MilkSale/Provider";
+import { ManageMilkSaleProvider } from "./component/MilkSale/Provider";
 import EditMilkSalePage from "./Pages/EditMilkSalePage";
 import MilkSaleInvoicePage from "./Pages/MilkSaleInvoicePage";
 import { ManageCowFeedProvider } from "./component/CowFeed/Provider";
@@ -54,9 +46,7 @@ import CowCalfListPage from "./Pages/CowCalfListPage";
 import { ManageCowCalfProvider } from "./component/ManageCowCalf/Provider";
 import EditCowCalfPage from "./Pages/EditCowCalfPage";
 import CowSaleListPage from "./Pages/CowSaleListPage";
-import {
-  ManageSalesProvider,
-} from "./component/CowSale/provider";
+import { ManageSalesProvider } from "./component/CowSale/provider";
 import EditCowSalePage from "./Pages/EditCowSalePage";
 import { ExpenseProvider } from "./component/FarmExpense/Provider";
 import FarmExpenseListPgae from "./Pages/FarmExpenseListPgae";
@@ -95,11 +85,10 @@ import CreditCardPage from "./Pages/CreditCardPage";
 import PaypalPage from "./Pages/PaypalPage";
 import BankTransferPage from "./Pages/BankTransferPage";
 import AddPaymentMethodPage from "./Pages/AddPaymentMethodPage";
-import 'react-toastify/dist/ReactToastify.css';
-import { ManageSupplierProvider } from './component/Suppliers/Provider';
+import "react-toastify/dist/ReactToastify.css";
+import { ManageSupplierProvider } from "./component/Suppliers/Provider";
 const App: React.FC = () => {
   return (
-
     <ManageUserProvider>
       <ManageStaffProvider>
         <ManageEmployeeProvider>
@@ -364,14 +353,7 @@ const App: React.FC = () => {
                                                                 </RequireAuthentication>
                                                               }
                                                             />
-                                                            <Route
-                                                              path="/edit-employee/:id"
-                                                              element={
-                                                                <RequireAuthentication>
-                                                                  <EditEmployeePage />
-                                                                </RequireAuthentication>
-                                                              }
-                                                            />
+
                                                             <Route
                                                               path="/staff"
                                                               element={
