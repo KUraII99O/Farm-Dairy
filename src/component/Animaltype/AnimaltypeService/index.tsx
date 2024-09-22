@@ -25,7 +25,7 @@ async function fetchAnimalTypes(): Promise<AnimalType[]> {
   }
 
   try {
-    const response = await fetch('https://auth-api-woad.vercel.app/api/api/animal-types?userId=' + user.id);
+    const response = await fetch('https://auth-api-woad.vercel.app/api/animal-types?userId=' + user.id);
     if (!response.ok) {
       throw new Error('Failed to fetch AnimalType data');
     }
@@ -50,7 +50,7 @@ async function addAnimalType(newAnimalType: Omit<AnimalType, 'id' | 'userId'>): 
 
   try {
     const animalTypeWithId: AnimalType = { id: uuidv4(), userId: user.id, ...newAnimalType };
-    const response = await fetch('https://auth-api-woad.vercel.app/api/api/animal-types', {
+    const response = await fetch('https://auth-api-woad.vercel.app/api/animal-types', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ async function addAnimalType(newAnimalType: Omit<AnimalType, 'id' | 'userId'>): 
 
 async function editAnimalType(id: string, updatedAnimalType: Omit<AnimalType, 'id'>): Promise<void> {
   try {
-    const response = await fetch(`https://auth-api-woad.vercel.app/api/api/animal-types/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/animal-types/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ async function editAnimalType(id: string, updatedAnimalType: Omit<AnimalType, 'i
 
 async function deleteAnimalType(id: string): Promise<void> {
   try {
-    const response = await fetch(`https://auth-api-woad.vercel.app/api/api/animal-types/${id}`, {
+    const response = await fetch(`https://auth-api-woad.vercel.app/api/animal-types/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) {
