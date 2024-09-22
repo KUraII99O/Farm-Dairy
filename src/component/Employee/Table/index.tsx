@@ -31,10 +31,10 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
       <Table.HeadCell onClick={() => handleSort("image")}>
         {translate("image")}
       </Table.HeadCell>
-      <Table.HeadCell onClick={() => handleSort("name")}>
+      <Table.HeadCell onClick={() => handleSort("employeeName")}>
         <div className="flex items-center">
-          {translate("name")}
-          {sortIcon("name")}
+          {translate("employeeName")}
+          {sortIcon("employeeName")}
         </div>
       </Table.HeadCell>
       <Table.HeadCell onClick={() => handleSort("payDate")}>
@@ -82,9 +82,9 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
           className="bg-white dark:border-gray-700 dark:bg-gray-800"
         >
           <Table.Cell>
-            <img src={employee.image} alt={employee.name} className="w-10 h-10 rounded-full" />
+            <img src={employee.image} alt={employee.employeeName} className="w-10 h-10 rounded-full" />
           </Table.Cell>
-          <Table.Cell>{employee.name}</Table.Cell>
+          <Table.Cell>{employee.employeeName}</Table.Cell>
           <Table.Cell>{employee.payDate}</Table.Cell>
           <Table.Cell>{employee.month}</Table.Cell>
           <Table.Cell>{employee.year}</Table.Cell>
@@ -100,7 +100,7 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
                 <BsPencil className="w-5 h-5 ml-2" />
               </button>
               <button
-                onClick={() => handleDeleteConfirmation(employee.name)}
+                onClick={() => handleDeleteConfirmation(employee.id!)}
                 className="text-red-500 hover:text-red-700 focus:outline-none flex items-center"
               >
                 <AiOutlineDelete className="w-5 h-5 mr-1" />

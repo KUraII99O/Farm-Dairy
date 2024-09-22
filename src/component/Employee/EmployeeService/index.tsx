@@ -4,7 +4,7 @@ export type Employee ={
   id?: string;
   image: string;
   userId?: string;
-  name: string;
+  employeeName: string;
   payDate: string; // Assuming payDate is a string representing a date
   month: string;
   year: string;
@@ -106,8 +106,6 @@ async function editEmployee(id: string, updatedEmployee: Omit<Employee, 'id'>): 
 }
 
 async function deleteEmployee(id: string): Promise<void> {
- 
-
   try {
     const response = await fetch(`https://auth-api-woad.vercel.app/api/employees/${id}`, {
       method: 'DELETE',
