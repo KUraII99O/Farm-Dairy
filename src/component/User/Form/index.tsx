@@ -27,6 +27,7 @@ const EditUser = () => {
     basicSalary: "",
     grossSalary: "",
     resignDate: "",
+    userId: "",
     status: "true",
   });
 
@@ -34,7 +35,7 @@ const EditUser = () => {
 
   useEffect(() => {
     if (isEditMode && id && users.length > 0) {
-      const selectedUser = users.find((item: { id: string }) => item.id === id); // Ensure id is of the same type as item.id
+      const selectedUser = users.find((item: { id: string; }) => item.id === id); // Ensure id is of the same type as item.id
       if (selectedUser) {
         setFormData(selectedUser);
       }
@@ -49,7 +50,7 @@ const EditUser = () => {
     });
   };
 
-  const handleChange = (e: any) => {
+  const handleChange = (e:any) => {
     const { name, value } = e.target;
     if (name === "status") {
       // Convert the selected value to boolean
@@ -66,7 +67,7 @@ const EditUser = () => {
     }
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e:any) => {
     e.preventDefault();
 
     try {
@@ -88,9 +89,7 @@ const EditUser = () => {
         <div className="grid grid-cols-3 gap-4">
           <div className="col-span-3 mb-4">
             <h2 className="text-xl font-bold mb-4 flex items-center">
-              <FaUserPlus
-                className={`mr-2 ${language === "ar" ? "ml-2" : ""}`}
-              />
+              <FaUserPlus className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
               <span>{translate("basicInformation")}</span>
             </h2>
             <h2 className="text-sm mb-4">{translate("fullName")}* :</h2>
@@ -266,10 +265,7 @@ const EditUser = () => {
               <FaImage className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
               {translate("profileImages")}:
             </label>
-            <ImageUpload
-              onImageUpload={handleImageUpload}
-              prefillImage={users.profileImageURL} // Pass the existing user image URL when editing
-            />
+            <ImageUpload onImageUpload={handleImageUpload} />
           </div>
         </div>
 

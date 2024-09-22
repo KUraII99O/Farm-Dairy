@@ -295,16 +295,15 @@ const EditStaff = () => {
             </select>
           </div>
 
+          
           <div className="col-span-3 mb-4">
             <label className="text-xl font-bold mt-8 flex items-center">
               <FaImage className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
               {translate("profileImages")}:
             </label>
-            <ImageUpload
-              onImageUpload={handleImageUpload}
-              prefillImage={staff.profileImageURL} // Pass the existing user image URL when editing
-            />
+            <ImageUpload onImageUpload={handleImageUpload} />
           </div>
+          
         </div>
 
         <button
