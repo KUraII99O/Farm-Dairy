@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 
 const EditStaff = () => {
   const { id } = useParams<{ id: string }>();
-  const { addStaff, editStaff } = useContext(ManageStaffContext);
+  const { staff,addStaff, editStaff } = useContext(ManageStaffContext);
   const { translate, language } = useTranslation();
   const navigate = useNavigate();
   const [] = useState<string | null>(null);
@@ -102,6 +102,16 @@ const EditStaff = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (isEditMode && id && staff.length > 0) {
+      const selectedStaff = staff.find((item: { id: string; }) => item.id === id); // Ensure id is of the same type as item.id
+      if (selectedStaff) {
+        setFormData(selectedStaff);
+      }
+    }
+  }, [id, isEditMode, staff]);
+
 
   return (
     <div>
