@@ -1,141 +1,117 @@
-import React, { useState } from "react";
+import React from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { BsPencil } from "react-icons/bs";
 import { Table } from "flowbite-react";
-import Pagination from "../../Pagination";
+import { Employee } from "../EmployeeService";
 
-interface EmployeeListProps {
-  currentEmployees: any[]; // Update with actual type of employee data
-  handleSort: (fieldName: string) => void;
-  sortIcon: (fieldName: string) => React.ReactNode;
-  handleEditDrawerOpen: (employee: any) => void; // Adjust 'any' to the actual type of employee data
+// Define the new Employee type
+
+
+interface EmployeeTableProps {
+  sortedEmployees: Employee[];
+  handleSort: (field: keyof Employee) => void;
+  sortIcon: (field: keyof Employee) => React.ReactNode;
+  handleEditDrawerOpen: (employee: Employee) => void;
   handleDeleteConfirmation: (id: string) => void;
+  handleToggleStatus: (id: string, status: string) => void;
+
   translate: (key: string) => string;
-  formClass: string;
-  itemsPerPage: number; // If pagination is involved
+  formClass?: string;
 }
 
-const EmployeeList: React.FC<EmployeeListProps> = ({
-  currentEmployees,
+const EmployeeTable: React.FC<EmployeeTableProps> = ({
+  sortedEmployees,
   handleSort,
   sortIcon,
-  handleDeleteConfirmation,
   handleEditDrawerOpen,
+  handleDeleteConfirmation,
   translate,
-}) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+}) => (
+  <Table>
+    <Table.Head>
+      <Table.HeadCell onClick={() => handleSort("image")}>
+        {translate("image")}
+      </Table.HeadCell>
+      <Table.HeadCell onClick={() => handleSort("name")}>
+        <div className="flex items-center">
+          {translate("name")}
+          {sortIcon("name")}
+        </div>
+      </Table.HeadCell>
+      <Table.HeadCell onClick={() => handleSort("payDate")}>
+        <div className="flex items-center">
+          {translate("payDate")}
+          {sortIcon("payDate")}
+        </div>
+      </Table.HeadCell>
+      <Table.HeadCell onClick={() => handleSort("month")}>
+        <div className="flex items-center">
+          {translate("month")}
+          {sortIcon("month")}
+        </div>
+      </Table.HeadCell>
+      <Table.HeadCell onClick={() => handleSort("year")}>
+        <div className="flex items-center">
+          {translate("year")}
+          {sortIcon("year")}
+        </div>
+      </Table.HeadCell>
+      <Table.HeadCell onClick={() => handleSort("monthlySalary")}>
+        <div className="flex items-center">
+          {translate("monthlySalary")}
+          {sortIcon("monthlySalary")}
+        </div>
+      </Table.HeadCell>
+      <Table.HeadCell onClick={() => handleSort("additionMoney")}>
+        <div className="flex items-center">
+          {translate("additionMoney")}
+          {sortIcon("additionMoney")}
+        </div>
+      </Table.HeadCell>
+      <Table.HeadCell onClick={() => handleSort("total")}>
+        <div className="flex items-center">
+          {translate("total")}
+          {sortIcon("total")}
+        </div>
+      </Table.HeadCell>
+      <Table.HeadCell>{translate("action")}</Table.HeadCell>
+    </Table.Head>
+    <Table.Body className="divide-y">
+      {sortedEmployees.map((employee, index) => (
+        <Table.Row
+          key={index}
+          className="bg-white dark:border-gray-700 dark:bg-gray-800"
+        >
+          <Table.Cell>
+            <img src={employee.image} alt={employee.name} className="w-10 h-10 rounded-full" />
+          </Table.Cell>
+          <Table.Cell>{employee.name}</Table.Cell>
+          <Table.Cell>{employee.payDate}</Table.Cell>
+          <Table.Cell>{employee.month}</Table.Cell>
+          <Table.Cell>{employee.year}</Table.Cell>
+          <Table.Cell>{employee.monthlySalary}</Table.Cell>
+          <Table.Cell>{employee.additionMoney}</Table.Cell>
+          <Table.Cell>{employee.total}</Table.Cell>
+          <Table.Cell>
+            <div className="flex items-center">
+              <button
+                onClick={() => handleEditDrawerOpen(employee)}
+                className="text-blue-500 hover:underline flex items-center mr-4 focus:outline-none"
+              >
+                <BsPencil className="w-5 h-5 ml-2" />
+              </button>
+              <button
+                onClick={() => handleDeleteConfirmation(employee.name)}
+                className="text-red-500 hover:text-red-700 focus:outline-none flex items-center"
+              >
+                <AiOutlineDelete className="w-5 h-5 mr-1" />
+              </button>
+            </div>
+          </Table.Cell>
+        </Table.Row>
+      ))}
+    </Table.Body>
+  </Table>
+);
 
-  // Calculate pagination indexes
-  const indexOfLastEmployee = currentPage * itemsPerPage;
-  const indexOfFirstEmployee = indexOfLastEmployee - itemsPerPage;
-  const currentEmployeesPage = currentEmployees.slice(
-    indexOfFirstEmployee,
-    indexOfLastEmployee
-  );
-
-  const handlePageChange = (page: number, itemsPerPage: number) => {
-    setCurrentPage(page);
-    setItemsPerPage(itemsPerPage);
-  };
-
-  return (
-    <div className="rtl:mirror-x">
-      <Table>
-        <Table.Head>
-          <Table.HeadCell onClick={() => handleSort("image")}>
-            <div className="flex items-center">{translate("image")}</div>
-          </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("name")}>
-            <div className="flex items-center">
-              {translate("employeeName")}
-              {sortIcon("name")}
-            </div>
-          </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("payDate")}>
-            <div className="flex items-center">
-              {translate("payDate")}
-              {sortIcon("payDate")}
-            </div>
-          </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("month")}>
-            <div className="flex items-center">
-              {translate("month")}
-              {sortIcon("month")}
-            </div>
-          </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("year")}>
-            <div className="flex items-center">
-              {translate("year")}
-              {sortIcon("year")}
-            </div>
-          </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("salaryAmount")}>
-            <div className="flex items-center">
-              {translate("salaryAmount")}
-              {sortIcon("salaryAmount")}
-            </div>
-          </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("additionAmount")}>
-            <div className="flex items-center">
-              {translate("additionAmount")}
-              {sortIcon("additionAmount")}
-            </div>
-          </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("total")}>
-            <div className="flex items-center">
-              {translate("total")}
-              {sortIcon("total")}
-            </div>
-          </Table.HeadCell>
-          <Table.HeadCell>{translate("action")}</Table.HeadCell>
-        </Table.Head>
-        <Table.Body className="divide-y">
-          {currentEmployeesPage.map((employee) => (
-            <Table.Row key={employee.id}>
-              <Table.Cell>
-                <img
-                  src={employee.image}
-                  alt="Profile"
-                  className="h-12 w-12 rounded-full"
-                />
-              </Table.Cell>
-              <Table.Cell>{employee.name}</Table.Cell> {/* Directly accessing name */}
-              <Table.Cell>{employee.payDate}</Table.Cell>
-              <Table.Cell>{employee.month}</Table.Cell>
-              <Table.Cell>{employee.year}</Table.Cell>
-              <Table.Cell>{employee.monthlySalary}</Table.Cell>
-              <Table.Cell>{employee.additionMoney}</Table.Cell>
-              <Table.Cell>{employee.total}</Table.Cell>
-              <Table.Cell>
-                <div className="flex items-center">
-                  <button
-                    onClick={() => handleEditDrawerOpen(employee)}
-                    className="text-blue-500 hover:underline flex items-center mr-4 focus:outline-none"
-                  >
-                    <BsPencil className="w-5 h-5 ml-2" />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteConfirmation(employee.id)}
-                    className="text-red-500 hover:text-red-700 focus:outline-none flex items-center"
-                  >
-                    <AiOutlineDelete className="w-5 h-5 mr-1" />
-                  </button>
-                </div>
-              </Table.Cell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table>
-      {/* Pagination controls */}
-      <Pagination
-        totalItems={currentEmployees.length}
-        defaultItemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange} itemsPerPage={0} currentPage={0} setCurrentPage={function (): void {
-          throw new Error("Function not implemented.");
-        } }      />
-    </div>
-  );
-};
-
-export default EmployeeList;
+export default EmployeeTable;

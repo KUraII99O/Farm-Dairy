@@ -1,62 +1,73 @@
-import React, { useState, useContext } from "react";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import React, { useState, useContext, useEffect } from "react";
+import { ManageEmployeeContext } from "../Provider"; // Update context for employees
+import Pagination from "../../Pagination";
+import { ToastContainer, toast } from "react-toastify";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
-import EditEmployeeForm from "../Form";
-import { toast } from "react-toastify";
+import { BiListUl } from "react-icons/bi";
+import EditEmployeeForm from "../Form"; // Update form component for employees
 import { useTranslation } from "../../Translator/Provider";
-import { ManageEmployeeContext } from "../Provider";
-import EmployeeList from "../Table";
-import { Drawer } from "flowbite-react";
-import { Employee } from "../EmployeeService";
+import { Drawer, Button } from "flowbite-react";
+import EmployeeTable from "../Table"; // Update table component for employees
+import { Employee } from "../EmployeeService"; // Update to Employee interface
 
-
-const EmployeeTable: React.FC = () => {
-  const { employees, deleteEmployee, addEmployee, editEmployee } = useContext(
-    ManageEmployeeContext
-  );
-
+const EmployeeList: React.FC = () => {
+  const { employees, deleteEmployee, addEmployee, editEmployee, toggleEmployeeStatus } =
+    useContext(ManageEmployeeContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
-    null
-  );
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const { translate, language } = useTranslation();
+
+  const handleDeleteConfirmation = async (id: string) => {
+    if (window.confirm("Are you sure you want to delete this employee?")) {
+      await handleDelete(id);
+    }
+  };
+
   const isArabic = language === "ar";
   const formClass = isArabic ? "rtl" : "ltr";
 
-  const filteredEmployees = employees.filter((employee: Employee) =>
-    Object.values(employee).some((field) => {
-      if (
-        typeof field === "string" ||
-        typeof field === "number" ||
-        typeof field === "boolean"
-      ) {
-        return field
-          .toString()
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
-      }
-      return false;
-    })
-  );
-  const sortedEmployees = sortBy
-  ? filteredEmployees.sort((a: Employee, b: Employee) => {
-      const aValue = a[sortBy as keyof Employee];
-      const bValue = b[sortBy as keyof Employee];
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteEmployee(id);
+      toast.success("Employee deleted successfully!");
+    } catch (error) {
+      toast.error("An error occurred while deleting the employee.");
+    }
+  };
 
-      // Ensure aValue and bValue are defined
-      if (aValue === undefined && bValue === undefined) return 0;
-      if (aValue === undefined) return 1; // Consider undefined to be "greater" for sorting
-      if (bValue === undefined) return -1; // Consider undefined to be "lesser" for sorting
+  const handleCloseDrawer = () => {
+    setIsEditDrawerOpen(false);
+  };
 
-      const comparison = aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+  const handleOutsideClick = (e: MouseEvent) => {
+    const target = e.target as HTMLElement;
+    const drawer = document.querySelector(".Drawer") as HTMLElement;
 
-      return sortOrder === "asc" ? comparison : -comparison;
-    })
-  : filteredEmployees;
+    if (drawer && !drawer.contains(target)) {
+      handleCloseDrawer();
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
+  const handleToggleStatus = async (id: string, newStatus: string) => {
+    try {
+      await toggleEmployeeStatus(id, newStatus);
+      toast.success("Employee status updated successfully!");
+    } catch (error) {
+      toast.error("An error occurred while updating employee status.");
+    }
+  };
 
   const handleSort = (fieldName: string) => {
     if (sortBy === fieldName) {
@@ -74,52 +85,55 @@ const EmployeeTable: React.FC = () => {
     return <FaSort />;
   };
 
-  const handleDeleteConfirmation = (id: string) => {
-    if (window.confirm("Are you sure you want to delete this employee?")) {
-      handleDelete(id);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    try {
-      await deleteEmployee(id);
-      toast.success("Employee deleted successfully!");
-    } catch (error) {
-      console.error("Error deleting employee: ", error);
-      toast.error("An error occurred while deleting employee.");
-    }
-  };
-
-  const handleAddNewEmployee = async (newEmployeeData: any) => {
-    try {
-      await addEmployee(newEmployeeData);
-      setIsEditDrawerOpen(false);
-      toast.success("New Employee added successfully!");
-    } catch (error) {
-      toast.error("An error occurred while adding new Employee.");
-    }
-  };
-
-  const handleUpdateEmployee = async (updatedEmployeeData: any) => {
-    try {
-      if (selectedEmployee)
-        await editEmployee(selectedEmployee.id, updatedEmployeeData);
-      setIsEditDrawerOpen(false);
-      toast.success("Employee updated successfully!");
-    } catch (error) {
-      toast.error("An error occurred while updating Employee.");
-    }
-  };
-
-  const handleCloseEditDrawer = () => {
-    setIsEditDrawerOpen(false);
-    setSelectedEmployee(null);
-  };
-
   const handleEditDrawerOpen = (employee: Employee | null) => {
     setSelectedEmployee(employee);
     setIsEditDrawerOpen(true);
   };
+
+  const handleAddNewEmployee = async (newEmployeeData: Employee) => {
+    try {
+      await addEmployee(newEmployeeData);
+      setIsEditDrawerOpen(false); // Close the drawer after adding
+      toast.success("New employee added successfully!");
+    } catch (error) {
+      toast.error("An error occurred while adding new employee.");
+    }
+  };
+
+  const handleUpdateEmployee = async (updatedEmployeeData: Employee) => {
+    try {
+      if (selectedEmployee) {
+        await editEmployee(selectedEmployee.id, updatedEmployeeData);
+        setIsEditDrawerOpen(false); // Close the drawer after updating
+        toast.success("Employee updated successfully!");
+      } else {
+        toast.error("No employee selected for updating.");
+      }
+    } catch (error) {
+      toast.error("An error occurred while updating employee.");
+    }
+  };
+
+  const handlePageChange = (page: number, itemsPerPage: number) => {
+    setCurrentPage(page);
+    setItemsPerPage(itemsPerPage);
+  };
+
+  const indexOfLastEmployee = currentPage * itemsPerPage;
+  const indexOfFirstEmployee = indexOfLastEmployee - itemsPerPage;
+  const currentEmployees = employees.slice(indexOfFirstEmployee, indexOfLastEmployee);
+
+  const sortedEmployees = sortBy
+    ? currentEmployees.slice().sort((a: Employee, b: Employee) => {
+        const aValue = a[sortBy as keyof Employee] ?? "";
+        const bValue = b[sortBy as keyof Employee] ?? "";
+        if (sortOrder === "asc") {
+          return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+        } else {
+          return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+        }
+      })
+    : currentEmployees;
 
   return (
     <div className="overflow-x-auto">
@@ -133,48 +147,59 @@ const EmployeeTable: React.FC = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="p-2 rounded border border-gray-300 ml-2"
           />
-          <button
+          <Button
             onClick={() => handleEditDrawerOpen(null)}
             className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary ml-2"
           >
-            {translate("addemployee")}
-          </button>
+            {translate("addNew")}
+          </Button>
         </div>
       </div>
-      <h1 className="text-xl font-bold mb-4">{translate("employeeTable")}</h1>
-      <div className="rtl:mirror-x">
-        <EmployeeList
-          currentEmployees={sortedEmployees}
-          handleSort={handleSort}
-          sortIcon={sortIcon}
-          handleEditDrawerOpen={handleEditDrawerOpen}
-          handleDeleteConfirmation={handleDeleteConfirmation}
-          translate={translate}
-          formClass={formClass}
-          itemsPerPage={0}
+      <h1 className="text-xl font-bold mb-4">
+        <BiListUl
+          className="inline-block mr-2 ml-2"
+          style={{ fontSize: "1.5em" }}
         />
+        {translate("employeelist")} {/* Update title for employees */}
+      </h1>
+      <EmployeeTable // Update to EmployeeTable
+        sortedEmployees={sortedEmployees}
+        handleSort={handleSort}
+        sortIcon={sortIcon}
+        handleToggleStatus={handleToggleStatus}
+        handleEditDrawerOpen={handleEditDrawerOpen}
+        handleDeleteConfirmation={handleDeleteConfirmation}
+        translate={translate}
+        formClass={formClass}
+      />
+      <Drawer
+        open={isEditDrawerOpen}
+        onClose={handleCloseDrawer}
+        className="EditEmployeeDrawer"
+        position="right" // Set the position to "right"
+      >
+        <Drawer.Header title="Drawer" />
+        <Drawer.Items>
+          <EditEmployeeForm // Update to EditEmployeeForm
+            employee={selectedEmployee}
+            onSubmit={selectedEmployee ? handleUpdateEmployee : handleAddNewEmployee}
+          />
+        </Drawer.Items>
+      </Drawer>
 
-        <Drawer
-          open={isEditDrawerOpen}
-          onClose={handleCloseEditDrawer}
-          className="EditStallDrawer"
-          position="right" // Set the position to "right"
-        >
-          <Drawer.Header title="Drawer" />
-          <Drawer.Items>
-            <EditEmployeeForm
-              employee={selectedEmployee ?? undefined} // Pass undefined if selectedEmployee is null
-              onSubmit={
-                selectedEmployee ? handleUpdateEmployee : handleAddNewEmployee
-              }
-            />
-          </Drawer.Items>
-        </Drawer>
-
-        <ToastContainer />
-      </div>
+      <Pagination
+        totalItems={employees.length}
+        defaultItemsPerPage={itemsPerPage}
+        onPageChange={handlePageChange}
+        itemsPerPage={0}
+        currentPage={0}
+        setCurrentPage={function (): void {
+          throw new Error("Function not implemented.");
+        }}
+      />
+      <ToastContainer />
     </div>
   );
 };
 
-export default EmployeeTable;
+export default EmployeeList; // Update export to EmployeeList
