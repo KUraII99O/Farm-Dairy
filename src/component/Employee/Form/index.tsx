@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "../../Translator/Provider";
-import { Employee } from "../EmployeeService"; // Adjust the import based on your actual Employee type
+import { Employee } from "../EmployeeService";
 import ImageUpload from "../../ImageUpload";
-import {  FaImage } from "react-icons/fa";
+import { FaImage } from "react-icons/fa";
 
 // Define the props for the EditEmployeeForm component
 interface EditEmployeeFormProps {
@@ -22,13 +22,29 @@ const EditEmployeeForm: React.FC<EditEmployeeFormProps> = ({ employee, onSubmit 
     image: "",
   });
 
+  const [staffs, setStaffs] = useState<{ id: string; employeeName: string }[]>([]); // State to store fetched staff data
   const { translate, language } = useTranslation();
 
+  // Fetch all staff members
+  useEffect(() => {
+    const fetchStaffs = async () => {
+      try {
+        const response = await fetch('https://auth-api-woad.vercel.app/api/staffs');
+        const data = await response.json();
+        setStaffs(data); // Store the staff data in the state
+      } catch (error) {
+        console.error("Failed to fetch staff:", error);
+      }
+    };
+
+    fetchStaffs(); // Fetch the data when the component mounts
+  }, []);
+
+  // Update the form with employee data if editing an employee
   useEffect(() => {
     if (employee) {
       setFormData(employee);
     } else {
-      // If employee is not provided (i.e., adding a new employee), reset formData
       setFormData({
         payDate: "",
         month: "",
@@ -49,24 +65,27 @@ const EditEmployeeForm: React.FC<EditEmployeeFormProps> = ({ employee, onSubmit 
       [name]: value,
     });
   };
-  
+
   const handleImageUpload = (imageData: string) => {
     setFormData({
       ...formData,
       image: imageData,
     });
   };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
   };
 
   return (
-    <div className="flex justify-end"> {/* Move the form container to the right */}
-      <form onSubmit={handleSubmit} className="w-96"> {/* Set a width for the form */}
+    <div className="flex justify-end">
+      <form onSubmit={handleSubmit} className="w-96">
         <h2 className="text-xl font-bold mb-4">
-          {employee ? "Edit Employee" : "Add New Employee"}
+          {employee ? translate("editEmployee") : translate("addEmployee")}
         </h2>
+
+        {/* Employee Name as Select Dropdown */}
         <div className="mb-4">
           <label
             htmlFor="name"
@@ -74,14 +93,22 @@ const EditEmployeeForm: React.FC<EditEmployeeFormProps> = ({ employee, onSubmit 
           >
             {translate("name")}:
           </label>
-          <input
-            type="text"
+          <select
             name="name"
             value={formData.employeeName}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-          />
+          >
+            <option value="">{translate("selectStaff")}</option>
+            {staffs.map((staff) => (
+              <option key={staff.id} value={staff.employeeName}>
+                {staff.employeeName}
+              </option>
+            ))}
+          </select>
         </div>
+
+        {/* Other Fields */}
         <div className="mb-4">
           <label
             htmlFor="payDate"
@@ -172,13 +199,14 @@ const EditEmployeeForm: React.FC<EditEmployeeFormProps> = ({ employee, onSubmit 
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
+
         <div className="col-span-3 mb-4">
-            <label className="text-xl font-bold mt-8 flex items-center">
-              <FaImage className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
-              {translate("profileImages")}:
-            </label>
-            <ImageUpload onImageUpload={handleImageUpload} />
-          </div>
+          <label className="text-xl font-bold mt-8 flex items-center">
+            <FaImage className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
+            {translate("profileImages")}:
+          </label>
+          <ImageUpload onImageUpload={handleImageUpload} />
+        </div>
         <div className="flex justify-end">
           <button
             type="submit"
