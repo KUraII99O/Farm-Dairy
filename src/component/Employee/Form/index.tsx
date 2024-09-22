@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "../../Translator/Provider";
 import { Employee } from "../EmployeeService";
-import ImageUpload from "../../ImageUpload";
-import { FaImage } from "react-icons/fa";
 
 // Define the props for the EditEmployeeForm component
 interface EditEmployeeFormProps {
@@ -23,7 +21,7 @@ const EditEmployeeForm: React.FC<EditEmployeeFormProps> = ({ employee, onSubmit 
   });
 
   const [staffs, setStaffs] = useState<{ id: string; employeeName: string }[]>([]); // State to store fetched staff data
-  const { translate, language } = useTranslation();
+  const { translate } = useTranslation();
 
   // Fetch all staff members
   useEffect(() => {
@@ -66,12 +64,6 @@ const EditEmployeeForm: React.FC<EditEmployeeFormProps> = ({ employee, onSubmit 
     });
   };
 
-  const handleImageUpload = (imageData: string) => {
-    setFormData({
-      ...formData,
-      image: imageData,
-    });
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -200,13 +192,7 @@ const EditEmployeeForm: React.FC<EditEmployeeFormProps> = ({ employee, onSubmit 
           />
         </div>
 
-        <div className="col-span-3 mb-4">
-          <label className="text-xl font-bold mt-8 flex items-center">
-            <FaImage className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
-            {translate("profileImages")}:
-          </label>
-          <ImageUpload onImageUpload={handleImageUpload} />
-        </div>
+        
         <div className="flex justify-end">
           <button
             type="submit"
