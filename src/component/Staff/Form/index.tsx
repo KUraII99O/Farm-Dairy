@@ -295,7 +295,7 @@ const EditStaff = () => {
             </select>
           </div>
 
-          <div>
+          
           <div className="col-span-3 mb-4">
             <label className="text-xl font-bold mt-8 flex items-center">
               <FaImage className={`mr-2 ${language === "ar" ? "ml-2" : ""}`} />
@@ -303,7 +303,7 @@ const EditStaff = () => {
             </label>
             <ImageUpload onImageUpload={handleImageUpload} />
           </div>
-          </div>
+          
         </div>
 
         <button
