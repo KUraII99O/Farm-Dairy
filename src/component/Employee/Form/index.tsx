@@ -11,7 +11,7 @@ interface Staff {
 }
 
 interface EditEmployeeFormProps {
-  employee: Employee | null;
+  employee?: Employee | null;
   onSubmit: (formData: Employee) => void;
 }
 
