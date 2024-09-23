@@ -38,7 +38,6 @@ const EditMilkSale = () => {
     paid: "",
     date: "",
     soldBy: "",
-    invoice: ""
   });
   const [loading, setLoading] = useState(false);
   const [, setSuccessPopup] = useState(false);
@@ -234,18 +233,6 @@ const EditMilkSale = () => {
             placeholder={translate("paid")}
             name="paid"
             value={formData.paid}
-            onChange={handleChange}
-            className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-            
-          />
-  
-          {/* Invoice */}
-          <label className="text-sm font-medium text-gray-700">{translate("invoice")}</label>
-          <input
-            type="text"
-            placeholder={translate("invoice")}
-            name="invoice"
-            value={formData.invoice}
             onChange={handleChange}
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
             
