@@ -3,14 +3,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "../../Translator/Provider";
 import { ManageMilkContext } from "../Provider";
 
-
 interface MilkRecord {
-
   id: string;
   Date: string;
   userId: string;
   AccountNo: string;
-  StallNo: string;
+  stallNumber: string;
   AnimalID: string;
   Liter: string;
   Fate: string;
@@ -20,7 +18,10 @@ interface MilkRecord {
   addedBy: string;
 }
 
-
+interface Stall {
+  id: string;
+  stallNumber: string;
+}
 
 const EditMilk = () => {
   const { id } = useParams<{ id: string }>();
@@ -28,7 +29,7 @@ const EditMilk = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     AccountNo: "",
-    StallNo: "",
+    stallNumber: "",
     AnimalID: "",
     Liter: "",
     CollectedFrom: "",
@@ -41,6 +42,21 @@ const EditMilk = () => {
   const [loading, setLoading] = useState(false);
   const [, setSuccessPopup] = useState(false);
   const { translate } = useTranslation();
+  const [stalls, setStalls] = useState<Stall[]>([]); // State for stall options
+
+  useEffect(() => {
+    // Fetch stall options from API
+    const fetchStalls = async () => {
+      try {
+        const response = await fetch('https://auth-api-woad.vercel.app/api/stalls');
+        const data = await response.json();
+        setStalls(data);
+      } catch (error) {
+        console.error("Error fetching stalls:", error);
+      }
+    };
+    fetchStalls();
+  }, []);
 
   useEffect(() => {
     const date = new Date();
@@ -53,7 +69,7 @@ const EditMilk = () => {
 
   useEffect(() => {
     if (id && milkRecords.length > 0) {
-      const selectedMilk = milkRecords.find((milk:MilkRecord) => milk.id === id);
+      const selectedMilk = milkRecords.find((milk: MilkRecord) => milk.id === id);
       if (selectedMilk) {
         setFormData(selectedMilk);
       }
@@ -72,7 +88,7 @@ const EditMilk = () => {
     }
   }, []);
 
-  const handleChange = (e:any) => {
+  const handleChange = (e: any) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
       ...prevState,
@@ -80,10 +96,10 @@ const EditMilk = () => {
     }));
   };
 
-  const handleSubmit = async (e:any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
-  
+
     try {
       if (id) {
         await editMilkRecord(id, formData);
@@ -102,7 +118,6 @@ const EditMilk = () => {
   return (
     <div>
       <form onSubmit={handleSubmit} className="flex flex-col w-full space-y-4">
-        {/* Form fields */}
         {/* Account No */}
         <label className="text-sm font-medium text-gray-700">{translate("accountNo")}</label>
         <input
@@ -112,20 +127,23 @@ const EditMilk = () => {
           value={formData.AccountNo}
           onChange={handleChange}
           className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-          
         />
 
-        {/* Stall No */}
+        {/* Stall No - Select Dropdown */}
         <label className="text-sm font-medium text-gray-700">{translate("stallNo")}</label>
-        <input
-          type="text"
-          placeholder={translate("stallNo")}
-          name="StallNo"
-          value={formData.StallNo}
+        <select
+          name="stallNumber"
+          value={formData.stallNumber}
           onChange={handleChange}
           className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-          
-        />
+        >
+          <option value="">{translate("selectStall")}</option>
+          {stalls.map((stall: Stall) => (
+            <option key={stall.id} value={stall.stallNumber}>
+              {stall.stallNumber}
+            </option>
+          ))}
+        </select>
 
         {/* Animal ID */}
         <label className="text-sm font-medium text-gray-700">{translate("animalID")}</label>
@@ -136,7 +154,6 @@ const EditMilk = () => {
           value={formData.AnimalID}
           onChange={handleChange}
           className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-          
         />
 
         {/* Liter */}
@@ -148,7 +165,6 @@ const EditMilk = () => {
           value={formData.Liter}
           onChange={handleChange}
           className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-          
         />
 
         {/* Collected From */}
@@ -160,7 +176,6 @@ const EditMilk = () => {
           value={formData.CollectedFrom}
           onChange={handleChange}
           className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-          
         />
 
         {/* Fate */}
@@ -172,7 +187,6 @@ const EditMilk = () => {
           value={formData.Fate}
           onChange={handleChange}
           className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-          
         />
 
         {/* Price */}
@@ -184,7 +198,6 @@ const EditMilk = () => {
           value={formData.Price}
           onChange={handleChange}
           className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-          
         />
 
         {/* Total */}
@@ -196,7 +209,6 @@ const EditMilk = () => {
           value={formData.Total}
           onChange={handleChange}
           className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-          
         />
 
         {/* Submit button */}

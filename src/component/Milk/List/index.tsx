@@ -12,7 +12,7 @@ interface MilkRecord {
   id: string;
   Date: string;
   userId: string;
-  AccountNo: string;
+  stallNumber: string;
   StallNo: string;
   AnimalID: string;
   Liter: string;

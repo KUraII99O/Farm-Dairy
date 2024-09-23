@@ -52,10 +52,10 @@ const MilkList: React.FC<MilkListProps> = ({
               {sortIcon("AccountNo")}
             </div>
           </Table.HeadCell>
-          <Table.HeadCell onClick={() => handleSort("StallNo")}>
+          <Table.HeadCell onClick={() => handleSort("stallNumber")}>
             <div className="flex items-center">
-              {translate("StallNo")}
-              {sortIcon("StallNo")}
+              {translate("stallNumber")}
+              {sortIcon("stallNumber")}
             </div>
           </Table.HeadCell>
           <Table.HeadCell onClick={() => handleSort("AnimalID")}>
@@ -107,7 +107,7 @@ const MilkList: React.FC<MilkListProps> = ({
             <Table.Row key={milk.id}>
               <Table.Cell>{milk.Date}</Table.Cell>
               <Table.Cell>{milk.AccountNo}</Table.Cell>
-              <Table.Cell>{milk.StallNo}</Table.Cell>
+              <Table.Cell>{milk.stallNumber}</Table.Cell>
               <Table.Cell>{milk.AnimalID}</Table.Cell>
               <Table.Cell>{milk.Liter}</Table.Cell>
               <Table.Cell>{milk.Fate}</Table.Cell>

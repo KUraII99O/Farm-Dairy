@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
   Date: string;
   userId: string;
   AccountNo: string;
-  StallNo: string;
+  stallNumber: string;
   AnimalID: string;
   Liter: string;
   Fate: string;
