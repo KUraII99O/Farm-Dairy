@@ -114,14 +114,14 @@ const MilkTable: React.FC = () => {
     return <FaSort />;
   };
 
-  const handleDeleteConfirmation = (id: number) => {
+  const handleDeleteConfirmation = (id: string) => {
     if (window.confirm("Are you sure you want to delete this milk entry?")) {
       // If the user confirms, directly call handleDelete
       handleDelete(id);
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     setIsDeleting(true);
     try {
       await deleteMilkRecord(id.toString()); // Ensure id is passed as string if needed
