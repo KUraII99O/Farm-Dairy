@@ -120,7 +120,7 @@ const SignUpForm = () => {
                 {translate("register_account")}
               </h1>
               <p className="text-[12px] text-gray-500 mt-4">
-                Hey enter your details to log in to your account
+                Hey enter your details to create your account
               </p>
             </div>
             <div className="w-full flex-1 mt-8">

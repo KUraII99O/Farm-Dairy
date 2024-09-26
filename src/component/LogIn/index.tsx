@@ -67,10 +67,10 @@ const LogIn: React.FC<LogInProps> = ({ onLogin }) => {
             <div className="text-center">
               <img className="mx-auto w-48" src={MoooImage} alt="Mooo Image" />
               <h1 className="text-2xl xl:text-4xl font-extrabold text-black">
-                {translate("register_account")}
+                {translate("Log in to your account")}
               </h1>
               <p className="text-[12px] text-gray-500 mt-4">
-                Hey enter your details to create your account
+                Hey enter your details access your account
               </p>
             </div>
             <div className="w-full flex-1 mt-8">
