@@ -72,23 +72,23 @@ const LandingNav: React.FC<LandingNavProps> = ({
         >
           {translate("getstarted")}
         </Link>
-        </div>
 
-        <div className="flex items-center">
-          <select
+        {/* Language Switcher */}
+        <div className="flex items-center space-x-2">
+        <select
             value={language}
             onChange={(e) => handleChangeLanguage(e.target.value)}
-            className="mr-2 border rounded-md text-sm md:text-base"
-          >
+            className="border rounded-md text-xs sm:text-sm p-1 sm:p-2"
+            >
             <option value="en">{translate("🇺🇸")}</option>
             <option value="fr">{translate("🇫🇷")}</option>
             <option value="ar">{translate("🇹🇳")}</option>
           </select>
-        
-
-        <NavbarToggle />
         </div>
-    
+
+        {/* Navbar Toggle for Mobile */}
+        <NavbarToggle className="p-1 sm:p-2 text-xs sm:text-sm" />
+        </div>
 
       {/* Collapsible Menu */}
       <NavbarCollapse>
