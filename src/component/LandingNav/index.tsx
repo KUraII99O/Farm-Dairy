@@ -74,24 +74,29 @@ const LandingNav: React.FC<LandingNavProps> = ({
         <div className="flex items-center justify-end md:order-2">
           <Link
             to="/app/login"
-            className="inline-block px-6 py-2 mr-3 bg-primary text-white font-semibold rounded hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+            className="inline-block px-4 py-2 text-sm md:text-base mr-3 bg-primary text-white font-semibold rounded hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
           >
             {translate("getstarted")}
           </Link>
 
-          <div className="flex items-center ">
+          {/* Language Switcher */}
+          <div className="flex items-center">
             <select
               value={language}
               onChange={(e) => handleChangeLanguage(e.target.value)}
-              className="mr-2"
+              className="mr-2 border rounded-md text-sm md:text-base"
             >
               <option value="en">{translate("🇺🇸")}</option>
               <option value="fr">{translate("🇫🇷")}</option>
               <option value="ar">{translate("🇹🇳")}</option>
             </select>
           </div>
+
+          {/* Navbar Toggle for Mobile */}
           <NavbarToggle />
         </div>
+
+        {/* Collapsible Menu */}
         <NavbarCollapse>
           <NavbarLink href="/">{translate("home")}</NavbarLink>
           <Dropdown label={translate("solutions")} inline>
