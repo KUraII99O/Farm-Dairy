@@ -42,7 +42,7 @@ const Pricing: React.FC = () => {
   };
 
   const handleSignUp = (plan: SubscriptionPlan) => {
-    navigate('/Signup', { state: { plan } });
+    navigate('/app/signup', { state: { plan } });
   };
 
   return (
