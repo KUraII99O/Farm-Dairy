@@ -56,17 +56,17 @@ const LandingNav: React.FC<LandingNavProps> = ({
   return (
     <div>
       <Navbar fluid rounded>
-        <NavbarBrand href="/">
+        <NavbarBrand href="/" className="flex items-center space-x-2">
           <Link
             to="/"
-            className="h-8 w-auto flex items-center transition-opacity duration-500"
+            className="flex items-center transition-opacity duration-500"
           >
             <img
               src="https://sakosys.com/envato/dairy-farm-management-system/storage/app/public/uploads/751280420015239.png"
               className="h-8 w-auto sm:h-12 sm:w-auto ml-2 sm:ml-24"
               alt="Your Company"
             />
-            <h3 className="text-lg sm:text-xl font-bold ml-2 text-primary">
+            <h3 className="text-lg sm:text-xl font-bold ml-2 text-primary whitespace-nowrap">
               {translate("Ges Cow")}
             </h3>
           </Link>
