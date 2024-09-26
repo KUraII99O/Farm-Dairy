@@ -160,7 +160,7 @@ const SignUpForm = () => {
                       onChange={(e) => setPassword(e.target.value)}
                     />
                     <div
-                      className={`absolute inset-y-0 ${iconPosition} flex items-center cursor-pointer`}
+                      className={`absolute inset-y-0 ${iconPosition} flex items-center cursor-pointer mr-2`}
                       onClick={togglePasswordVisibility}
                     >
                       {showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
@@ -178,13 +178,13 @@ const SignUpForm = () => {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                     />
                     <div
-                      className={`absolute inset-y-0 ${iconPosition} flex items-center cursor-pointer`}
+                      className={`absolute inset-y-0 ${iconPosition} flex items-center cursor-pointer mr-2 `}
                       onClick={toggleConfirmPasswordVisibility}
                     >
                       {showConfirmPassword ? <FaRegEye /> : <FaRegEyeSlash />}
                     </div>
                   </div>
-                  <button className="mt-5 tracking-wide font-semibold bg-blue-900 text-gray-100 w-full py-4 rounded-lg">
+                  <button className="mt-5 tracking-wide font-semibold bg-primary hover:bg-secondary text-gray-100 w-full py-4 rounded-lg">
                     {translate("sign_up")}
                   </button>
                 </form>
