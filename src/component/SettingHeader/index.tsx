@@ -3,12 +3,15 @@ import { Link, useLocation } from "react-router-dom";
 import Invoices from "../Invoices";
 import ProfileISettings from "../ProfileISettings";
 import Subscription from "../Subscription";
-import Dashboard from "../Dashboard"; // Assuming you have a Dashboard component
+import DashboardSettings from "../DashboardSettings";
 import { useTranslation } from "../Translator/Provider";
 
 const SettingHeader: React.FC = () => {
   const location = useLocation();
   const [activeSection, setActiveSection] = useState<string>("/Subscription");
+
+  // State to manage visible items in the dashboard
+  const [visibleItems, setVisibleItems] = useState<number[]>([1, 2, 3, 4]); // Set your initial visible items here
 
   const isActive = (pathname: string) => {
     return location.pathname === pathname || activeSection === pathname;
@@ -32,7 +35,18 @@ const SettingHeader: React.FC = () => {
   const handleSectionClick = (section: string) => {
     setActiveSection(section);
   };
-  
+
+  // Function to toggle visibility of dashboard items
+  const handleToggle = (itemId: number, isVisible: boolean) => {
+    setVisibleItems((prev) => {
+      if (isVisible) {
+        return [...prev, itemId]; // Add item if checked
+      } else {
+        return prev.filter(id => id !== itemId); // Remove item if unchecked
+      }
+    });
+  };
+
   const { translate } = useTranslation();
 
   return (
@@ -96,7 +110,7 @@ const SettingHeader: React.FC = () => {
           <a
             onClick={() => handleSectionClick("/invoice")}
             className={getLinkStyles("/invoice")}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: "pointer" }}
           >
             <svg
               className={`w-4 h-4 me-2 ${getIconColor("/invoice")}`}
@@ -105,16 +119,23 @@ const SettingHeader: React.FC = () => {
               fill="currentColor"
               viewBox="0 0 24 24"
             >
-              <path d="M19 2H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h8l6-6V4c0-1.1-.9-2-2-2zM14 2v6h6M8 14h8v2H8zm0-4h8v2H8zm0-4h4v2H8zm8.5 10.5l-1.41 1.41L14 16.83l-2.09 2.09L10.5 18.5 14 15l4.5 4.5z" />
+              <path d="M19 2H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h8l6-6V4c0-1.1-.9-2-2-2zM14 2v6h6M8 14h8v2H8zm0-4h8v2H8zm0-4h4v2H8zm-4 8h12v2H4zm0-8h4v2H4zm0 4h4v2H4zm0 4h4v2H4zm16-2h-4v2h4v-2z" />
             </svg>
             {translate("invoice")}
           </a>
         </li>
       </ul>
-      {activeSection === "/Subscription" && <Subscription />}
-      {activeSection === "/profile" && <ProfileISettings />}
-      {activeSection === "/dashboard" && <Dashboard />}
-      {activeSection === "/invoice" && <Invoices />}
+      <div className="py-4">
+        {activeSection === "/dashboard" && (
+          <DashboardSettings
+            visibleItems={visibleItems}
+            onToggle={handleToggle}
+          />
+        )}
+        {activeSection === "/profile" && <ProfileISettings />}
+        {activeSection === "/Subscription" && <Subscription />}
+        {activeSection === "/invoice" && <Invoices />}
+      </div>
     </div>
   );
 };
