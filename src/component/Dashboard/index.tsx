@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react"; // Make sure to import useState
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUsers,
@@ -17,14 +17,17 @@ import {
 import DashboardItem from "../dashboardItem";
 import { useTranslation } from "../Translator/Provider";
 import "./index.css"; // Import CSS file for Dashboard styles
+import DashboardSettings from "../DashboardSettings";
 
 const Dashboard: React.FC = () => {
-  const { translate, language } = useTranslation(); // Use the useTranslation hook to access translation function and selected language
+  const { translate, language } = useTranslation();
+  
+  // Visibility state for dashboard items
+  const [visibleItems, setVisibleItems] = useState<number[]>([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
 
   const items = [
-    // Dashboard items with translated titles
     { id: 1, title: translate("dashboard"), icon: <FontAwesomeIcon icon={faUsers} />, color: "bg-red-500", value: "0" },
-    { id: 2, title: translate("manageCow"), icon: <FontAwesomeIcon icon={faCow} />, color: "bg-blue-500 ", value: "0" },
+    { id: 2, title: translate("manageCow"), icon: <FontAwesomeIcon icon={faCow} />, color: "bg-blue-500", value: "0" },
     { id: 3, title: translate("manageCowCalf"), icon: <FontAwesomeIcon icon={faBaby} />, color: "bg-green-500", value: "0" },
     { id: 4, title: translate("suppliers"), icon: <FontAwesomeIcon icon={faTruck} />, color: "bg-yellow-500", value: "0" },
     { id: 5, title: translate("manageStall"), icon: <FontAwesomeIcon icon={faWarehouse} />, color: "bg-purple-500", value: "0" },
@@ -37,14 +40,29 @@ const Dashboard: React.FC = () => {
     { id: 12, title: translate("todaySoldMilkAmount"), icon: <FontAwesomeIcon icon={faDollarSign} />, color: "bg-amber-500", value: "0" },
   ];
 
+  const handleToggleVisibility = (itemId: number, isVisible: boolean) => {
+    setVisibleItems((prev) => {
+      if (isVisible) {
+        return [...prev, itemId]; // Add item if checked
+      } else {
+        return prev.filter(id => id !== itemId); // Remove item if unchecked
+      }
+    });
+  };
+
   return (
-    <div className={language === "ar" ? "rtl" : ""}> {/* Conditionally apply "rtl" class for Arabic language */}
+    <div className={language === "ar" ? "rtl" : ""}>
       <h1 className="text-3xl font-bold mb-4 text-secondary">{translate("adminDashboard")}</h1>
-      <div className="grid grid-cols-1 gap-4  mt-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 ">
-        {items.map((item) => (
-          <DashboardItem key={item.id} item={item} isRTL={language === "ar"} />
-        ))}
+      <div className="grid grid-cols-1 gap-4 mt-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
+        {items
+          .filter(item => visibleItems.includes(item.id)) // Only show visible items
+          .map((item) => (
+            <DashboardItem key={item.id} item={item} isRTL={language === "ar"} />
+          ))}
       </div>
+
+      {/* Include the Settings component, passing the handleToggleVisibility function and visibleItems */}
+      <DashboardSettings onToggle={handleToggleVisibility} visibleItems={visibleItems} />
     </div>
   );
 };
