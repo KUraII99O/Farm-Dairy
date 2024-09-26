@@ -54,74 +54,68 @@ const LandingNav: React.FC<LandingNavProps> = ({
   };
 
   return (
-    <div>
-      <Navbar fluid rounded>
-        <NavbarBrand href="/" className="flex items-center space-x-2">
-          <Link
-            to="/"
-            className="flex items-center transition-opacity duration-500"
-          >
-            <img
-              src="https://sakosys.com/envato/dairy-farm-management-system/storage/app/public/uploads/751280420015239.png"
-              className="h-6 w-auto sm:h-12 sm:w-auto ml-2 sm:ml-24"
-              alt="Your Company"
-            />
-            <h3 className="text-lg sm:text-xl font-bold ml-2 text-primary whitespace-nowrap ml-6">
-              {translate("Ges Cow")}
-            </h3>
-          </Link>
-        </NavbarBrand>
-        <div className="flex items-center justify-end md:order-2">
-          <Link
-            to="/app/login"
-            className="inline-block px-4 py-2 text-sm md:text-base mr-3 bg-primary text-white font-semibold rounded hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-          >
-            {translate("getstarted")}
-          </Link>
+    <Navbar fluid rounded>
+      <Navbar.Brand href="https://flowbite-react.com">
+        <img
+          src="https://sakosys.com/envato/dairy-farm-management-system/storage/app/public/uploads/751280420015239.png"
+          className="mr-3 h-6 sm:h-9"
+          alt="Flowbite React Logo"
+        />
+        <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
+          GesCow
+        </span>
+      </Navbar.Brand>
 
-          {/* Language Switcher */}
-          <div className="flex items-center">
-            <select
-              value={language}
-              onChange={(e) => handleChangeLanguage(e.target.value)}
-              className="mr-2 border rounded-md text-sm md:text-base"
-            >
-              <option value="en">{translate("🇺🇸")}</option>
-              <option value="fr">{translate("🇫🇷")}</option>
-              <option value="ar">{translate("🇹🇳")}</option>
-            </select>
-          </div>
+      <div className="flex md:order-2">
+        <Link
+          to="/app/login"
+          className="inline-block px-4 py-2 text-sm md:text-base mr-3 bg-primary text-white font-semibold rounded hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+        >
+          {translate("getstarted")}
+        </Link>
 
-          {/* Navbar Toggle for Mobile */}
-          <NavbarToggle />
+        {/* Language Switcher */}
+        <div className="flex items-center">
+          <select
+            value={language}
+            onChange={(e) => handleChangeLanguage(e.target.value)}
+            className="mr-2 border rounded-md text-sm md:text-base"
+          >
+            <option value="en">{translate("🇺🇸")}</option>
+            <option value="fr">{translate("🇫🇷")}</option>
+            <option value="ar">{translate("🇹🇳")}</option>
+          </select>
         </div>
 
-        {/* Collapsible Menu */}
-        <NavbarCollapse>
-          <NavbarLink href="/">{translate("home")}</NavbarLink>
-          <Dropdown label={translate("solutions")} inline>
-            <Dropdown.Item>
-              <Link to="/">{translate("web")}</Link>
-            </Dropdown.Item>
-            <Dropdown.Item>
-              <Link to="/solutions/mobile">{translate("mobile")}</Link>
-            </Dropdown.Item>
-            <Dropdown.Item>
-              <Link to="/solutions/desktop">{translate("desktop")}</Link>
-            </Dropdown.Item>
-          </Dropdown>
-          <NavbarLink className="cursor-pointer" onClick={handleServiceClick}>
-            {translate("services")}
-          </NavbarLink>
-          <NavbarLink className="cursor-pointer" onClick={handlePricingClick}>
-            {translate("pricing")}
-          </NavbarLink>
-          <NavbarLink className="cursor-pointer" onClick={handleContactClick}>
-            {translate("contact")}
-          </NavbarLink>
-        </NavbarCollapse>
-      </Navbar>
-    </div>
+        {/* Navbar Toggle for Mobile */}
+        <NavbarToggle />
+      </div>
+
+      {/* Collapsible Menu */}
+      <NavbarCollapse>
+        <NavbarLink href="/">{translate("home")}</NavbarLink>
+        <Dropdown label={translate("solutions")} inline>
+          <Dropdown.Item>
+            <Link to="/">{translate("web")}</Link>
+          </Dropdown.Item>
+          <Dropdown.Item>
+            <Link to="/solutions/mobile">{translate("mobile")}</Link>
+          </Dropdown.Item>
+          <Dropdown.Item>
+            <Link to="/solutions/desktop">{translate("desktop")}</Link>
+          </Dropdown.Item>
+        </Dropdown>
+        <NavbarLink className="cursor-pointer" onClick={handleServiceClick}>
+          {translate("services")}
+        </NavbarLink>
+        <NavbarLink className="cursor-pointer" onClick={handlePricingClick}>
+          {translate("pricing")}
+        </NavbarLink>
+        <NavbarLink className="cursor-pointer" onClick={handleContactClick}>
+          {translate("contact")}
+        </NavbarLink>
+      </NavbarCollapse>
+    </Navbar>
   );
 };
 
