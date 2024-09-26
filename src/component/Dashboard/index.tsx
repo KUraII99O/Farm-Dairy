@@ -1,4 +1,4 @@
-import React, { useState } from "react"; // Make sure to import useState
+import React, { useState } from "react"; // Import useState
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUsers,
@@ -21,7 +21,7 @@ import DashboardSettings from "../DashboardSettings";
 
 const Dashboard: React.FC = () => {
   const { translate, language } = useTranslation();
-  
+
   // Visibility state for dashboard items
   const [visibleItems, setVisibleItems] = useState<number[]>([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
 
@@ -61,7 +61,7 @@ const Dashboard: React.FC = () => {
           ))}
       </div>
 
-      {/* Include the Settings component, passing the handleToggleVisibility function and visibleItems */}
+      {/* Pass the handleToggleVisibility and visibleItems to DashboardSettings */}
       <DashboardSettings onToggle={handleToggleVisibility} visibleItems={visibleItems} />
     </div>
   );
