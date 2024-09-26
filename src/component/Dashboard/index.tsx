@@ -1,4 +1,4 @@
-import React, { useState } from "react"; // Import useState
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUsers,
@@ -17,13 +17,12 @@ import {
 import DashboardItem from "../dashboardItem";
 import { useTranslation } from "../Translator/Provider";
 import "./index.css"; // Import CSS file for Dashboard styles
-import DashboardSettings from "../DashboardSettings";
 
 const Dashboard: React.FC = () => {
   const { translate, language } = useTranslation();
 
   // Visibility state for dashboard items
-  const [visibleItems, setVisibleItems] = useState<number[]>([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+  const [visibleItems,] = useState<number[]>([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
 
   const items = [
     { id: 1, title: translate("dashboard"), icon: <FontAwesomeIcon icon={faUsers} />, color: "bg-red-500", value: "0" },
@@ -40,16 +39,6 @@ const Dashboard: React.FC = () => {
     { id: 12, title: translate("todaySoldMilkAmount"), icon: <FontAwesomeIcon icon={faDollarSign} />, color: "bg-amber-500", value: "0" },
   ];
 
-  const handleToggleVisibility = (itemId: number, isVisible: boolean) => {
-    setVisibleItems((prev) => {
-      if (isVisible) {
-        return [...prev, itemId]; // Add item if checked
-      } else {
-        return prev.filter(id => id !== itemId); // Remove item if unchecked
-      }
-    });
-  };
-
   return (
     <div className={language === "ar" ? "rtl" : ""}>
       <h1 className="text-3xl font-bold mb-4 text-secondary">{translate("adminDashboard")}</h1>
@@ -60,9 +49,7 @@ const Dashboard: React.FC = () => {
             <DashboardItem key={item.id} item={item} isRTL={language === "ar"} />
           ))}
       </div>
-
-      {/* Pass the handleToggleVisibility and visibleItems to DashboardSettings */}
-      <DashboardSettings onToggle={handleToggleVisibility} visibleItems={visibleItems} />
+      {/* DashboardSettings component should be used only in the settings page */}
     </div>
   );
 };
