@@ -21,6 +21,7 @@ const SignUpForm = () => {
   const { plan } = location.state || {};
   
 
+
   const validateForm = () => {
     const errors: { [key: string]: string } = {};
     if (!mobile.trim()) {
