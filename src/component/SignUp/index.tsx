@@ -116,10 +116,10 @@ const SignUpForm = () => {
                 src={MoooImage}
                 alt="Mooo Image"
               />
-              <h1 className="text-2xl xl:text-4xl font-extrabold text-blue-900">
+              <h1 className="text-2xl xl:text-4xl font-extrabold text-black">
                 {translate("register_account")}
               </h1>
-              <p className="text-[12px] text-gray-500">
+              <p className="text-[12px] text-gray-500 mt-4">
                 Hey enter your details to create your account
               </p>
             </div>
