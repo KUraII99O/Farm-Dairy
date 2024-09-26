@@ -20,7 +20,7 @@ const SignUpForm = () => {
   const location = useLocation();
   const { plan } = location.state || {};
   
-  
+
   const validateForm = () => {
     const errors: { [key: string]: string } = {};
     if (!mobile.trim()) {
@@ -125,7 +125,7 @@ const SignUpForm = () => {
             <div className="w-full flex-1 mt-8">
               <div className="mx-auto max-w-xs flex flex-col gap-4">
                 <form onSubmit={handleSubmit}>
-                  
+                 
                   <input
                     type="text"
                     className="w-full px-5 py-3 mb-4 rounded-lg font-medium bg-gray-100 border border-gray-200 text-sm"
@@ -136,7 +136,7 @@ const SignUpForm = () => {
                   {errors.username && <p className="text-red-500">{errors.username}</p>}
                   <input
                     type="text"
-                    className="w-full px-5 py-3  mb-4 rounded-lg font-medium bg-gray-100 border border-gray-200 text-sm"
+                    className="w-full px-5 py-3 mb-4 rounded-lg font-medium bg-gray-100 border border-gray-200 text-sm"
                     placeholder={translate("username")}
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
