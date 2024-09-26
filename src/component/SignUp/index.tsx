@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import CowFarmImage from "../../assets/images/CowFarm.png"; // Replace with the actual image path
+import MoooImage from "../../assets/images/Mooo.png";
 import { FaRegEyeSlash, FaRegEye } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "../Translator/Provider";
 import { useLocation } from "react-router-dom";
 
 const SignUpForm = () => {
-  const { translate, setLanguage, language } = useTranslation();
+  const { translate, language } = useTranslation();
   
   const [mobile, setMobile] = useState("");
   const [username, setUsername] = useState("");
@@ -16,14 +16,11 @@ const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Use the useNavigate hook
   const location = useLocation();
   const { plan } = location.state || {};
   
-  const handleChangeLanguage = (newLanguage: string) => {
-    setLanguage(newLanguage);
-  };
-
+  
   const validateForm = () => {
     const errors: { [key: string]: string } = {};
     if (!mobile.trim()) {
@@ -73,7 +70,7 @@ const SignUpForm = () => {
         }
 
         const data = await response.json();
-        console.log(data.message);
+        console.log(data.message); // Print success message or handle it as needed
         console.log({ email, password });
         setTimeout(() => {
           navigate("/login");
@@ -102,11 +99,11 @@ const SignUpForm = () => {
   return (
     <div className="h-[100vh] items-center flex justify-center px-5 lg:px-0">
       <div className="max-w-screen-xl bg-white border shadow sm:rounded-lg flex justify-center flex-1">
-        <div className="flex-1 bg-green-900 text-center hidden md:flex">
+        <div className="flex-1 bg-blue-900 text-center hidden md:flex">
           <div
             className="m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat"
             style={{
-              backgroundImage: `url(${CowFarmImage})`, // Update this to your farm-related image
+              backgroundImage: `url(https://www.tailwindtap.com/assets/common/marketing.svg)`,
             }}
           ></div>
         </div>
@@ -115,31 +112,20 @@ const SignUpForm = () => {
             <div className="text-center">
               <img
                 className="mx-auto w-48"
-                src={CowFarmImage} // Replace with the farm-related image
-                alt="Farm Cow Image"
+                src={MoooImage}
+                alt="Mooo Image"
               />
-              <h1 className="text-2xl xl:text-4xl font-extrabold text-green-900">
+              <h1 className="text-2xl xl:text-4xl font-extrabold text-blue-900">
                 {translate("register_account")}
               </h1>
               <p className="text-[12px] text-gray-500">
-                Hey, enter your details to create your account
+                Hey enter your details to create your account
               </p>
             </div>
             <div className="w-full flex-1 mt-8">
               <div className="mx-auto max-w-xs flex flex-col gap-4">
                 <form onSubmit={handleSubmit}>
-                  <div>
-                    <select
-                      value={language}
-                      onChange={(e) => handleChangeLanguage(e.target.value)}
-                      className="mb-4"
-                    >
-                      <option value="en">🇺🇸 English</option>
-                      <option value="fr">🇫🇷 Français</option>
-                      <option value="ar">🇹🇳 العربية</option>
-                    </select>
-                  </div>
-                  {errors.mobile && <p className="text-red-500">{errors.mobile}</p>}
+                  
                   <input
                     type="text"
                     className="w-full px-5 py-3 mb-4 rounded-lg font-medium bg-gray-100 border border-gray-200 text-sm"
@@ -150,7 +136,7 @@ const SignUpForm = () => {
                   {errors.username && <p className="text-red-500">{errors.username}</p>}
                   <input
                     type="text"
-                    className="w-full px-5 py-3 mb-4 rounded-lg font-medium bg-gray-100 border border-gray-200 text-sm"
+                    className="w-full px-5 py-3  mb-4 rounded-lg font-medium bg-gray-100 border border-gray-200 text-sm"
                     placeholder={translate("username")}
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
@@ -164,10 +150,10 @@ const SignUpForm = () => {
                     onChange={(e) => setEmail(e.target.value)}
                   />
                   {errors.password && <p className="text-red-500">{errors.password}</p>}
-                  <div className="relative mb-4">
+                  <div className="relative">
                     <input
                       type={showPassword ? "text" : "password"}
-                      className="w-full px-5 py-3 rounded-lg font-medium bg-gray-100 border border-gray-200 text-sm"
+                      className="w-full px-5 py-3 mb-4 rounded-lg font-medium bg-gray-100 border border-gray-200 text-sm"
                       placeholder={translate("password")}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -182,10 +168,10 @@ const SignUpForm = () => {
                   {errors.confirmPassword && (
                     <p className="text-red-500">{errors.confirmPassword}</p>
                   )}
-                  <div className="relative mb-4">
+                  <div className="relative">
                     <input
                       type={showConfirmPassword ? "text" : "password"}
-                      className="w-full px-5 py-3 rounded-lg font-medium bg-gray-100 border border-gray-200 text-sm"
+                      className="w-full px-5 py-3 mb-4 rounded-lg font-medium bg-gray-100 border border-gray-200 text-sm"
                       placeholder={translate("confirm_password")}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
@@ -197,14 +183,14 @@ const SignUpForm = () => {
                       {showConfirmPassword ? <FaRegEye /> : <FaRegEyeSlash />}
                     </div>
                   </div>
-                  <button className="mt-5 tracking-wide font-semibold bg-green-900 text-gray-100 w-full py-4 rounded-lg">
+                  <button className="mt-5 tracking-wide font-semibold bg-blue-900 text-gray-100 w-full py-4 rounded-lg">
                     {translate("sign_up")}
                   </button>
                 </form>
                 <p className="mt-6 text-xs text-gray-600 text-center">
                   {translate("have_account")}{" "}
                   <Link to="/app/login">
-                    <span className="text-green-900 font-semibold">{translate("login")}</span>
+                    <span className="text-blue-900 font-semibold">{translate("login")}</span>
                   </Link>
                 </p>
               </div>
