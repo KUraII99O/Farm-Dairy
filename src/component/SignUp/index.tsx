@@ -5,8 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "../Translator/Provider";
 import { useLocation } from "react-router-dom";
 
-const RegistartionForm = () => {
-  const { translate, setLanguage, language } = useTranslation();
+const SignUpForm = () => {
+  const { translate, language } = useTranslation();
   
   const [mobile, setMobile] = useState("");
   const [username, setUsername] = useState("");
@@ -20,11 +20,7 @@ const RegistartionForm = () => {
   const location = useLocation();
   const { plan } = location.state || {};
   
-  const handleChangeLanguage = (newLanguage: string) => {
-    console.log("Changing language to:", newLanguage);
-    setLanguage(newLanguage);
-  };
-
+  
   const validateForm = () => {
     const errors: { [key: string]: string } = {};
     if (!mobile.trim()) {
@@ -129,18 +125,7 @@ const RegistartionForm = () => {
             <div className="w-full flex-1 mt-8">
               <div className="mx-auto max-w-xs flex flex-col gap-4">
                 <form onSubmit={handleSubmit}>
-                  <div>
-                    <select
-                      value={language}
-                      onChange={(e) => handleChangeLanguage(e.target.value)}
-                      className="mb-4"
-                    >
-                      <option value="en">🇺🇸 English</option>
-                      <option value="fr">🇫🇷 Français</option>
-                      <option value="ar">🇹🇳 العربية</option>
-                    </select>
-                  </div>
-                  {errors.mobile && <p className="text-red-500">{errors.mobile}</p>}
+                  
                   <input
                     type="text"
                     className="w-full px-5 py-3 rounded-lg font-medium bg-gray-100 border border-gray-200 text-sm"
@@ -217,4 +202,4 @@ const RegistartionForm = () => {
   );
 };
 
-export default RegistartionForm;
+export default SignUpForm;
