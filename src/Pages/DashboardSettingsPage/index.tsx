@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import DashboardSettings from '../../component/DashboardSettings'; // Adjust the path as necessary
+import DashboardSettings from '../../component/DashboardSettings';
 
 const DashboardSettingsPage: React.FC = () => {
   // Initialize the visibility state with all items visible
@@ -17,13 +17,10 @@ const DashboardSettingsPage: React.FC = () => {
   };
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-4">Dashboard Settings</h1>
-      <DashboardSettings
-        visibleItems={visibleItems} // Pass the visibility state
-        onToggle={handleToggle} // Pass the toggle function
+    <DashboardSettings
+      visibleItems={visibleItems} // Pass the visibility state
+      handleToggle={handleToggle} // Pass the correct prop
       />
-    </div>
   );
 };
 

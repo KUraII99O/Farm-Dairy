@@ -129,7 +129,7 @@ const SettingHeader: React.FC = () => {
         {activeSection === "/dashboard" && (
           <DashboardSettings
             visibleItems={visibleItems}
-            onToggle={handleToggle}
+            handleToggle={handleToggle} // Pass the correct prop
           />
         )}
         {activeSection === "/profile" && <ProfileISettings />}
