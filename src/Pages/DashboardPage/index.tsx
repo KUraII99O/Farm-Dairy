@@ -6,7 +6,11 @@ import SaleHistory from '../../component/SaleHistoryTable';
 import CowFeedChart from '../../component/CowFeedcharts';
 import { useTranslation } from '../../component/Translator/Provider';
 
-const DashboardPage: React.FC = () => {
+interface DashboardPageProps {
+  visibleItems: number[];
+}
+
+const DashboardPage: React.FC<DashboardPageProps> = ({ visibleItems }) => {
   const { translate } = useTranslation(); // Use the translation hook or context
   
   // Assuming you have a variable isRTL indicating right-to-left language direction
@@ -41,7 +45,7 @@ const DashboardPage: React.FC = () => {
 
   return (
     <div>
-      <Dashboard />
+      <Dashboard visibleItems={visibleItems} /> {/* Pass visibleItems to Dashboard */}
       <div className="flex flex-col md:flex-row lg:flex-row xl:flex-row space-y-4 md:space-y-0 lg:space-y-0 xl:space-y-0 space-x-0 md:space-x-4 lg:space-x-4 xl:space-x-4">
         <div className={`w-full md:w-1/2 lg:w-1/2 xl:w-1/2 ${isRTL ? 'md:order-2 lg:order-2 xl:order-2' : ''}`}>
           <ExpenseHistory className={isRTL ? 'pr-4' : 'pl-4'} />
