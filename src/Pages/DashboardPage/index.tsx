@@ -1,4 +1,3 @@
-// DashboardPage.tsx
 import React from 'react';
 import Dashboard from '../../component/Dashboard';
 import ExpenseHistory from '../../component/ExpenseHistoryTable';
@@ -7,7 +6,7 @@ import CowFeedChart from '../../component/CowFeedcharts';
 import { useTranslation } from '../../component/Translator/Provider';
 
 interface DashboardPageProps {
-  visibleItems: number[];
+  visibleItems: number[]; // This prop is required
 }
 
 const DashboardPage: React.FC<DashboardPageProps> = ({ visibleItems }) => {
@@ -57,6 +56,11 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ visibleItems }) => {
       <CowFeedChart data={cowFeedChartData} />
     </div>
   );
+};
+
+// Default props for visibleItems
+DashboardPage.defaultProps = {
+  visibleItems: [1, 2, 3, 4, 5], // Default set of visible items
 };
 
 export default DashboardPage;
