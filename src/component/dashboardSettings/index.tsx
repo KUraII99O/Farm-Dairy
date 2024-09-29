@@ -28,10 +28,11 @@ const DashboardSettings: React.FC = () => {
   }, []);
 
   const handleCheckboxChange = (id: number) => {
-    setVisibleItems((prev) => ({
-      ...prev,
-      [id]: !prev[id], // Toggle visibility
-    }));
+    setVisibleItems((prev) => {
+      const newVisibility = { ...prev, [id]: !prev[id] }; // Toggle visibility
+      console.log("New Visibility State:", newVisibility); // Debugging line
+      return newVisibility;
+    });
   };
 
   const handleConfirm = () => {
@@ -48,7 +49,7 @@ const DashboardSettings: React.FC = () => {
           <div key={item.id} className="flex items-center mb-2">
             <input
               type="checkbox"
-              checked={visibleItems[item.id]}
+              checked={visibleItems[item.id]} // Should reflect current state
               onChange={() => handleCheckboxChange(item.id)}
               className="mr-2 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
