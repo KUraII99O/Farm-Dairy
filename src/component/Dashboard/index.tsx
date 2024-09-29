@@ -46,51 +46,51 @@ const Dashboard: React.FC = () => {
     let color;
 
     switch (item.title) {
-      case "dashboard":
+      case "Dashboard":
         icon = <FontAwesomeIcon icon={faUsers} />;
         color = "bg-red-500";
         break;
-      case "manageCow":
+      case "Number Of Cow":
         icon = <FontAwesomeIcon icon={faCow} />;
         color = "bg-blue-500";
         break;
-      case "manageCowCalf":
+      case "Number Of Cow Calf":
         icon = <FontAwesomeIcon icon={faBaby} />;
         color = "bg-green-500";
         break;
-      case "suppliers":
+      case "Suppliers":
         icon = <FontAwesomeIcon icon={faTruck} />;
         color = "bg-yellow-500";
         break;
-      case "manageStall":
+      case "Number Of Stalls":
         icon = <FontAwesomeIcon icon={faWarehouse} />;
         color = "bg-purple-500";
         break;
-      case "farmExpense":
+      case "Farm Expense":
         icon = <FontAwesomeIcon icon={faMoneyBill} />;
         color = "bg-indigo-500";
         break;
-      case "collectMilk":
+      case "Collected Milk":
         icon = <FontAwesomeIcon icon={faFlask} />;
         color = "bg-pink-500";
         break;
-      case "saleMilk":
+      case "Sold Milk":
         icon = <FontAwesomeIcon icon={faShoppingCart} />;
         color = "bg-teal-500";
         break;
-      case "todayCollectedMilk":
+      case "Today Collected Milk":
         icon = <FontAwesomeIcon icon={faCheese} />;
         color = "bg-orange-500";
         break;
-      case "todaySoldMilk":
+      case "Today Sold Milk":
         icon = <FontAwesomeIcon icon={faGlassWhiskey} />;
         color = "bg-cyan-500";
         break;
-      case "todayCollectedMilkAmount":
+      case "Today Collected Milk Amount":
         icon = <FontAwesomeIcon icon={faSackDollar} />;
         color = "bg-gray-500";
         break;
-      case "todaySoldMilkAmount":
+      case "Today Sold Milk Amount":
         icon = <FontAwesomeIcon icon={faDollarSign} />;
         color = "bg-amber-500";
         break;
