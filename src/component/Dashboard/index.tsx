@@ -62,7 +62,7 @@ const Dashboard: React.FC = () => {
         icon = <FontAwesomeIcon icon={faTruck} />;
         color = "bg-yellow-500";
         break;
-      case "Number Of Stalls":
+      case "Number Of Stall":
         icon = <FontAwesomeIcon icon={faWarehouse} />;
         color = "bg-purple-500";
         break;
@@ -86,7 +86,7 @@ const Dashboard: React.FC = () => {
         icon = <FontAwesomeIcon icon={faGlassWhiskey} />;
         color = "bg-cyan-500";
         break;
-      case "Today Collected Milk Amount":
+      case "Today Collected MilkAmount":
         icon = <FontAwesomeIcon icon={faSackDollar} />;
         color = "bg-gray-500";
         break;

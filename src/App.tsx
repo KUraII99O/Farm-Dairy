@@ -87,7 +87,6 @@ import BankTransferPage from "./Pages/BankTransferPage";
 import AddPaymentMethodPage from "./Pages/AddPaymentMethodPage";
 import "react-toastify/dist/ReactToastify.css";
 import { ManageSupplierProvider } from "./component/Suppliers/Provider";
-import DashboardSettings from "./component/dashboardSettings";
 const App: React.FC = () => {
   return (
     <ManageUserProvider>
@@ -186,13 +185,6 @@ const App: React.FC = () => {
                                                                 </RequireAuthentication>
                                                               }
                                                             />
-                                                            <Route
-                                                              path="/dashboard-settings"
-                                                              Component={
-                                                                DashboardSettings
-                                                              }
-                                                            />
-
                                                             <Route
                                                               path="/Animal-Pregnancy"
                                                               element={
