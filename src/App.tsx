@@ -5,7 +5,6 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
-import DashboardPage from "./Pages/DashboardPage";
 import SettingPage from "./Pages/SettingPage";
 import Layout from "./component/Layout";
 import { ManageUserProvider } from "./component/User/Provider";
@@ -87,6 +86,7 @@ import BankTransferPage from "./Pages/BankTransferPage";
 import AddPaymentMethodPage from "./Pages/AddPaymentMethodPage";
 import "react-toastify/dist/ReactToastify.css";
 import { ManageSupplierProvider } from "./component/Suppliers/Provider";
+import DashboardSettings from "./component/dashboardSettings";
 const App: React.FC = () => {
   return (
     <ManageUserProvider>
@@ -178,13 +178,12 @@ const App: React.FC = () => {
                                                               }
                                                             />
                                                             <Route
-                                                              path="/dashboard"
-                                                              element={
-                                                                <RequireAuthentication>
-                                                                  <DashboardPage />
-                                                                </RequireAuthentication>
+                                                              path="/dashboard-settings"
+                                                              Component={
+                                                                DashboardSettings
                                                               }
                                                             />
+
                                                             <Route
                                                               path="/Animal-Pregnancy"
                                                               element={

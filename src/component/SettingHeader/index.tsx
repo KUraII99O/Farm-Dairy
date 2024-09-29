@@ -3,8 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import Invoices from "../Invoices";
 import ProfileISettings from "../ProfileISettings";
 import Subscription from "../Subscription";
-import Dashboard from "../Dashboard"; // Assuming you have a Dashboard component
 import { useTranslation } from "../Translator/Provider";
+import DashboardSettings from "../dashboardSettings";
 
 const SettingHeader: React.FC = () => {
   const location = useLocation();
@@ -59,11 +59,11 @@ const SettingHeader: React.FC = () => {
         <li className="me-2">
           <Link
             to="#"
-            onClick={() => handleSectionClick("/dashboard")}
-            className={getLinkStyles("/dashboard")}
+            onClick={() => handleSectionClick("/dashboardSettings")}
+            className={getLinkStyles("/dashboardSettings")}
           >
             <svg
-              className={`w-4 h-4 me-2 ${getIconColor("/dashboard")}`}
+              className={`w-4 h-4 me-2 ${getIconColor("/dashboardSettings")}`}
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="currentColor"
@@ -113,7 +113,7 @@ const SettingHeader: React.FC = () => {
       </ul>
       {activeSection === "/Subscription" && <Subscription />}
       {activeSection === "/profile" && <ProfileISettings />}
-      {activeSection === "/dashboard" && <Dashboard />}
+      {activeSection === "/dashboard-settings" && <DashboardSettings />} {/* Render the settings component */}
       {activeSection === "/invoice" && <Invoices />}
     </div>
   );
