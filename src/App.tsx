@@ -5,6 +5,7 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
+import DashboardPage from "./Pages/DashboardPage";
 import SettingPage from "./Pages/SettingPage";
 import Layout from "./component/Layout";
 import { ManageUserProvider } from "./component/User/Provider";
@@ -175,6 +176,14 @@ const App: React.FC = () => {
                                                               path="/new-password"
                                                               element={
                                                                 <NewPasswordPage />
+                                                              }
+                                                            />
+                                                            <Route
+                                                              path="/dashboard"
+                                                              element={
+                                                                <RequireAuthentication>
+                                                                  <DashboardPage />
+                                                                </RequireAuthentication>
                                                               }
                                                             />
                                                             <Route
